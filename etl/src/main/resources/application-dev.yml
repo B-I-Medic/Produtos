@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: ETL
+  jpa:
+    open-in-view: false
+
+app:
+  datasource:
+    origem:
+      ufx:
+        driver-class-name: dbmaker.sql.type4.Driver
+        url: ${DBMAKER_UFX_URL}
+        username: ${DBMAKER_UFX_USERNAME}
+        password: ${DBMAKER_UFX_PASSWORD}
+      s00:
+        driver-class-name: dbmaker.sql.type4.Driver
+        url: ${DBMAKER_S00_URL}
+        username: ${DBMAKER_S00_USERNAME}
+        password: ${DBMAKER_S00_PASSWORD}
+    produto:
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://localhost:5432/produto
+      username: produtoetl
+      password: etl123
+
+etl:
+  scheduler:
+    fixed-delay-ms: 300000
+  thread-pool-size: 4

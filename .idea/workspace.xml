@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0593e64c-08a5-4309-95b8-d15686fe4e95" name="Changes" comment="docker, flyway, spring profiles">
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/src/main/resources/application-dev.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Web/src/main/resources/application-prod.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/postgres/init/01_create_user.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/etl/src/main/resources/application-prod.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/etl/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/etl/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/ETLApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/ETLApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/config/ExecutorConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/config/ExecutorConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/config/dataSource/DataSourceConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/config/dataSource/DataSourceConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/config/property/ETLProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/config/property/ETLProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/config/property/ProdutoDataSourceProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/config/property/ProdutoDataSourceProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/config/property/S00DataSourceProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/config/property/S00DataSourceProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/config/property/UFXDataSourceProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/config/property/UFXDataSourceProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/dto/consulta/EstoqueInternoConsultaDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/dto/consulta/EstoqueInternoConsultaDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/dto/consulta/EstoqueSegregadoConsultaDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/dto/consulta/EstoqueSegregadoConsultaDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/dto/consulta/ValePermanenteConsultaDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/dto/consulta/ValePermanenteConsultaDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/dto/parametro/EstoqueInternoParametroDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/dto/parametro/EstoqueInternoParametroDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/dto/parametro/EstoqueSegregadoParametroDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/dto/parametro/EstoqueSegregadoParametroDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/dto/parametro/ValePermanenteParametroDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/dto/parametro/ValePermanenteParametroDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/model/estoque/interno/EstoqueInterno.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/model/estoque/interno/EstoqueInterno.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/model/estoque/segregado/EstoqueSegregado.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/model/estoque/segregado/EstoqueSegregado.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/model/estoque/valePermanente/ValePermanente.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/model/estoque/valePermanente/ValePermanente.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/model/processamento/Processamento.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/model/processamento/Processamento.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/model/processamento/ProcessamentoStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/model/processamento/ProcessamentoStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/estoque/interno/ConsultaEstoqueInternoS00Repository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/estoque/interno/ConsultaEstoqueInternoS00Repository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/estoque/interno/ConsultaEstoqueInternoUFXRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/estoque/interno/ConsultaEstoqueInternoUFXRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/estoque/interno/InsercaoEstoqueInternoProdutoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/estoque/interno/InsercaoEstoqueInternoProdutoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/estoque/segregado/ConsultaConsultaSegregadoUFXRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/estoque/segregado/ConsultaConsultaSegregadoUFXRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/estoque/segregado/InsercaoConsultaSegregadoProdutoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/estoque/segregado/InsercaoConsultaSegregadoProdutoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/estoque/valePermanente/ConsultaS00Repository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/estoque/valePermanente/ConsultaS00Repository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/estoque/valePermanente/ConsultaUFXRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/estoque/valePermanente/ConsultaUFXRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/estoque/valePermanente/InsercaoValePermanenteProdutoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/estoque/valePermanente/InsercaoValePermanenteProdutoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/parametro/EstoqueInternoParametroRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/parametro/EstoqueInternoParametroRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/parametro/EstoqueSegregadoParametroRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/parametro/EstoqueSegregadoParametroRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/parametro/ValePermanenteParametroRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/parametro/ValePermanenteParametroRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/processamento/ProcessamentoLockRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/processamento/ProcessamentoLockRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/repository/processamento/ProcessamentoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/repository/processamento/ProcessamentoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/schedule/EtlSchedule.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/schedule/EtlSchedule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/service/estoque/interno/EstoqueInternoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/service/estoque/interno/EstoqueInternoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/service/estoque/interno/ProcessarEstoqueInternoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/service/estoque/interno/ProcessarEstoqueInternoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/service/estoque/segregado/EstoqueSegregadoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/service/estoque/segregado/EstoqueSegregadoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/service/estoque/segregado/ProcessarEstoqueSegregadoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/service/estoque/segregado/ProcessarEstoqueSegregadoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/service/estoque/valePermanente/ProcessarValePermanenteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/service/estoque/valePermanente/ProcessarValePermanenteService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/service/estoque/valePermanente/ValePermanenteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/service/estoque/valePermanente/ValePermanenteService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/java/com/medic/ETL/service/processamento/ControlarProcessamentoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/java/com/medic/ETL/service/processamento/ControlarProcessamentoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETL/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/etl/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/.github/workflows/build-deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/resources/workflows/build-deploy.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/web/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/web/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/ProdutosApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/ProdutosApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/config/auth/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/config/auth/CorsConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/config/auth/JwtAuthenticationConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/config/auth/JwtAuthenticationConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/config/auth/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/config/auth/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/config/auth/UsuarioReactiveAuthenticationManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/config/auth/UsuarioReactiveAuthenticationManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/config/mail/MailProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/config/mail/MailProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/config/persistence/R2dbcConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/config/persistence/R2dbcConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/config/persistence/UUIDAutoGenerated.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/config/persistence/UUIDAutoGenerated.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/config/persistence/UUIDAutoGeneratedConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/config/persistence/UUIDAutoGeneratedConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/config/web/OpenAPIConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/config/web/OpenAPIConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/auth/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/auth/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/cd/CdController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/cd/CdController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/cd/CdEmpresaMunicipioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/cd/CdEmpresaMunicipioController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/empresa/EmpresaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/empresa/EmpresaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/empresa/EmpresaMunicipioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/empresa/EmpresaMunicipioController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/municipio/MunicipioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/municipio/MunicipioController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/necessidade/NecessidadeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/necessidade/NecessidadeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/parametro/estoque/EstoqueInternoParametroController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/parametro/estoque/EstoqueInternoParametroController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/parametro/estoque/EstoqueSegregadoParametroController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/parametro/estoque/EstoqueSegregadoParametroController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/parametro/estoque/ValePermanenteParametroController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/parametro/estoque/ValePermanenteParametroController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/parametro/periodo/PeriodoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/parametro/periodo/PeriodoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/parametro/taxa/TaxaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/parametro/taxa/TaxaController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/controller/usuario/UsuarioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/controller/usuario/UsuarioController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/auth/LoginRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/auth/LoginRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/auth/LoginResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/auth/LoginResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/auth/PasswordRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/auth/PasswordRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/auth/ResetPasswordRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/auth/ResetPasswordRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/cd/CdEmpresaMunipioRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/cd/CdEmpresaMunipioRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/cd/CdEmpresaMunipioResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/cd/CdEmpresaMunipioResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/cd/CentroDistribuicaoRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/cd/CentroDistribuicaoRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/cd/CentroDistribuicaoResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/cd/CentroDistribuicaoResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/empresa/EmpresaMunicipioRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/empresa/EmpresaMunicipioRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/empresa/EmpresaMunicipioResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/empresa/EmpresaMunicipioResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/empresa/EmpresaRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/empresa/EmpresaRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/empresa/EmpresaResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/empresa/EmpresaResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/municipio/MunicipioRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/municipio/MunicipioRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/municipio/MunicipioResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/municipio/MunicipioResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/necessidade/NecessidadeResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/necessidade/NecessidadeResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/pagina/PaginaRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/pagina/PaginaRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/pagina/PaginaResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/pagina/PaginaResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/parametro/estoque/EstoqueInternoRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/parametro/estoque/EstoqueInternoRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/parametro/estoque/EstoqueInternoResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/parametro/estoque/EstoqueInternoResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/parametro/estoque/EstoqueSegregadoRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/parametro/estoque/EstoqueSegregadoRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/parametro/estoque/EstoqueSegregadoResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/parametro/estoque/EstoqueSegregadoResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/parametro/estoque/ValePermanenteRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/parametro/estoque/ValePermanenteRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/parametro/estoque/ValePermanenteResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/parametro/estoque/ValePermanenteResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/parametro/periodo/PeriodoRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/parametro/periodo/PeriodoRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/parametro/periodo/PeriodoResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/parametro/periodo/PeriodoResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/parametro/taxa/TaxaRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/parametro/taxa/TaxaRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/parametro/taxa/TaxaResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/parametro/taxa/TaxaResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/usuario/UsuarioPaginaDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/usuario/UsuarioPaginaDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/usuario/UsuarioRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/usuario/UsuarioRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/usuario/UsuarioResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/usuario/UsuarioResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/dto/web/ErrorResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/dto/web/ErrorResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/exception/handler/JwtAcessDenied.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/exception/handler/JwtAcessDenied.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/exception/handler/JwtEntryPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/exception/handler/JwtEntryPoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/exception/type/NotFounException.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/exception/type/NotFounException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/exception/type/auth/PasswordAlreadySetException.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/exception/type/auth/PasswordAlreadySetException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/exception/type/auth/PasswordResetCodeException.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/exception/type/auth/PasswordResetCodeException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/auth/PasswordResetCodeMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/auth/PasswordResetCodeMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/cd/CdEmpresaMunipioMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/cd/CdEmpresaMunipioMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/cd/CentroDistribuicaoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/cd/CentroDistribuicaoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/empresa/EmpresaMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/empresa/EmpresaMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/empresa/EmpresaMunicipioMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/empresa/EmpresaMunicipioMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/municipio/MunicipioMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/municipio/MunicipioMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/necessidade/NecessidadeMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/necessidade/NecessidadeMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/parametro/estoque/EstoqueInternoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/parametro/estoque/EstoqueInternoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/parametro/estoque/EstoqueSegregadoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/parametro/estoque/EstoqueSegregadoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/parametro/estoque/ValePermanenteMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/parametro/estoque/ValePermanenteMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/parametro/periodo/PeriodoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/parametro/periodo/PeriodoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/parametro/taxa/TaxaMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/parametro/taxa/TaxaMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/mapper/usuario/UsuarioMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/mapper/usuario/UsuarioMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/auth/PasswordResetCodeModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/auth/PasswordResetCodeModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/cd/CdEmpresaMunipioModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/cd/CdEmpresaMunipioModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/cd/CentroDistribuicaoModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/cd/CentroDistribuicaoModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/empresa/EmpresaModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/empresa/EmpresaModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/empresa/EmpresaMunicipioModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/empresa/EmpresaMunicipioModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/empresa/Viman.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/empresa/Viman.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/municipio/MunicipioModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/municipio/MunicipioModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/necessidade/NecessidadeModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/necessidade/NecessidadeModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/parametro/estoque/EstoqueInternoParametroModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/parametro/estoque/EstoqueInternoParametroModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/parametro/estoque/EstoqueSegregadoParametroModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/parametro/estoque/EstoqueSegregadoParametroModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/parametro/estoque/ValePermanenteParametroModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/parametro/estoque/ValePermanenteParametroModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/parametro/periodo/PeriodoEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/parametro/periodo/PeriodoEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/parametro/periodo/PeriodoModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/parametro/periodo/PeriodoModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/parametro/taxa/TaxaEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/parametro/taxa/TaxaEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/parametro/taxa/TaxaModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/parametro/taxa/TaxaModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/usuario/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/usuario/Role.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/model/usuario/UsuarioModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/model/usuario/UsuarioModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/auth/AuthRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/auth/AuthRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/auth/PasswordResetCodeRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/auth/PasswordResetCodeRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/cd/CdEmpresaMunipioRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/cd/CdEmpresaMunipioRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/cd/CentroDistribuicaoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/cd/CentroDistribuicaoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/cd/MunicipioRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/cd/MunicipioRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/empresa/EmpresaMunicipioRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/empresa/EmpresaMunicipioRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/empresa/EmpresaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/empresa/EmpresaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/estoque/EstoqueInternoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/estoque/EstoqueInternoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/estoque/EstoqueSegregadoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/estoque/EstoqueSegregadoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/estoque/ValePermanenteRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/estoque/ValePermanenteRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/necessidade/NecessidadeRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/necessidade/NecessidadeRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/parametro/PeriodoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/parametro/PeriodoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/parametro/TaxaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/parametro/TaxaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/repository/usuario/UsuarioRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/repository/usuario/UsuarioRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/auth/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/auth/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/auth/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/auth/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/auth/PasswordResetCodeGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/auth/PasswordResetCodeGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/cd/ManutencaoCDService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/cd/ManutencaoCDService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/cd/ManutencaoCdEmpresaMunicipioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/cd/ManutencaoCdEmpresaMunicipioService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/empresa/ManutencaoEmpresaMunicipioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/empresa/ManutencaoEmpresaMunicipioService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/empresa/ManutencaoEmpresaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/empresa/ManutencaoEmpresaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/mail/MailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/mail/MailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/mail/MailTemplateService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/mail/MailTemplateService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/muncipio/ConsultaMunicipioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/muncipio/ConsultaMunicipioService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/necessidade/ConsultaNecessidadeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/necessidade/ConsultaNecessidadeService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/parametro/estoque/ManutencaoEstoqueInternoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/parametro/estoque/ManutencaoEstoqueInternoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/parametro/estoque/ManutencaoEstoqueSegregadoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/parametro/estoque/ManutencaoEstoqueSegregadoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/parametro/estoque/ManutencaoValePermanenteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/parametro/estoque/ManutencaoValePermanenteService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/parametro/periodo/ManutencaoPeriodoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/parametro/periodo/ManutencaoPeriodoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/parametro/taxa/ManutencaoTaxaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/parametro/taxa/ManutencaoTaxaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/usuario/ConsultaUsuarioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/usuario/ConsultaUsuarioService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/service/usuario/ManutencaoUsuarioService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/service/usuario/ManutencaoUsuarioService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/utils/Comparador.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/utils/Comparador.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/utils/NormalizarTexto.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/utils/NormalizarTexto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/utils/Paginacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/utils/Paginacao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/utils/VimanDateFormatter.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/utils/VimanDateFormatter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/java/com/medic/Produtos/validator/estoque/ValidadorEmpresaEstoqueService.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/java/com/medic/Produtos/validator/estoque/ValidadorEmpresaEstoqueService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/resources/db/migration/V1__create_tables.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/V1__create_tables.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/main/resources/templates/forgot-password.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/main/resources/templates/forgot-password.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/controller/auth/AuthControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/controller/auth/AuthControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/controller/cd/CdControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/controller/cd/CdControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/controller/consulta/ConsultaControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/controller/consulta/ConsultaControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/controller/empresa/EmpresaControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/controller/empresa/EmpresaControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/controller/estoque/EstoqueControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/controller/estoque/EstoqueControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/controller/parametro/ParametroControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/controller/parametro/ParametroControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/controller/usuario/UsuarioControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/controller/usuario/UsuarioControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/mapper/auth/PasswordResetCodeMapperTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/mapper/auth/PasswordResetCodeMapperTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/mapper/empresa/EmpresaMapperTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/mapper/empresa/EmpresaMapperTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/mapper/parametro/ParametroMapperTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/mapper/parametro/ParametroMapperTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/mapper/parametro/estoque/EstoqueMapperTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/mapper/parametro/estoque/EstoqueMapperTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/model/auth/PasswordResetCodeModelTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/model/auth/PasswordResetCodeModelTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/service/auth/AuthServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/service/auth/AuthServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/service/auth/JwtServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/service/auth/JwtServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/service/auth/PasswordResetCodeGeneratorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/service/auth/PasswordResetCodeGeneratorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/service/cd/CdServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/service/cd/CdServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/service/consulta/ConsultaServicesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/service/consulta/ConsultaServicesTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/service/empresa/EmpresaServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/service/empresa/EmpresaServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/service/estoque/EstoqueServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/service/estoque/EstoqueServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/service/mail/MailServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/service/mail/MailServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/service/mail/MailTemplateServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/service/mail/MailTemplateServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/service/parametro/ParametroServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/service/parametro/ParametroServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/service/usuario/UsuarioServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/service/usuario/UsuarioServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/support/FixedAuthenticationPrincipalResolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/support/FixedAuthenticationPrincipalResolver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/support/TestDataFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/support/TestDataFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Web/src/test/java/com/medic/Produtos/validator/estoque/ValidadorEmpresaEstoqueServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/test/java/com/medic/Produtos/validator/estoque/ValidadorEmpresaEstoqueServiceTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="205" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Bi2-Medic&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/B-I-Medic/Produtos.git&quot;,
+    &quot;accountId&quot;: &quot;98f32833-05c4-4d1b-b0a0-4e0aa414e410&quot;
+  }
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="6.4601540555002326E-6" />
+      <entry key="MS500" value="0.09163229732432557" />
+      <entry key="S2" value="0.5501893046838786" />
+      <entry key="S5" value="0.7874828724491234" />
+      <entry key="S10" value="0.9243056329011939" />
+      <entry key="S30" value="3.9115092941722645" />
+      <entry key="S60" value="10.022668492498068" />
+      <entry key="M2" value="16.936324634695396" />
+      <entry key="M5" value="25.457036262830723" />
+      <entry key="M10" value="38.80284533372037" />
+      <entry key="M15" value="61.41013043880401" />
+      <entry key="M30" value="168.1710969232989" />
+      <entry key="H1" value="360.93718708950985" />
+      <entry key="H2" value="559.3075058146478" />
+      <entry key="H4" value="704.5964101377963" />
+      <entry key="D1" value="858.814556478731" />
+      <entry key="W1" value="888.8765810632875" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0000000000000173" />
+      <entry key="S2" value="1.0003625581436666" />
+      <entry key="S5" value="1.0420485540296132" />
+      <entry key="S10" value="1.2050574408052852" />
+      <entry key="S30" value="1.5896919319370801" />
+      <entry key="S60" value="1.7680675573205806" />
+      <entry key="M2" value="1.8986082008111351" />
+      <entry key="M5" value="2.6939608786098237" />
+      <entry key="M10" value="4.915897753706796" />
+      <entry key="M15" value="6.843013329003795" />
+      <entry key="M30" value="10.923881967812207" />
+      <entry key="H1" value="15.715411955117485" />
+      <entry key="H2" value="20.051164373172288" />
+      <entry key="H4" value="23.100712744558788" />
+      <entry key="D1" value="26.2801712647328" />
+      <entry key="W1" value="26.895289725952015" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="7.260798700281497E-5" />
+      <entry key="MS500" value="0.1787111223336155" />
+      <entry key="S2" value="1.0375012392520153" />
+      <entry key="S5" value="1.5629717472738023" />
+      <entry key="S10" value="1.9643736186004588" />
+      <entry key="S30" value="5.424642532995305" />
+      <entry key="S60" value="11.746301528094833" />
+      <entry key="M2" value="18.810263273682725" />
+      <entry key="M5" value="28.13823609436901" />
+      <entry key="M10" value="43.70901990651317" />
+      <entry key="M15" value="68.24464900243942" />
+      <entry key="M30" value="179.08788152954475" />
+      <entry key="H1" value="376.6467858808949" />
+      <entry key="H2" value="579.354597969769" />
+      <entry key="H4" value="727.6946556653381" />
+      <entry key="D1" value="885.0942396567258" />
+      <entry key="W1" value="915.7717989119675" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3Fe0BoXWxeRACdbx1BfSVuSh4VR" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Docker.postgres.executor": "Run",
+    "Maven.ETL [clean].executor": "Run",
+    "Maven.Produtos [clean].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Shell Script.Flyway Migrate.executor": "Run",
+    "Spring Boot.web.executor": "Run",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Spring/Produtos/etl/src/main/resources",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Problems",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.34367815",
+    "settings.editor.selected.configurable": "project.propVCSSupport.Mappings"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Spring\Produtos\etl\src\main\resources" />
+      <recent name="C:\Spring\Produtos\web\src\main\resources" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Spring\Produtos" />
+      <recent name="C:\Spring\Produtos\docker" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.web">
+    <configuration name="Flyway Migrate" type="ShConfigurationType">
+      <option name="SCRIPT_TEXT" value="docker run --rm -v &quot;${PWD}/database/migrations:/flyway/sql&quot; flyway/flyway -url=jdbc:postgresql://host.docker.internal:5432/produto -user=flyway -password=flyway123 migrate" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="powershell.exe" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="false" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="etl" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="ACTIVE_PROFILES" value="dev" />
+      <option name="ALTERNATIVE_JRE_PATH" value="21" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <module name="ETL" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.medic.ETL.ETLApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="web" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="ACTIVE_PROFILES" value="dev" />
+      <option name="ALTERNATIVE_JRE_PATH" value="21" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <module name="Web" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.medic.Produtos.ProdutosApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="postgres" type="docker-deploy" factoryName="docker-compose.yml" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="sourceFilePath" value="docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Docker.postgres" />
+      <item itemvalue="Shell Script.Flyway Migrate" />
+      <item itemvalue="Spring Boot.etl" />
+      <item itemvalue="Spring Boot.web" />
+    </list>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.24374.151" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.24374.151" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0593e64c-08a5-4309-95b8-d15686fe4e95" name="Changes" comment="" />
+      <created>1782420097114</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1782420097114</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="docker, flyway, spring profiles" />
+    <option name="LAST_COMMIT_MESSAGE" value="docker, flyway, spring profiles" />
+  </component>
+</project>
