@@ -273,6 +273,15 @@ jobs:
             throw "Artifact do etl nao encontrado em '$etlStagedJarPath'."
           }
           
+          Stop-ServiceIfRunning -Name $WebServiceName
+          Stop-ServiceIfRunning -Name $EtlServiceName
+          
+          Copy-Item -LiteralPath $webStagedJarPath -Destination $WebJarPath -Force
+          Remove-Item -LiteralPath $webStagedJarPath -Force
+          
+          Copy-Item -LiteralPath $etlStagedJarPath -Destination $EtlJarPath -Force
+          Remove-Item -LiteralPath $etlStagedJarPath -Force
+          
           EOF
           
           scp  deploy.ps1 "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:C:/apps/produto/hml/deploy.ps1"
