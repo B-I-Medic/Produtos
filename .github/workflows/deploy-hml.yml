@@ -322,7 +322,7 @@ jobs:
       - name: Deploy and restart services
         run: |
           ssh  "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
-            "powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/apps/produto/hml/deploy.ps1' -WebServiceName '${{ env.WEB_SERVICE_NAME }}' -WebJarPath '${{ env.WEB_SERVER_JAR }}' -EtlServiceName '${{ env.ETL_SERVICE_NAME }}' -EtlJarPath '${{ env.ETL_SERVER_JAR }}' -HealthUrl '${{ env.HEALTHCHECK_URL }}' -ExpectedProfile 'hml'"
+            "powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/apps/produto/hml/deploy.ps1 -WebServiceName '${{ env.WEB_SERVICE_NAME }}' -WebJarPath '${{ env.WEB_SERVER_JAR }}' -EtlServiceName '${{ env.ETL_SERVICE_NAME }}' -EtlJarPath '${{ env.ETL_SERVER_JAR }}' -HealthUrl '${{ env.HEALTHCHECK_URL }}' -ExpectedProfile 'hml'"
 
       - name: Cleanup remote deploy script
         if: always()
