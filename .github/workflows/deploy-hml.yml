@@ -116,6 +116,16 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           printf '%s\n' "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
+          
+      - name: Validate SSH secrets
+        run: |
+          echo "SSH_USER is set: ${{ secrets.SSH_USER != '' }}"
+          echo "SSH_HOST is set: ${{ secrets.SSH_HOST != '' }}"
+          echo "SSH_PATH_WEB is set: ${{ secrets.SSH_PATH_WEB != '' }}"
+          echo "SSH_PATH_ETL is set: ${{ secrets.SSH_PATH_ETL != '' }}"
+      
+          echo "WEB path target will end with .new: ${{ endsWith(format('{0}.new', secrets.SSH_PATH_WEB), '.jar.new') }}"
+          echo "ETL path target will end with .new: ${{ endsWith(format('{0}.new', secrets.SSH_PATH_ETL), '.jar.new') }}"
 
       - name: Stage artifacts on Windows Server
         run: |
