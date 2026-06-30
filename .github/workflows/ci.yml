@@ -9,6 +9,8 @@ jobs:
   validate:
     runs-on: ubuntu-latest
 
+    env: ${{ secrets.JWT_SECRET }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,5 +27,4 @@ jobs:
             app/etl/pom.xml
 
       - name: Run tests and build
-        env: ${{ secrets.JWT_SECRET }}
         run: mvn -B clean verify
