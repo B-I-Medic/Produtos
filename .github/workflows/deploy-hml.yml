@@ -119,8 +119,8 @@ jobs:
 
       - name: Stage artifacts on Windows Server
         run: |
-          scp  dist/web/Web.jar "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/${{ secrets.SSH_PATH_WEB }}"
-          scp  dist/etl/Etl.jar "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/${{ secrets.SSH_PATH_ETL }}"
+          scp  dist/web/Web.jar "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/${{ secrets.SSH_PATH_WEB }}.new"
+          scp  dist/etl/Etl.jar "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/${{ secrets.SSH_PATH_ETL }}.new"
 
       - name: Upload deploy script
         run: |
