@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: produto-web-dev
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/produto
+    username: produtowebapi
+    password: webapi123
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
