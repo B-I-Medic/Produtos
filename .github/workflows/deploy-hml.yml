@@ -36,6 +36,16 @@ jobs:
           echo "web_artifact_name=produto-web-${web_version}" >> "$GITHUB_OUTPUT"
           echo "etl_artifact_name=produto-etl-${etl_version}" >> "$GITHUB_OUTPUT"
 
+      - name: Install DbMaker driver
+        shell: pwsh
+        run: |
+          mvn install:install-file `
+            -Dfile="libs/driver-dbmaker.jar" `
+            -DgroupId="com.dbmaker" `
+            -DartifactId="driver-dbmaker" `
+            -Dversion="1.0.0" `
+            -Dpackaging="jar"
+
       - name: Package modules
         run: mvn -B -DskipTests package
 
