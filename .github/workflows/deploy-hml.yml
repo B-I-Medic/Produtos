@@ -122,3 +122,153 @@ jobs:
         run: |
           scp  dist/web/Web.jar "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH_WEB }}.new"
           scp  dist/etl/Etl.jar "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH_ETL }}.new"
+
+      - name: Upload deploy script
+        run: |
+          cat <<'EOF' > deploy.ps1
+          param(
+            [string]$WebServiceName,
+            [string]$WebJarPath,
+            [string]$EtlServiceName,
+            [string]$EtlJarPath,
+            [string]$HealthUrl,
+            [string]$ExpectedProfile
+          )
+
+          $ErrorActionPreference = 'Stop'
+
+          function Get-NssmValue {
+            param(
+              [string]$Name,
+              [string]$Key
+            )
+
+            $value = & nssm get $Name $Key 2>$null
+            if ($LASTEXITCODE -ne 0) {
+              throw "Nao foi possivel ler '$Key' do servico '$Name' via nssm."
+            }
+
+            return ($value | Out-String).Trim()
+          }
+
+          function Get-ServiceEnvironment {
+            param([string]$Name)
+
+            $environment = @{}
+            $raw = Get-NssmValue -Name $Name -Key 'AppEnvironmentExtra'
+            foreach ($line in ($raw -split "`r?`n")) {
+              if ($line -match '^(?<key>[^=]+)=(?<value>.*)$') {
+                $environment[$matches['key'].Trim()] = $matches['value']
+              }
+            }
+
+            return $environment
+          }
+
+          function Get-EffectiveEnvValue {
+            param(
+              [string]$Name,
+              [hashtable]$ServiceEnvironment
+            )
+
+            if ($ServiceEnvironment.ContainsKey($Name) -and -not [string]::IsNullOrWhiteSpace($ServiceEnvironment[$Name])) {
+              return $ServiceEnvironment[$Name]
+            }
+
+            $machineValue = [Environment]::GetEnvironmentVariable($Name, 'Machine')
+            if (-not [string]::IsNullOrWhiteSpace($machineValue)) {
+              return $machineValue
+            }
+
+            $userValue = [Environment]::GetEnvironmentVariable($Name, 'User')
+            if (-not [string]::IsNullOrWhiteSpace($userValue)) {
+              return $userValue
+            }
+
+            return $null
+          }
+
+          function Show-LogTail {
+            param(
+              [string]$Label,
+              [string]$Path
+            )
+
+            if ([string]::IsNullOrWhiteSpace($Path) -or $Path -eq 'NUL') {
+              return
+            }
+
+            if (Test-Path -LiteralPath $Path) {
+              Write-Host "===== $Label ($Path) ====="
+              Get-Content -LiteralPath $Path -Tail 50
+            }
+          }
+
+          function Stop-ServiceIfRunning {
+            param([string]$Name)
+
+            try {
+              $status = (& nssm status $Name | Out-String).Trim()
+              if ($status -match 'SERVICE_RUNNING|START_PENDING') {
+                & nssm stop $Name | Out-Host
+                Start-Sleep -Seconds 5
+              }
+            } catch {
+              Write-Host "Falha ao consultar/parar o servico '$Name': $($_.Exception.Message)"
+              throw
+            }
+          }
+
+          function Start-ServiceAndValidateProfile {
+            param(
+              [string]$Name,
+              [string]$JarPath,
+              [string]$ExpectedProfile
+            )
+
+            $application = Get-NssmValue -Name $Name -Key 'Application'
+            $appParameters = Get-NssmValue -Name $Name -Key 'AppParameters'
+            $stdoutPath = Get-NssmValue -Name $Name -Key 'AppStdout'
+            $stderrPath = Get-NssmValue -Name $Name -Key 'AppStderr'
+            $serviceEnvironment = Get-ServiceEnvironment -Name $Name
+
+            $referencesExpectedJar =
+              $application -eq $JarPath -or
+              $appParameters -like "*$JarPath*" -or
+              $appParameters -like "*$(Split-Path -Leaf $JarPath)*"
+
+            if (-not $referencesExpectedJar) {
+              throw "O servico '$Name' nao aponta para o jar esperado. Application='$application' AppParameters='$appParameters' JarEsperado='$JarPath'"
+            }
+
+            $configuredProfile = Get-EffectiveEnvValue -Name 'SPRING_PROFILES_ACTIVE' -ServiceEnvironment $serviceEnvironment
+            $profileInParameters =
+              $appParameters -like "*--spring.profiles.active=$ExpectedProfile*" -or
+              $appParameters -like "*-Dspring.profiles.active=$ExpectedProfile*"
+
+            if (($configuredProfile -ne $ExpectedProfile) -and (-not $profileInParameters)) {
+              throw "O servico '$Name' nao esta configurado para o profile esperado '$ExpectedProfile'."
+            }
+
+            & nssm start $Name | Out-Host
+
+            return @{
+              Stdout = $stdoutPath
+              Stderr = $stderrPath
+            }
+          }
+          
+          if (-not (Get-Command nssm -ErrorAction SilentlyContinue)) {
+            throw 'nssm nao esta disponivel no PATH do servidor.'
+          }
+
+          $webStagedJarPath = "$WebJarPath.new"
+          $etlStagedJarPath = "$EtlJarPath.new"
+
+          if (-not (Test-Path -LiteralPath $webStagedJarPath)) {
+            throw "Artifact do web nao encontrado em '$webStagedJarPath'."
+          }
+
+          if (-not (Test-Path -LiteralPath $etlStagedJarPath)) {
+            throw "Artifact do etl nao encontrado em '$etlStagedJarPath'."
+          }
