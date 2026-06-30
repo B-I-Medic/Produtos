@@ -193,7 +193,7 @@
     Write-Host 'Deploy concluido com health check valido.'
     EOF
     
-    scp  deploy.ps1 "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/C:/apps/produto/hml/deploy.ps1"
+    scp  deploy.ps1 "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:C:/apps/produto/hml/deploy.ps1"
 
 - name: Deploy and restart services
   run: |
