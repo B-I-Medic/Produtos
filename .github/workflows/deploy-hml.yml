@@ -286,32 +286,46 @@ jobs:
           $etlLogs = Start-ServiceAndValidateProfile -Name $EtlServiceName -JarPath $EtlJarPath -ExpectedProfile $ExpectedProfile
           
           $healthy = $false
+  
           for ($attempt = 1; $attempt -le 36; $attempt++) {
             try {
-              $response = Invoke-WebRequest -Uri $HealthUrl -UseBasicParsing -TimeoutSec 10
-              if ($response.StatusCode -eq 200 -and $response.Content -match '"status"\s*:\s*"UP"') {
+              Write-Host "Health check tentativa $attempt/36 em $HealthUrl"
+          
+              $response = Invoke-RestMethod `
+                -Uri $HealthUrl `
+                -TimeoutSec 10
+        
+              Write-Host "Status recebido: $($response.status)"
+          
+              if ($response.status -eq "UP") {
+                Write-Host "Aplicacao web saudavel."
                 $healthy = $true
                 break
               }
+          
+              Write-Host "Aplicacao respondeu, mas status ainda nao esta UP."
+            
             } catch {
               Write-Host "Health check tentativa $attempt/36 falhou: $($_.Exception.Message)"
             }
-          
+        
             Start-Sleep -Seconds 30
           }
           
           if (-not $healthy) {
+          
             try {
               Write-Host "Status web: $(& nssm status $WebServiceName)"
               Write-Host "Status etl: $(& nssm status $EtlServiceName)"
             } catch {
               Write-Host "Nao foi possivel obter o status dos servicos: $($_.Exception.Message)"
             }
-          
+        
             Show-LogTail -Label 'WEB STDOUT' -Path $webLogs.Stdout
             Show-LogTail -Label 'WEB STDERR' -Path $webLogs.Stderr
             Show-LogTail -Label 'ETL STDOUT' -Path $etlLogs.Stdout
             Show-LogTail -Label 'ETL STDERR' -Path $etlLogs.Stderr
+          
             throw "Aplicacao web nao ficou saudavel em '$HealthUrl' apos o deploy."
           }
           
@@ -322,7 +336,7 @@ jobs:
 
       - name: Deploy and restart services
         run: |
-          ssh  "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+          ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=20 "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
             "powershell -NoProfile -ExecutionPolicy Bypass -File C:/apps/produto/hml/deploy.ps1 -WebServiceName ${{ env.WEB_SERVICE_NAME }} -WebJarPath ${{ env.WEB_SERVER_JAR }} -EtlServiceName ${{ env.ETL_SERVICE_NAME }} -EtlJarPath ${{ env.ETL_SERVER_JAR }} -HealthUrl ${{ env.HEALTHCHECK_URL }} -ExpectedProfile hml"
 
       - name: Cleanup remote deploy script
