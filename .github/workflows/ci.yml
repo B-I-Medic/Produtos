@@ -24,6 +24,16 @@ jobs:
             app/web/pom.xml
             app/etl/pom.xml
 
+      - name: Install DbMaker driver
+        shell: pwsh
+        run: |
+          mvn install:install-file `
+            -Dfile="libs/driver-dbmaker-1.0.0.jar" `
+            -DgroupId="com.dbmaker" `
+            -DartifactId="driver-dbmaker" `
+            -Dversion="1.0.0" `
+            -Dpackaging="jar"
+
       - name: Run tests and build
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
