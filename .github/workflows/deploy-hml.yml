@@ -1,0 +1,325 @@
+name: deploy-hml
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  WEB_SERVER_JAR: C:\apps\produto\hml\web\produto-web.jar
+  ETL_SERVER_JAR: C:\apps\produto\hml\etl\produto-etl.jar
+  WEB_SERVICE_NAME: produto-hml-web
+  ETL_SERVICE_NAME: produto-hml-etl
+  HEALTHCHECK_URL: http://localhost:9091/actuator/health
+  DEPLOY_PROFILE: dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      web_artifact_name: ${{ steps.versions.outputs.web_artifact_name }}
+      etl_artifact_name: ${{ steps.versions.outputs.etl_artifact_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: |
+            pom.xml
+            app/web/pom.xml
+            app/etl/pom.xml
+
+      - name: Resolve artifact names
+        id: versions
+        run: |
+          web_version=$(mvn -q -pl app/web -DforceStdout help:evaluate -Dexpression=project.version | tail -n 1)
+          etl_version=$(mvn -q -pl app/etl -DforceStdout help:evaluate -Dexpression=project.version | tail -n 1)
+
+          echo "web_artifact_name=produto-web-${web_version}" >> "$GITHUB_OUTPUT"
+          echo "etl_artifact_name=produto-etl-${etl_version}" >> "$GITHUB_OUTPUT"
+
+      - name: Run tests
+        run: mvn -B clean test
+
+      - name: Package modules
+        run: mvn -B -DskipTests package
+
+      - name: Upload web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.versions.outputs.web_artifact_name }}
+          path: app/web/target/Web.jar
+          if-no-files-found: error
+
+      - name: Upload etl artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.versions.outputs.etl_artifact_name }}
+          path: app/etl/target/Etl.jar
+          if-no-files-found: error
+
+  migrate:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: homologacao
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Flyway migrations
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/database/migrations:/flyway/sql:ro" \
+            flyway/flyway:11.12.0 \
+            -url="${{ secrets.FLYWAY_URL }}" \
+            -user="${{ secrets.FLYWAY_USER }}" \
+            -password="${{ secrets.FLYWAY_PASSWORD }}" \
+            migrate
+
+  deploy:
+    needs:
+      - build
+      - migrate
+    runs-on: ubuntu-latest
+    environment: homologacao
+
+    steps:
+      - name: Download web artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.web_artifact_name }}
+          path: dist/web
+
+      - name: Download etl artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.etl_artifact_name }}
+          path: dist/etl
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Stage artifacts on Windows Server
+        run: |
+          scp -P "${{ secrets.SSH_PORT }}" dist/web/Web.jar "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/C:/apps/produto/hml/web/produto-web.jar.new"
+          scp -P "${{ secrets.SSH_PORT }}" dist/etl/Etl.jar "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/C:/apps/produto/hml/etl/produto-etl.jar.new"
+
+      - name: Upload deploy script
+        run: |
+          cat <<'EOF' > deploy.ps1
+          param(
+            [string]$WebServiceName,
+            [string]$WebJarPath,
+            [string]$EtlServiceName,
+            [string]$EtlJarPath,
+            [string]$HealthUrl,
+            [string]$ExpectedProfile
+          )
+
+          $ErrorActionPreference = 'Stop'
+
+          function Get-NssmValue {
+            param(
+              [string]$Name,
+              [string]$Key
+            )
+
+            $value = & nssm get $Name $Key 2>$null
+            if ($LASTEXITCODE -ne 0) {
+              throw "Nao foi possivel ler '$Key' do servico '$Name' via nssm."
+            }
+
+            return ($value | Out-String).Trim()
+          }
+
+          function Get-ServiceEnvironment {
+            param([string]$Name)
+
+            $environment = @{}
+            $raw = Get-NssmValue -Name $Name -Key 'AppEnvironmentExtra'
+            foreach ($line in ($raw -split "`r?`n")) {
+              if ($line -match '^(?<key>[^=]+)=(?<value>.*)$') {
+                $environment[$matches['key'].Trim()] = $matches['value']
+              }
+            }
+
+            return $environment
+          }
+
+          function Get-EffectiveEnvValue {
+            param(
+              [string]$Name,
+              [hashtable]$ServiceEnvironment
+            )
+
+            if ($ServiceEnvironment.ContainsKey($Name) -and -not [string]::IsNullOrWhiteSpace($ServiceEnvironment[$Name])) {
+              return $ServiceEnvironment[$Name]
+            }
+
+            $machineValue = [Environment]::GetEnvironmentVariable($Name, 'Machine')
+            if (-not [string]::IsNullOrWhiteSpace($machineValue)) {
+              return $machineValue
+            }
+
+            $userValue = [Environment]::GetEnvironmentVariable($Name, 'User')
+            if (-not [string]::IsNullOrWhiteSpace($userValue)) {
+              return $userValue
+            }
+
+            return $null
+          }
+
+          function Show-LogTail {
+            param(
+              [string]$Label,
+              [string]$Path
+            )
+
+            if ([string]::IsNullOrWhiteSpace($Path) -or $Path -eq 'NUL') {
+              return
+            }
+
+            if (Test-Path -LiteralPath $Path) {
+              Write-Host "===== $Label ($Path) ====="
+              Get-Content -LiteralPath $Path -Tail 50
+            }
+          }
+
+          function Stop-ServiceIfRunning {
+            param([string]$Name)
+
+            try {
+              $status = (& nssm status $Name | Out-String).Trim()
+              if ($status -match 'SERVICE_RUNNING|START_PENDING') {
+                & nssm stop $Name | Out-Host
+                Start-Sleep -Seconds 5
+              }
+            } catch {
+              Write-Host "Falha ao consultar/parar o servico '$Name': $($_.Exception.Message)"
+              throw
+            }
+          }
+
+          function Start-ServiceAndValidateProfile {
+            param(
+              [string]$Name,
+              [string]$JarPath,
+              [string]$ExpectedProfile
+            )
+
+            $application = Get-NssmValue -Name $Name -Key 'Application'
+            $appParameters = Get-NssmValue -Name $Name -Key 'AppParameters'
+            $stdoutPath = Get-NssmValue -Name $Name -Key 'AppStdout'
+            $stderrPath = Get-NssmValue -Name $Name -Key 'AppStderr'
+            $serviceEnvironment = Get-ServiceEnvironment -Name $Name
+
+            $referencesExpectedJar =
+              $application -eq $JarPath -or
+              $appParameters -like "*$JarPath*" -or
+              $appParameters -like "*$(Split-Path -Leaf $JarPath)*"
+
+            if (-not $referencesExpectedJar) {
+              throw "O servico '$Name' nao aponta para o jar esperado. Application='$application' AppParameters='$appParameters' JarEsperado='$JarPath'"
+            }
+
+            $configuredProfile = Get-EffectiveEnvValue -Name 'SPRING_PROFILES_ACTIVE' -ServiceEnvironment $serviceEnvironment
+            $profileInParameters =
+              $appParameters -like "*--spring.profiles.active=$ExpectedProfile*" -or
+              $appParameters -like "*-Dspring.profiles.active=$ExpectedProfile*"
+
+            if (($configuredProfile -ne $ExpectedProfile) -and (-not $profileInParameters)) {
+              throw "O servico '$Name' nao esta configurado para o profile esperado '$ExpectedProfile'."
+            }
+
+            & nssm start $Name | Out-Host
+
+            return @{
+              Stdout = $stdoutPath
+              Stderr = $stderrPath
+            }
+          }
+
+          if (-not (Get-Command nssm -ErrorAction SilentlyContinue)) {
+            throw 'nssm nao esta disponivel no PATH do servidor.'
+          }
+
+          $webStagedJarPath = "$WebJarPath.new"
+          $etlStagedJarPath = "$EtlJarPath.new"
+
+          if (-not (Test-Path -LiteralPath $webStagedJarPath)) {
+            throw "Artifact do web nao encontrado em '$webStagedJarPath'."
+          }
+
+          if (-not (Test-Path -LiteralPath $etlStagedJarPath)) {
+            throw "Artifact do etl nao encontrado em '$etlStagedJarPath'."
+          }
+
+          Stop-ServiceIfRunning -Name $WebServiceName
+          Stop-ServiceIfRunning -Name $EtlServiceName
+
+          Copy-Item -LiteralPath $webStagedJarPath -Destination $WebJarPath -Force
+          Remove-Item -LiteralPath $webStagedJarPath -Force
+
+          Copy-Item -LiteralPath $etlStagedJarPath -Destination $EtlJarPath -Force
+          Remove-Item -LiteralPath $etlStagedJarPath -Force
+
+          $webLogs = Start-ServiceAndValidateProfile -Name $WebServiceName -JarPath $WebJarPath -ExpectedProfile $ExpectedProfile
+          $etlLogs = Start-ServiceAndValidateProfile -Name $EtlServiceName -JarPath $EtlJarPath -ExpectedProfile $ExpectedProfile
+
+          $healthy = $false
+          for ($attempt = 1; $attempt -le 36; $attempt++) {
+            try {
+              $response = Invoke-WebRequest -Uri $HealthUrl -UseBasicParsing -TimeoutSec 10
+              if ($response.StatusCode -eq 200 -and $response.Content -match '"status"\s*:\s*"UP"') {
+                $healthy = $true
+                break
+              }
+            } catch {
+              Write-Host "Health check tentativa $attempt/36 falhou: $($_.Exception.Message)"
+            }
+
+            Start-Sleep -Seconds 30
+          }
+
+          if (-not $healthy) {
+            try {
+              Write-Host "Status web: $(& nssm status $WebServiceName)"
+              Write-Host "Status etl: $(& nssm status $EtlServiceName)"
+            } catch {
+              Write-Host "Nao foi possivel obter o status dos servicos: $($_.Exception.Message)"
+            }
+
+            Show-LogTail -Label 'WEB STDOUT' -Path $webLogs.Stdout
+            Show-LogTail -Label 'WEB STDERR' -Path $webLogs.Stderr
+            Show-LogTail -Label 'ETL STDOUT' -Path $etlLogs.Stdout
+            Show-LogTail -Label 'ETL STDERR' -Path $etlLogs.Stderr
+            throw "Aplicacao web nao ficou saudavel em '$HealthUrl' apos o deploy."
+          }
+
+          Write-Host 'Deploy concluido com health check valido.'
+          EOF
+
+          scp -P "${{ secrets.SSH_PORT }}" deploy.ps1 "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/C:/apps/produto/hml/deploy.ps1"
+
+      - name: Deploy and restart services
+        run: |
+          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "powershell -NoProfile -ExecutionPolicy Bypass -File 'C:\apps\produto\hml\deploy.ps1' -WebServiceName '${{ env.WEB_SERVICE_NAME }}' -WebJarPath '${{ env.WEB_SERVER_JAR }}' -EtlServiceName '${{ env.ETL_SERVICE_NAME }}' -EtlJarPath '${{ env.ETL_SERVER_JAR }}' -HealthUrl '${{ env.HEALTHCHECK_URL }}' -ExpectedProfile '${{ env.DEPLOY_PROFILE }}'"
+
+      - name: Cleanup remote deploy script
+        if: always()
+        run: |
+          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "powershell -NoProfile -Command \"if (Test-Path -LiteralPath 'C:\apps\produto\hml\deploy.ps1') { Remove-Item -LiteralPath 'C:\apps\produto\hml\deploy.ps1' -Force }\""

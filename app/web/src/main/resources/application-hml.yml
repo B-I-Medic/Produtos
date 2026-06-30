@@ -1,10 +1,10 @@
 spring:
   application:
-    name: produto-web-prod
+    name: produto-web-hml
   r2dbc:
-    url: ${PRODUTO_WEB_PROD_URL}
-    username: ${PRODUTO_WEB_PROD_USERNAME}
-    password: ${PRODUTO_WEB_PROD_PASSWORD}
+    url: ${PRODUTO_WEB_HML_URL}
+    username: ${PRODUTO_WEB_HML_USERNAME}
+    password: ${PRODUTO_WEB_HML_PASSWORD}
   mail:
     host: smtp.gmail.com
     port: 587
@@ -18,7 +18,7 @@ spring:
             enable: true
 
 server:
-  port: 9092
+  port: 9091
   forward-headers-strategy: framework
 
 springdoc:

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: Estoque
+    name: produto-etl-prod
   jpa:
     open-in-view: false
 
@@ -19,9 +19,9 @@ app:
         password: ${DBMAKER_S00_PASSWORD}
     produto:
       driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://localhost:5432/produto
-      username: ${PRODUTO_ETL_JDBC_USERNAME}
-      password: ${PRODUTO_ETL_JDBC_PASSWORD}
+      url: ${PRODUTO_ETL_PROD_URL}
+      username: ${PRODUTO_ETL_PROD_USERNAME}
+      password: ${PRODUTO_ETL_PROD_PASSWORD}
 
 etl:
   scheduler:

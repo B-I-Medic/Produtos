@@ -32,7 +32,7 @@ public class OpenAPIConfig {
                         )
                 );
 
-        if (activeProfile.equals("prod")) {
+        if (activeProfile.equals("hml")) {
             openApi.servers(List.of(new Server().url("https://mdcvm03.southcentralus.cloudapp.azure.com/produto/v1/api")));
         }
 
