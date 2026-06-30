@@ -272,3 +272,7 @@ jobs:
           if (-not (Test-Path -LiteralPath $etlStagedJarPath)) {
             throw "Artifact do etl nao encontrado em '$etlStagedJarPath'."
           }
+          
+          EOF
+          
+          scp  deploy.ps1 "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:C:/apps/produto/hml/deploy.ps1"
