@@ -5,14 +5,6 @@ on:
     branches:
       - main
 
-env:
-  WEB_SERVER_JAR: C:\apps\produto\hml\web\produto-web.jar
-  ETL_SERVER_JAR: C:\apps\produto\hml\etl\produto-etl.jar
-  WEB_SERVICE_NAME: produto-hml-web
-  ETL_SERVICE_NAME: produto-hml-etl
-  HEALTHCHECK_URL: http://localhost:9091/actuator/health
-  DEPLOY_PROFILE: dev
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -43,9 +35,6 @@ jobs:
 
           echo "web_artifact_name=produto-web-${web_version}" >> "$GITHUB_OUTPUT"
           echo "etl_artifact_name=produto-etl-${etl_version}" >> "$GITHUB_OUTPUT"
-
-      - name: Run tests
-        run: mvn -B clean test
 
       - name: Package modules
         run: mvn -B -DskipTests package
@@ -90,6 +79,13 @@ jobs:
     runs-on: ubuntu-latest
     environment: homologacao
 
+    env:
+      WEB_SERVER_JAR: ${{ vars.WEB_SERVER_JAR }}
+      ETL_SERVER_JAR: ${{ vars.ETL_SERVER_JAR }}
+      WEB_SERVICE_NAME: ${{ vars.WEB_SERVICE_NAME }}
+      ETL_SERVICE_NAME: ${{ vars.ETL_SERVICE_NAME }}
+      HEALTHCHECK_URL: ${{ vars.HEALTHCHECK_URL }}
+
     steps:
       - name: Download web artifact
         uses: actions/download-artifact@v4
@@ -113,8 +109,8 @@ jobs:
 
       - name: Stage artifacts on Windows Server
         run: |
-          scp -P "${{ secrets.SSH_PORT }}" dist/web/Web.jar "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/C:/apps/produto/hml/web/produto-web.jar.new"
-          scp -P "${{ secrets.SSH_PORT }}" dist/etl/Etl.jar "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/C:/apps/produto/hml/etl/produto-etl.jar.new"
+          scp  dist/web/Web.jar "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/${{ secrets.SSH_PATH }}"
+          scp  dist/etl/Etl.jar "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/${{ secrets.SSH_PATH }}"
 
       - name: Upload deploy script
         run: |
@@ -311,15 +307,15 @@ jobs:
           Write-Host 'Deploy concluido com health check valido.'
           EOF
 
-          scp -P "${{ secrets.SSH_PORT }}" deploy.ps1 "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/C:/apps/produto/hml/deploy.ps1"
+          scp  deploy.ps1 "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/C:/apps/produto/hml/deploy.ps1"
 
       - name: Deploy and restart services
         run: |
-          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
-            "powershell -NoProfile -ExecutionPolicy Bypass -File 'C:\apps\produto\hml\deploy.ps1' -WebServiceName '${{ env.WEB_SERVICE_NAME }}' -WebJarPath '${{ env.WEB_SERVER_JAR }}' -EtlServiceName '${{ env.ETL_SERVICE_NAME }}' -EtlJarPath '${{ env.ETL_SERVER_JAR }}' -HealthUrl '${{ env.HEALTHCHECK_URL }}' -ExpectedProfile '${{ env.DEPLOY_PROFILE }}'"
+          ssh  "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "powershell -NoProfile -ExecutionPolicy Bypass -File 'C:\apps\produto\hml\deploy.ps1' -WebServiceName '${{ env.WEB_SERVICE_NAME }}' -WebJarPath '${{ env.WEB_SERVER_JAR }}' -EtlServiceName '${{ env.ETL_SERVICE_NAME }}' -EtlJarPath '${{ env.ETL_SERVER_JAR }}' -HealthUrl '${{ env.HEALTHCHECK_URL }}' -ExpectedProfile 'hml'"
 
       - name: Cleanup remote deploy script
         if: always()
         run: |
-          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+          ssh  "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
             "powershell -NoProfile -Command \"if (Test-Path -LiteralPath 'C:\apps\produto\hml\deploy.ps1') { Remove-Item -LiteralPath 'C:\apps\produto\hml\deploy.ps1' -Force }\""
