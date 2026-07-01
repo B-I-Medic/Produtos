@@ -63,7 +63,7 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/api-docs/**",
                                         "/v3/api-docs/**",
                                         "/v3/api-docs",
-                                        "/actuator/health",
+                                        "/actuator/health/readiness",
                                         "/auth/login",
                                         "/auth/forgot-password",
                                         "/auth/reset-password"
