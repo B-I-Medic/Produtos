@@ -276,6 +276,9 @@ jobs:
           Stop-ServiceIfRunning -Name $WebServiceName
           Stop-ServiceIfRunning -Name $EtlServiceName
           
+          Remove-Item C:/apps/produto/hml/web/logs/logout.log
+          Remove-Item C:/apps/produto/hml/etl/logs/logout.log
+          
           Copy-Item -LiteralPath $webStagedJarPath -Destination $WebJarPath -Force
           Remove-Item -LiteralPath $webStagedJarPath -Force
           
