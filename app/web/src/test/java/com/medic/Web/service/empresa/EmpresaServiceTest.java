@@ -1,12 +1,11 @@
 package com.medic.Web.service.empresa;
 
-import com.medic.Web.dto.cd.CdEmpresaMunipioRequestDTO;
+import com.medic.Web.dto.empresa.EmpresaMunicipioFilterDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioRequestDTO;
 import com.medic.Web.dto.empresa.EmpresaRequestDTO;
 import com.medic.Web.mapper.cd.CdEmpresaMunipioMapper;
 import com.medic.Web.mapper.empresa.EmpresaMapper;
 import com.medic.Web.mapper.empresa.EmpresaMunicipioMapper;
-import com.medic.Web.model.cd.CdEmpresaMunipioModel;
 import com.medic.Web.model.empresa.Viman;
 import com.medic.Web.repository.cd.CdEmpresaMunipioRepository;
 import com.medic.Web.repository.empresa.EmpresaMunicipioRepository;
@@ -76,27 +75,34 @@ class EmpresaServiceTest {
     void shouldCrudEmpresaMunicipio() {
 
         var model = TestDataFactory.empresaMunicipioModel();
-        var response = TestDataFactory.empresaMunicipioResponseDTO();
-        var dto = new EmpresaMunicipioRequestDTO(model.getIdEmpresa(), model.getIdMunicipio());
-        CdEmpresaMunipioModel cdModel = TestDataFactory.cdEmpresaMunipioModel();
+        UUID empresaId = UUID.randomUUID();
+        UUID cdId = UUID.randomUUID();
+        var dto = new EmpresaMunicipioRequestDTO(cdId, model.getIdMunicipio());
+        var cdModel = TestDataFactory.cdEmpresaMunipioModel();
+        cdModel.setIdCd(cdId);
+        cdModel.setIdEmpresaMunicipio(model.getId());
+        var response = TestDataFactory.empresaMunicipioResponseDTO(model, cdId);
+        var filter = new EmpresaMunicipioFilterDTO("Cidade", "SP");
 
         when(empresaMunicipioMapper.toEntity(
                 ArgumentMatchers.any(),
-                ArgumentMatchers.eq(dto),
+                ArgumentMatchers.eq(empresaId),
+                ArgumentMatchers.eq(model.getIdMunicipio()),
                 ArgumentMatchers.any(UUID.class))).thenReturn(model);
         when(cdEmpresaMunipioMapper.toEntity(
                 ArgumentMatchers.any(),
-                ArgumentMatchers.any(CdEmpresaMunipioRequestDTO.class),
+                ArgumentMatchers.eq(cdId),
+                ArgumentMatchers.eq(model.getId()),
                 ArgumentMatchers.any(UUID.class))).thenReturn(cdModel);
-        when(empresaMunicipioMapper.toDTO(model)).thenReturn(response);
 
         when(empresaMunicipioRepository.save(model)).thenReturn(Mono.just(model));
         when(cdEmpresaMunipioRepository.save(cdModel)).thenReturn(Mono.just(cdModel));
-        when(empresaMunicipioRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
+        when(empresaMunicipioRepository.findByIdCustom(model.getId())).thenReturn(Mono.just(response));
+        when(empresaMunicipioRepository.findByFiltro(empresaId, filter)).thenReturn(Flux.fromIterable(List.of(response)));
         when(empresaMunicipioRepository.deleteById(model.getId())).thenReturn(Mono.empty());
 
-        StepVerifier.create(empresaMunicipioService.save(UUID.randomUUID(), dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(empresaMunicipioService.listEmpresasMunicipio()).expectNext(response).verifyComplete();
+        StepVerifier.create(empresaMunicipioService.save(empresaId, dto, UUID.randomUUID())).expectNext(response).verifyComplete();
+        StepVerifier.create(empresaMunicipioService.listEmpresasMunicipio(empresaId, filter)).expectNext(response).verifyComplete();
         StepVerifier.create(empresaMunicipioService.delete(model.getId())).verifyComplete();
     }
 }

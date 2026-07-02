@@ -1,6 +1,8 @@
 package com.medic.Web.controller.empresa;
 
 import com.medic.Web.dto.empresa.EmpresaMunicipioRequestDTO;
+import com.medic.Web.dto.empresa.EmpresaMunicipioFilterDTO;
+import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaRequestDTO;
 import com.medic.Web.model.empresa.Viman;
 import com.medic.Web.model.usuario.UsuarioModel;
@@ -63,14 +65,33 @@ class EmpresaControllerTest {
     void shouldHandleEmpresaMunicipioEndpoints() {
 
         var response = TestDataFactory.empresaMunicipioResponseDTO();
-        var dto = new EmpresaMunicipioRequestDTO(response.idEmpresa(), response.idMunicipio());
+        UUID empresaId = UUID.randomUUID();
         UUID cdId = UUID.randomUUID();
-        when(empresaMunicipioService.listEmpresasMunicipio()).thenReturn(Flux.fromIterable(List.of(response)));
-        when(empresaMunicipioService.save(cdId, dto, user.getId())).thenReturn(Mono.just(response));
+        UUID municipioId = UUID.randomUUID();
+        var dto = new EmpresaMunicipioRequestDTO(cdId, municipioId);
+        var filter = new EmpresaMunicipioFilterDTO("Cidade", "SP");
+
+        when(empresaMunicipioService.listEmpresasMunicipio(empresaId, filter)).thenReturn(Flux.fromIterable(List.of(response)));
+        when(empresaMunicipioService.save(empresaId, dto, user.getId())).thenReturn(Mono.just(response));
         when(empresaMunicipioService.delete(response.id())).thenReturn(Mono.empty());
 
-        empresaMunicipioClient.get().uri("/empresa/municipio/get").exchange().expectStatus().isOk();
-        empresaMunicipioClient.post().uri("/empresa/municipio/save/" + cdId).contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
+        empresaMunicipioClient.get().uri(uriBuilder -> uriBuilder
+                        .path("/empresa/municipio/get/" + empresaId)
+                        .queryParam("municipio", "Cidade")
+                        .queryParam("estado", "SP")
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(EmpresaMunicipioResponseDTO.class)
+                .hasSize(1)
+                .contains(response);
+        empresaMunicipioClient.post().uri("/empresa/municipio/save/" + empresaId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(EmpresaMunicipioResponseDTO.class)
+                .isEqualTo(response);
         empresaMunicipioClient.delete().uri("/empresa/municipio/delete/" + response.id()).exchange().expectStatus().isOk();
     }
 }

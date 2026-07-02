@@ -1,10 +1,7 @@
 package com.medic.Web.service.cd;
 
-import com.medic.Web.dto.cd.CdEmpresaMunipioRequestDTO;
 import com.medic.Web.dto.cd.CentroDistribuicaoRequestDTO;
-import com.medic.Web.mapper.cd.CdEmpresaMunipioMapper;
 import com.medic.Web.mapper.cd.CentroDistribuicaoMapper;
-import com.medic.Web.model.cd.CdEmpresaMunipioModel;
 import com.medic.Web.model.cd.CentroDistribuicaoModel;
 import com.medic.Web.repository.cd.CdEmpresaMunipioRepository;
 import com.medic.Web.repository.cd.CentroDistribuicaoRepository;
@@ -33,8 +30,6 @@ class CdServiceTest {
     private CentroDistribuicaoMapper centroDistribuicaoMapper;
     @Mock
     private CdEmpresaMunipioRepository cdEmpresaMunipioRepository;
-    @Mock
-    private CdEmpresaMunipioMapper cdEmpresaMunipioMapper;
 
     @InjectMocks
     private ManutencaoCDService manutencaoCDService;
@@ -67,27 +62,16 @@ class CdServiceTest {
     }
 
     @Test
-    void shouldCrudCdEmpresaMunicipio() {
+    void shouldListCdEmpresaMunicipio() {
 
-        CdEmpresaMunipioModel model = TestDataFactory.cdEmpresaMunipioModel();
+        var consultaResponse = TestDataFactory.cdEmpresaMunipioConsultaResponseDTO();
+        UUID cdId = UUID.randomUUID();
 
-        var response = TestDataFactory.cdEmpresaMunipioResponseDTO();
-        var dto = new CdEmpresaMunipioRequestDTO(model.getIdCd(), model.getIdEmpresaMunicipio());
+        when(cdEmpresaMunipioRepository.findByFiltro(cdId, null))
+                .thenReturn(Flux.just(consultaResponse));
 
-        when(cdEmpresaMunipioMapper.toEntity(
-                ArgumentMatchers.any(),
-                ArgumentMatchers.eq(dto),
-                ArgumentMatchers.any(UUID.class))).thenReturn(model);
-        when(cdEmpresaMunipioMapper.toDTO(model)).thenReturn(response);
-
-        when(cdEmpresaMunipioRepository.save(model)).thenReturn(Mono.just(model));
-        when(cdEmpresaMunipioRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
-        when(cdEmpresaMunipioRepository.findById(model.getId())).thenReturn(Mono.just(model));
-        when(cdEmpresaMunipioRepository.delete(model)).thenReturn(Mono.empty());
-        when(cdEmpresaMunipioRepository.findByIdEmpresaMunicipio(model.getIdEmpresaMunicipio())).thenReturn(Flux.just(model));
-
-        StepVerifier.create(manutencaoCdEmpresaMunicipioService.save(dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(manutencaoCdEmpresaMunicipioService.listCdEmpresaMunicipio()).expectNext(response).verifyComplete();
-        StepVerifier.create(manutencaoCdEmpresaMunicipioService.delete(model.getId())).verifyComplete();
+        StepVerifier.create(manutencaoCdEmpresaMunicipioService.listCdEmpresaMunicipio(cdId, null))
+                .expectNext(consultaResponse)
+                .verifyComplete();
     }
 }

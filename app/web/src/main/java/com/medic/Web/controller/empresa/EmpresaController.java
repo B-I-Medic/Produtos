@@ -24,12 +24,6 @@ public class EmpresaController {
         this.service = service;
     }
 
-    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<EmpresaResponseDTO> listEmpresas() {
-
-        return service.listEmpresas();
-    }
-
     @PostMapping("/save")
     public Mono<EmpresaResponseDTO> save(@RequestBody @Valid Mono<EmpresaRequestDTO> dto,
                                          @AuthenticationPrincipal UsuarioModel user) {
@@ -50,5 +44,11 @@ public class EmpresaController {
     public Mono<Void> delete(@PathVariable @NotNull(message = "O ID da empresa e obrigatorio") UUID empresaId) {
 
         return service.delete(empresaId);
+    }
+
+    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<EmpresaResponseDTO> listEmpresas() {
+
+        return service.listEmpresas();
     }
 }
