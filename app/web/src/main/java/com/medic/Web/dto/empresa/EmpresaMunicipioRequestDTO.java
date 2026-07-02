@@ -7,9 +7,9 @@ import java.util.UUID;
 public record EmpresaMunicipioRequestDTO(
 
         @NotNull(message = "O id da empresa e obrigatorio")
-        UUID idEmpresa,
+        UUID cdId,
 
         @NotNull(message = "O id do municipio e obrigatorio")
-        UUID idMunicipio
+        UUID municipioId
 ) {
 }

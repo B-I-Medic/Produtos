@@ -1,5 +1,6 @@
 package com.medic.Web.controller.empresa;
 
+import com.medic.Web.dto.empresa.EmpresaMunicipioFilterDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioRequestDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
@@ -24,24 +25,25 @@ public class EmpresaMunicipioController {
         this.service = service;
     }
 
-    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<EmpresaMunicipioResponseDTO> listEmpresasMunicipio() {
-
-        return service.listEmpresasMunicipio();
-    }
-
-    @PostMapping("/save/{cdId}")
-    public Mono<EmpresaMunicipioResponseDTO> save(@RequestBody @Valid Mono<EmpresaMunicipioRequestDTO> dto,
-                                                  @PathVariable @NotNull(message = "O ID do CD e obrigatorio") UUID cdId,
+    @PostMapping("/save/{empresaId}")
+    public Mono<EmpresaMunicipioResponseDTO> save(@PathVariable @NotNull(message = "O ID da Empresa é obrigatório") UUID empresaId,
+                                                  @RequestBody @Valid Mono<EmpresaMunicipioRequestDTO> dto,
                                                   @AuthenticationPrincipal UsuarioModel user) {
 
         return dto.flatMap(empresaMunicipio ->
-                service.save(cdId, empresaMunicipio, user.getId()));
+                service.save(empresaId, empresaMunicipio, user.getId()));
     }
 
     @DeleteMapping("/delete/{empresaMunicipioId}")
     public Mono<Void> delete(@PathVariable @NotNull(message = "O ID da empresa-municipio e obrigatorio") UUID empresaMunicipioId) {
 
         return service.delete(empresaMunicipioId);
+    }
+
+    @GetMapping(value = "/get/{empresaId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<EmpresaMunicipioResponseDTO> listEmpresasMunicipio(@PathVariable @NotNull(message = "O ID da empresa é obrigatório") UUID empresaId,
+                                                                   @ModelAttribute EmpresaMunicipioFilterDTO filter) {
+
+        return service.listEmpresasMunicipio(empresaId, filter);
     }
 }

@@ -1,6 +1,6 @@
 package com.medic.Web.support;
 
-import com.medic.Web.dto.cd.CdEmpresaMunipioResponseDTO;
+import com.medic.Web.dto.cd.CdEmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.cd.CentroDistribuicaoResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaResponseDTO;
@@ -13,7 +13,7 @@ import com.medic.Web.dto.parametro.periodo.PeriodoResponseDTO;
 import com.medic.Web.dto.parametro.taxa.TaxaResponseDTO;
 import com.medic.Web.dto.usuario.UsuarioResponseDTO;
 import com.medic.Web.model.auth.PasswordResetCodeModel;
-import com.medic.Web.model.cd.CdEmpresaMunipioModel;
+import com.medic.Web.model.cd.CdEmpresaMunicipioModel;
 import com.medic.Web.model.cd.CentroDistribuicaoModel;
 import com.medic.Web.model.municipio.MunicipioModel;
 import com.medic.Web.model.empresa.EmpresaModel;
@@ -139,12 +139,29 @@ public final class TestDataFactory {
     public static EmpresaMunicipioResponseDTO empresaMunicipioResponseDTO() {
 
         var model = empresaMunicipioModel();
-        return new EmpresaMunicipioResponseDTO(model.getId(), model.getIdEmpresa(), model.getIdMunicipio());
+        return new EmpresaMunicipioResponseDTO(
+                model.getId(),
+                "Empresa",
+                "Cidade",
+                "SP",
+                null
+        );
     }
 
-    public static CdEmpresaMunipioModel cdEmpresaMunipioModel() {
+    public static EmpresaMunicipioResponseDTO empresaMunicipioResponseDTO(EmpresaMunicipioModel model, UUID idCd) {
 
-        var model = new CdEmpresaMunipioModel();
+        return new EmpresaMunicipioResponseDTO(
+                model.getId(),
+                "Empresa",
+                "Cidade",
+                "SP",
+                idCd != null ? idCd.toString() : null
+        );
+    }
+
+    public static CdEmpresaMunicipioModel cdEmpresaMunipioModel() {
+
+        var model = new CdEmpresaMunicipioModel();
         model.setId(UUID.randomUUID());
         model.setIdCd(UUID.randomUUID());
         model.setIdEmpresaMunicipio(UUID.randomUUID());
@@ -152,10 +169,10 @@ public final class TestDataFactory {
         return model;
     }
 
-    public static CdEmpresaMunipioResponseDTO cdEmpresaMunipioResponseDTO() {
+    public static CdEmpresaMunicipioResponseDTO cdEmpresaMunipioConsultaResponseDTO() {
 
         var model = cdEmpresaMunipioModel();
-        return new CdEmpresaMunipioResponseDTO(model.getId(), model.getIdCd(), model.getIdEmpresaMunicipio());
+        return new CdEmpresaMunicipioResponseDTO(model.getId(), "Empresa", "Cidade", "SP");
     }
 
     public static EstoqueInternoParametroModel estoqueInternoModel() {

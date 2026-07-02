@@ -1,11 +1,11 @@
 package com.medic.Web.service.empresa;
 
-import com.medic.Web.dto.cd.CdEmpresaMunipioRequestDTO;
+import com.medic.Web.dto.empresa.EmpresaMunicipioFilterDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioRequestDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.mapper.cd.CdEmpresaMunipioMapper;
 import com.medic.Web.mapper.empresa.EmpresaMunicipioMapper;
-import com.medic.Web.model.cd.CdEmpresaMunipioModel;
+import com.medic.Web.model.cd.CdEmpresaMunicipioModel;
 import com.medic.Web.model.empresa.EmpresaMunicipioModel;
 import com.medic.Web.repository.cd.CdEmpresaMunipioRepository;
 import com.medic.Web.repository.empresa.EmpresaMunicipioRepository;
@@ -21,6 +21,7 @@ public class ManutencaoEmpresaMunicipioService {
 
     private final EmpresaMunicipioRepository repository;
     private final CdEmpresaMunipioRepository cdEmpresaMunipioRepository;
+
     private final EmpresaMunicipioMapper mapper;
     private final CdEmpresaMunipioMapper cdEmpresaMunipioMapper;
 
@@ -35,23 +36,24 @@ public class ManutencaoEmpresaMunicipioService {
     }
 
     @Transactional
-    public Mono<EmpresaMunicipioResponseDTO> save(UUID cdId,
+    public Mono<EmpresaMunicipioResponseDTO> save(UUID empresaId,
                                                   EmpresaMunicipioRequestDTO dto,
                                                   UUID userId) {
 
         return Mono.just(new EmpresaMunicipioModel())
-                .map(empresaMunicipio -> mapper.toEntity(empresaMunicipio, dto, userId))
+                .map(empresaMunicipio -> mapper.toEntity(empresaMunicipio, empresaId, dto.municipioId(), userId))
                 .flatMap(repository::save)
                 .flatMap(empresaMunicipio -> cdEmpresaMunipioRepository
                         .save(
                                 cdEmpresaMunipioMapper.toEntity(
-                                        new CdEmpresaMunipioModel(),
-                                        new CdEmpresaMunipioRequestDTO(cdId, empresaMunicipio.getId()),
+                                        new CdEmpresaMunicipioModel(),
+                                        dto.cdId(),
+                                        empresaMunicipio.getId(),
                                         userId
                                 )
                         )
                         .thenReturn(empresaMunicipio))
-                .map(mapper::toDTO);
+                .flatMap(empresaMunicipio -> findById(empresaMunicipio.getId()));
     }
 
     @Transactional
@@ -61,9 +63,14 @@ public class ManutencaoEmpresaMunicipioService {
     }
 
     @Transactional(readOnly = true)
-    public Flux<EmpresaMunicipioResponseDTO> listEmpresasMunicipio() {
+    public Flux<EmpresaMunicipioResponseDTO> listEmpresasMunicipio(UUID empresaId, EmpresaMunicipioFilterDTO filter) {
 
-        return repository.findAll()
-                .map(mapper::toDTO);
+        return repository.findByFiltro(empresaId, filter);
+    }
+
+    @Transactional(readOnly = true)
+    protected Mono<EmpresaMunicipioResponseDTO> findById(UUID id) {
+
+        return repository.findByIdCustom(id);
     }
 }

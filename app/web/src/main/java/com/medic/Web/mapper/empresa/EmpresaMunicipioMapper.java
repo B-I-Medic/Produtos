@@ -1,7 +1,5 @@
 package com.medic.Web.mapper.empresa;
 
-import com.medic.Web.dto.empresa.EmpresaMunicipioRequestDTO;
-import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.model.empresa.EmpresaMunicipioModel;
 import org.springframework.stereotype.Component;
 
@@ -11,22 +9,14 @@ import java.util.UUID;
 public class EmpresaMunicipioMapper {
 
     public EmpresaMunicipioModel toEntity(EmpresaMunicipioModel entity,
-                                          EmpresaMunicipioRequestDTO dto,
+                                          UUID empresaId,
+                                          UUID municipioId,
                                           UUID userId) {
 
-        entity.setIdEmpresa(dto.idEmpresa());
-        entity.setIdMunicipio(dto.idMunicipio());
+        entity.setIdEmpresa(empresaId);
+        entity.setIdMunicipio(municipioId);
         entity.setCriadoPor(userId);
 
         return entity;
-    }
-
-    public EmpresaMunicipioResponseDTO toDTO(EmpresaMunicipioModel entity) {
-
-        return new EmpresaMunicipioResponseDTO(
-                entity.getId(),
-                entity.getIdEmpresa(),
-                entity.getIdMunicipio()
-        );
     }
 }
