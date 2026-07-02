@@ -1,5 +1,6 @@
 package com.medic.Web.service.muncipio;
 
+import com.medic.Web.dto.municipio.MunicipioFilterDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
 import com.medic.Web.mapper.municipio.MunicipioMapper;
 import com.medic.Web.repository.cd.MunicipioRepository;
@@ -20,9 +21,9 @@ public class ConsultaMunicipioService {
     }
 
     @Transactional(readOnly = true)
-    public Flux<MunicipioResponseDTO> listMunicipios() {
+    public Flux<MunicipioResponseDTO> listMunicipios(MunicipioFilterDTO filter) {
 
-        return repository.findAll()
+        return repository.findByFiltro(filter)
                 .map(mapper::toDTO);
     }
 }
