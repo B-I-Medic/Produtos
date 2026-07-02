@@ -1,5 +1,6 @@
 package com.medic.Web.service.consulta;
 
+import com.medic.Web.dto.municipio.MunicipioFilterDTO;
 import com.medic.Web.mapper.municipio.MunicipioMapper;
 import com.medic.Web.mapper.necessidade.NecessidadeMapper;
 import com.medic.Web.model.municipio.MunicipioModel;
@@ -43,10 +44,11 @@ class ConsultaServicesTest {
 
         MunicipioModel model = TestDataFactory.municipioModel();
         var response = TestDataFactory.municipioResponseDTO();
-        when(municipioRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
+        var filter = new MunicipioFilterDTO("Cidade", "SP");
+        when(municipioRepository.findByFiltro(filter)).thenReturn(Flux.fromIterable(List.of(model)));
         when(municipioMapper.toDTO(model)).thenReturn(response);
 
-        StepVerifier.create(municipioService.listMunicipios())
+        StepVerifier.create(municipioService.listMunicipios(filter))
                 .expectNext(response)
                 .verifyComplete();
     }
