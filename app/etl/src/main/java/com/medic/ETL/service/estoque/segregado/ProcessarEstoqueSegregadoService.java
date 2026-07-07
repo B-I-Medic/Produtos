@@ -14,21 +14,21 @@ import java.util.List;
 @Service
 public class ProcessarEstoqueSegregadoService {
 
-    private final EstoqueSegregadoService estoqueSegregadoService;
+    private final PrepararConsultaEstoqueSegregadoService prepararConsultaEstoqueSegregadoService;
     private final ConsultaConsultaSegregadoUFXRepository consultaConsultaSegregadoUFXRepository;
     private final InsercaoConsultaSegregadoProdutoRepository insercaoConsultaSegregadoProdutoRepository;
 
-    public ProcessarEstoqueSegregadoService(EstoqueSegregadoService estoqueSegregadoService,
+    public ProcessarEstoqueSegregadoService(PrepararConsultaEstoqueSegregadoService prepararConsultaEstoqueSegregadoService,
                                             ConsultaConsultaSegregadoUFXRepository consultaConsultaSegregadoUFXRepository,
                                             InsercaoConsultaSegregadoProdutoRepository insercaoConsultaSegregadoProdutoRepository) {
-        this.estoqueSegregadoService = estoqueSegregadoService;
+        this.prepararConsultaEstoqueSegregadoService = prepararConsultaEstoqueSegregadoService;
         this.consultaConsultaSegregadoUFXRepository = consultaConsultaSegregadoUFXRepository;
         this.insercaoConsultaSegregadoProdutoRepository = insercaoConsultaSegregadoProdutoRepository;
     }
 
     public void processarEstoqueSegregado(Processamento processamento) {
 
-        EstoqueSegregadoConsultaDTO consultas = estoqueSegregadoService.montarConsultas(processamento);
+        EstoqueSegregadoConsultaDTO consultas = prepararConsultaEstoqueSegregadoService.montarConsultas(processamento);
         List<EstoqueSegregado> itens = executarConsultaUfx(consultas.consultaUfx());
 
         if (itens.isEmpty()) {

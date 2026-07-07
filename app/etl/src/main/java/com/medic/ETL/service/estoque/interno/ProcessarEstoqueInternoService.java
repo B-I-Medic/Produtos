@@ -19,18 +19,18 @@ import java.util.concurrent.Executor;
 @Service
 public class ProcessarEstoqueInternoService {
 
-    private final EstoqueInternoService estoqueInternoService;
+    private final PrepararConsultaEstoqueInternoService prepararConsultaEstoqueInternoService;
     private final ConsultaEstoqueInternoUFXRepository consultaEstoqueInternoUFXRepository;
     private final ConsultaEstoqueInternoS00Repository consultaEstoqueInternoS00Repository;
     private final InsercaoEstoqueInternoProdutoRepository insercaoEstoqueInternoProdutoRepository;
     private final Executor etlExecutor;
 
-    public ProcessarEstoqueInternoService(EstoqueInternoService estoqueInternoService,
+    public ProcessarEstoqueInternoService(PrepararConsultaEstoqueInternoService prepararConsultaEstoqueInternoService,
                                           ConsultaEstoqueInternoUFXRepository consultaEstoqueInternoUFXRepository,
                                           ConsultaEstoqueInternoS00Repository consultaEstoqueInternoS00Repository,
                                           InsercaoEstoqueInternoProdutoRepository insercaoEstoqueInternoProdutoRepository,
                                           @Qualifier("etlExecutor") Executor etlExecutor) {
-        this.estoqueInternoService = estoqueInternoService;
+        this.prepararConsultaEstoqueInternoService = prepararConsultaEstoqueInternoService;
         this.consultaEstoqueInternoUFXRepository = consultaEstoqueInternoUFXRepository;
         this.consultaEstoqueInternoS00Repository = consultaEstoqueInternoS00Repository;
         this.insercaoEstoqueInternoProdutoRepository = insercaoEstoqueInternoProdutoRepository;
@@ -39,7 +39,7 @@ public class ProcessarEstoqueInternoService {
 
     public void processarEstoqueInterno(Processamento processamento) {
 
-        EstoqueInternoConsultaDTO consultas = estoqueInternoService.montarConsultas(processamento);
+        EstoqueInternoConsultaDTO consultas = prepararConsultaEstoqueInternoService.montarConsultas(processamento);
 
         CompletableFuture<List<EstoqueInterno>> consultaUfxFuture = CompletableFuture.supplyAsync(
                 () -> executarConsultaUfx(consultas.consultaUfx()),

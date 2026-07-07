@@ -19,18 +19,18 @@ import java.util.concurrent.Executor;
 @Service
 public class ProcessarValePermanenteService {
 
-    private final ValePermanenteService valePermanenteService;
+    private final PrepararConsultaValePermanenteService prepararConsultaValePermanenteService;
     private final ConsultaUFXRepository consultaUFXRepository;
     private final ConsultaS00Repository consultaS00Repository;
     private final InsercaoValePermanenteProdutoRepository insercaoValePermanenteProdutoRepository;
     private final Executor etlExecutor;
 
-    public ProcessarValePermanenteService(ValePermanenteService valePermanenteService,
+    public ProcessarValePermanenteService(PrepararConsultaValePermanenteService prepararConsultaValePermanenteService,
                                           ConsultaUFXRepository consultaUFXRepository,
                                           ConsultaS00Repository consultaS00Repository,
                                           InsercaoValePermanenteProdutoRepository insercaoValePermanenteProdutoRepository,
                                           @Qualifier("etlExecutor") Executor etlExecutor) {
-        this.valePermanenteService = valePermanenteService;
+        this.prepararConsultaValePermanenteService = prepararConsultaValePermanenteService;
         this.consultaUFXRepository = consultaUFXRepository;
         this.consultaS00Repository = consultaS00Repository;
         this.insercaoValePermanenteProdutoRepository = insercaoValePermanenteProdutoRepository;
@@ -39,7 +39,7 @@ public class ProcessarValePermanenteService {
 
     public void processarValePermanente(Processamento processamento) {
 
-        ValePermanenteConsultaDTO consultas = valePermanenteService.montarConsultas(processamento);
+        ValePermanenteConsultaDTO consultas = prepararConsultaValePermanenteService.montarConsultas(processamento);
 
         CompletableFuture<List<ValePermanente>> consultaUfxFuture = CompletableFuture.supplyAsync(
                 () -> executarConsultaUfx(consultas.consultaUfx()),
