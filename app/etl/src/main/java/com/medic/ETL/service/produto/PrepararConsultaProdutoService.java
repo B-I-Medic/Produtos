@@ -9,7 +9,7 @@ public class PrepararConsultaProdutoService {
     private static final String CONSULTA_UFX = """
             SELECT
                 'UFX' AS Viman,
-                '01,03,04,05,06,13' AS CodEmpresa,
+                trim('01,03,04,05,06,13') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -44,13 +44,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'UFX' AS Viman,
-                '07' AS CodEmpresa,
+                trim('07') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -85,13 +85,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU07 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'UFX' AS Viman,
-                '08' AS CodEmpresa,
+                trim('08') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -126,13 +126,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU08 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'UFX' AS Viman,
-                '11' AS CodEmpresa,
+                trim('11') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -167,13 +167,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU10 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
             """;
 
     private static final String CONSULTA_S00 = """
             SELECT
                 'S00' AS Viman,
-                '01' AS CodEmpresa,
+                trim('01') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -208,13 +208,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'S00' AS Viman,
-                '02' AS CodEmpresa,
+                trim('02') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -249,13 +249,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'S00' AS Viman,
-                '03' AS CodEmpresa,
+                trim('03') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -290,13 +290,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'S00' AS Viman,
-                '04' AS CodEmpresa,
+                trim('04') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -331,13 +331,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'S00' AS Viman,
-                '06' AS CodEmpresa,
+                trim('06') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -372,13 +372,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'S00' AS Viman,
-                '07' AS CodEmpresa,
+                trim('07') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -413,13 +413,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'S00' AS Viman,
-                '08' AS CodEmpresa,
+                trim('08') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -454,13 +454,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'S00' AS Viman,
-                '09' AS CodEmpresa,
+                trim('09') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -495,13 +495,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'S00' AS Viman,
-                '10' AS CodEmpresa,
+                trim('10') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -536,13 +536,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'S00' AS Viman,
-                '11' AS CodEmpresa,
+                trim('11') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -577,13 +577,13 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
 
             UNION ALL
 
             SELECT
                 'S00' AS Viman,
-                '12' AS CodEmpresa,
+                trim('12') AS CodEmpresa,
                 TRIM(PR.PRCDPR) AS CodProduto,
                 TRIM(PR.PRNOME) AS Descricao,
                 TRIM(MA.MADESC) AS Marca,
@@ -618,7 +618,7 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            WHERE PR.PRTPRM = 1
+            
             """;
 
     public ProdutoConsultaDTO montarConsultas() {

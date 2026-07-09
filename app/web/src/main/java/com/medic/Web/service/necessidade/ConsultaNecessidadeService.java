@@ -1,7 +1,7 @@
 package com.medic.Web.service.necessidade;
 
-import com.medic.Web.dto.necessidade.NecessidadeResponseDTO;
-import com.medic.Web.mapper.necessidade.NecessidadeMapper;
+import com.medic.Web.dto.necessidade.NecessidadeFilterDTO;
+import com.medic.Web.dto.necessidade.NecessidadeAgrupadoPorCDResponseDTO;
 import com.medic.Web.repository.necessidade.NecessidadeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,18 +11,14 @@ import reactor.core.publisher.Flux;
 public class ConsultaNecessidadeService {
 
     private final NecessidadeRepository repository;
-    private final NecessidadeMapper mapper;
 
-    public ConsultaNecessidadeService(NecessidadeRepository repository,
-                                      NecessidadeMapper mapper) {
+    public ConsultaNecessidadeService(NecessidadeRepository repository) {
         this.repository = repository;
-        this.mapper = mapper;
     }
 
     @Transactional(readOnly = true)
-    public Flux<NecessidadeResponseDTO> listNecessidades() {
+    public Flux<NecessidadeAgrupadoPorCDResponseDTO> listNecessidadesAgrupadoPorCD(NecessidadeFilterDTO filter) {
 
-        return repository.findAll()
-                .map(mapper::toDTO);
+        return repository.findByCDFilter(filter);
     }
 }

@@ -1,10 +1,9 @@
 package com.medic.Web.service.consulta;
 
 import com.medic.Web.dto.municipio.MunicipioFilterDTO;
+import com.medic.Web.dto.necessidade.NecessidadeFilterDTO;
 import com.medic.Web.mapper.municipio.MunicipioMapper;
-import com.medic.Web.mapper.necessidade.NecessidadeMapper;
 import com.medic.Web.model.municipio.MunicipioModel;
-import com.medic.Web.model.necessidade.NecessidadeModel;
 import com.medic.Web.repository.cd.MunicipioRepository;
 import com.medic.Web.repository.necessidade.NecessidadeRepository;
 import com.medic.Web.service.muncipio.ConsultaMunicipioService;
@@ -31,8 +30,6 @@ class ConsultaServicesTest {
     private MunicipioMapper municipioMapper;
     @Mock
     private NecessidadeRepository necessidadeRepository;
-    @Mock
-    private NecessidadeMapper necessidadeMapper;
 
     @InjectMocks
     private ConsultaMunicipioService municipioService;
@@ -56,12 +53,11 @@ class ConsultaServicesTest {
     @Test
     void shouldListNecessidades() {
 
-        NecessidadeModel model = TestDataFactory.necessidadeModel();
-        var response = TestDataFactory.necessidadeResponseDTO();
-        when(necessidadeRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
-        when(necessidadeMapper.toDTO(model)).thenReturn(response);
+        var filter = new NecessidadeFilterDTO("CD", "Empresa", "Cidade", "Produto", "Marca");
+        var response = TestDataFactory.necessidadeAgrupadoPorCDResponseDTO();
+        when(necessidadeRepository.findByCDFilter(filter)).thenReturn(Flux.fromIterable(List.of(response)));
 
-        StepVerifier.create(necessidadeService.listNecessidades())
+        StepVerifier.create(necessidadeService.listNecessidadesAgrupadoPorCD(filter))
                 .expectNext(response)
                 .verifyComplete();
     }

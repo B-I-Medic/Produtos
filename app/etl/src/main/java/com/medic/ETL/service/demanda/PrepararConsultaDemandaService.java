@@ -67,7 +67,7 @@ public class PrepararConsultaDemandaService {
                             '%s' as Processamento,
                             '%s' as CodEmpresa,
                             cast(cl.CLCMFI as varchar(7)) as IBGE,
-                            IV.IVCODP AS CodProduto,
+                            trim(iv.ivcodp) AS CodProduto,
                             sum(case
                                     when (pv.PVDTCD between %s and %s and pv.PVORVA = 1 and pv.PVTPVD in (17, 119)) then IV.IVQTDE
                                     else 0
@@ -101,7 +101,7 @@ public class PrepararConsultaDemandaService {
                             '%s' as Processamento,
                             '%s' as CodEmpresa,
                             cast(cl.CLCMFI as varchar(7)) as IBGE,
-                            vp.vpcodp as CodProduto,
+                            trim(vp.vpcodp) as CodProduto,
                             0 as QntOrcado,
                             0 as QntAprovado,
                             0 as QntAgendado,

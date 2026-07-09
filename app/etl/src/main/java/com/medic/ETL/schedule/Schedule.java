@@ -4,6 +4,7 @@ import com.medic.ETL.model.processamento.Processamento;
 import com.medic.ETL.model.processamento.ProcessamentoDisparo;
 import com.medic.ETL.model.processamento.ProcessamentoEntidade;
 import com.medic.ETL.model.processamento.ProcessamentoStatus;
+import com.medic.ETL.repository.estoque.AtualizarViewMaterializadaRepository;
 import com.medic.ETL.repository.processamento.ProcessamentoRepository;
 import com.medic.ETL.service.demanda.ProcessarDemandaService;
 import com.medic.ETL.service.estoque.interno.ProcessarEstoqueInternoService;
@@ -11,6 +12,7 @@ import com.medic.ETL.service.estoque.segregado.ProcessarEstoqueSegregadoService;
 import com.medic.ETL.service.estoque.valePermanente.ProcessarValePermanenteService;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
 import com.medic.ETL.service.produto.ProcessarProdutoService;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,7 @@ public class Schedule {
     private static final long DEMANDA_LOCK_KEY = 872343L;
 
     private final ProcessamentoRepository processamentoRepository;
+    private final AtualizarViewMaterializadaRepository atualizarViewMaterializadaRepository;
 
     private final ControlarProcessamentoService processamentoService;
     private final ProcessarEstoqueInternoService processarEstoqueInternoService;
@@ -32,13 +35,15 @@ public class Schedule {
     private final ProcessarProdutoService processarProdutoService;
     private final ProcessarDemandaService processarDemandaService;
 
-    public Schedule(ProcessarEstoqueInternoService processarEstoqueInternoService,
+    public Schedule(AtualizarViewMaterializadaRepository atualizarViewMaterializadaRepository,
+                    ProcessarEstoqueInternoService processarEstoqueInternoService,
                     ProcessarEstoqueSegregadoService processarEstoqueSegregadoService,
                     ProcessarValePermanenteService processarValePermanenteService,
                     ProcessarProdutoService processarProdutoService,
                     ControlarProcessamentoService processamentoService,
                     ProcessamentoRepository processamentoRepository,
                     ProcessarDemandaService processarDemandaService) {
+        this.atualizarViewMaterializadaRepository = atualizarViewMaterializadaRepository;
         this.processarEstoqueInternoService = processarEstoqueInternoService;
         this.processarEstoqueSegregadoService = processarEstoqueSegregadoService;
         this.processarValePermanenteService = processarValePermanenteService;
@@ -48,10 +53,15 @@ public class Schedule {
         this.processarDemandaService = processarDemandaService;
     }
 
+    @PostConstruct
+    public void init() {
+        atualizarEstoque();
+        atualizarProdutos();
+        atualizarDemanda();
+    }
+
     @Scheduled(cron = "0 */30 * * * *")
     public void atualizarEstoque() {
-
-        log.info("Iniciando Estoque");
 
         if (processamentoRepository.lockEmUso(ESTOQUE_LOCK_KEY)) {
 
@@ -70,6 +80,8 @@ public class Schedule {
             processarValePermanenteService.processarValePermanente(processamento);
 
             processamentoService.encerrarProcessamento(processamento, ProcessamentoStatus.CONCLUIDO);
+
+            atualizarViewMaterializadaRepository.atualizar();
 
         } catch (Exception exception) {
 
