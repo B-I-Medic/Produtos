@@ -4,5 +4,6 @@ public enum ProcessamentoStatus {
 
     INICIADO,
     CONCLUIDO,
-    FALHOU
+    FALHOU,
+    ABORTADO
 }

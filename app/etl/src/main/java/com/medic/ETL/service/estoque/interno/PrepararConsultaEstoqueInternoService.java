@@ -16,13 +16,13 @@ import java.util.UUID;
 
 
 @Service
-public class EstoqueInternoService {
+public class PrepararConsultaEstoqueInternoService {
 
     private static final Set<String> CODIGOS_UFX_GENERICOS = Set.of("01", "03", "04", "05", "06", "11", "13");
 
     private final EstoqueInternoParametroRepository estoqueInternoParametroRepository;
 
-    public EstoqueInternoService(EstoqueInternoParametroRepository estoqueInternoParametroRepository) {
+    public PrepararConsultaEstoqueInternoService(EstoqueInternoParametroRepository estoqueInternoParametroRepository) {
         this.estoqueInternoParametroRepository = estoqueInternoParametroRepository;
     }
 
@@ -84,7 +84,7 @@ public class EstoqueInternoService {
                             ELSE CAST(PU.PUCDUS AS CHAR(2))
                         END AS CodEmpresa,
                         '%s' AS IdEmpresaMunicipio,
-                        PU.PUCDPR AS CodProduto,
+                        TRIM(PU.PUCDPR) AS CodProduto,
                         (PU.PUQTER - PU.PUQEDE_1) AS QntDisponivel
                     FROM SYSADM.VETEPU PU
                     WHERE PU.PUCDUS IN (%s)
@@ -103,7 +103,7 @@ public class EstoqueInternoService {
                         'UFX' as Viman,
                         '07' as CodEmpresa,
                         '%s' AS IdEmpresaMunicipio,
-                        PRCDPR AS CodProduto,
+                        TRIM(PRCDPR) AS CodProduto,
                         (PRQTER - PRQEDE_1) AS QntDisponivel
                     FROM SYSADM.VETEPR07
                     """.formatted(
@@ -120,7 +120,7 @@ public class EstoqueInternoService {
                         'UFX' as Viman,
                         '08' as CodEmpresa,
                         '%s' AS IdEmpresaMunicipio,
-                        PRCDPR AS CodProduto,
+                        TRIM(PRCDPR) AS CodProduto,
                         (PRQTER - PRQEDE_1) AS QntDisponivel
                     FROM SYSADM.VETEPR08
                     """.formatted(
@@ -162,7 +162,7 @@ public class EstoqueInternoService {
                             ELSE CAST(PU.PUCDUS AS CHAR(2))
                         END AS CodEmpresa,
                         '%s' AS IdEmpresaMunicipio,
-                        PU.PUCDPR AS CodProduto,
+                        TRIM(PU.PUCDPR) AS CodProduto,
                         (PU.PUQTER - PU.PUQEDE_1) AS QntDisponivel
                     FROM SYSADM.VETEPU PU
                     WHERE PU.PUCDUS IN (%s)

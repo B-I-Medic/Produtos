@@ -1,9 +1,11 @@
 package com.medic.Web.controller.necessidade;
 
-import com.medic.Web.dto.necessidade.NecessidadeResponseDTO;
+import com.medic.Web.dto.necessidade.NecessidadeFilterDTO;
+import com.medic.Web.dto.necessidade.NecessidadeAgrupadoPorCDResponseDTO;
 import com.medic.Web.service.necessidade.ConsultaNecessidadeService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
@@ -18,9 +20,9 @@ public class NecessidadeController {
         this.service = service;
     }
 
-    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<NecessidadeResponseDTO> listNecessidades() {
+    @GetMapping(value = "/get/agrupado-por-cd", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<NecessidadeAgrupadoPorCDResponseDTO> listNecessidadesAgrupadoPorCD(@ModelAttribute NecessidadeFilterDTO filter) {
 
-        return service.listNecessidades();
+        return service.listNecessidadesAgrupadoPorCD(filter);
     }
 }

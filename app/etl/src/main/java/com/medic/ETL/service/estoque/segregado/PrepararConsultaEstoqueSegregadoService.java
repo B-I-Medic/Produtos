@@ -15,11 +15,11 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class EstoqueSegregadoService {
+public class PrepararConsultaEstoqueSegregadoService {
 
     private final EstoqueSegregadoParametroRepository estoqueSegregadoParametroRepository;
 
-    public EstoqueSegregadoService(EstoqueSegregadoParametroRepository estoqueSegregadoParametroRepository) {
+    public PrepararConsultaEstoqueSegregadoService(EstoqueSegregadoParametroRepository estoqueSegregadoParametroRepository) {
         this.estoqueSegregadoParametroRepository = estoqueSegregadoParametroRepository;
     }
 
@@ -64,7 +64,7 @@ public class EstoqueSegregadoService {
                         'UFX' as Viman,
                         '%s' as CodEmpresa,
                         '%s' AS IdEmpresaMunicipio,
-                        ESCDPR AS CodProduto,
+                        TRIM(ESCDPR) AS CodProduto,
                         sum(ESQTDE) AS QntDisponivel
                     FROM SYSADM.VETEES%s
                     WHERE ESCDNC IN (%s)

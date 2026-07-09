@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 @Configuration
 public class ExecutorConfig {
 
-    @Bean(name = "etlExecutor")
+    @Bean
     public Executor etlExecutor(ETLProperties properties) {
         return Executors.newFixedThreadPool(properties.getThreadPoolSize());
     }

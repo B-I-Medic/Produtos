@@ -8,7 +8,7 @@ import com.medic.Web.dto.parametro.estoque.EstoqueInternoResponseDTO;
 import com.medic.Web.dto.parametro.estoque.EstoqueSegregadoResponseDTO;
 import com.medic.Web.dto.parametro.estoque.ValePermanenteResponseDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
-import com.medic.Web.dto.necessidade.NecessidadeResponseDTO;
+import com.medic.Web.dto.necessidade.NecessidadeAgrupadoPorCDResponseDTO;
 import com.medic.Web.dto.parametro.periodo.PeriodoResponseDTO;
 import com.medic.Web.dto.parametro.taxa.TaxaResponseDTO;
 import com.medic.Web.dto.usuario.UsuarioResponseDTO;
@@ -22,7 +22,6 @@ import com.medic.Web.model.empresa.Viman;
 import com.medic.Web.model.parametro.estoque.EstoqueInternoParametroModel;
 import com.medic.Web.model.parametro.estoque.EstoqueSegregadoParametroModel;
 import com.medic.Web.model.parametro.estoque.ValePermanenteParametroModel;
-import com.medic.Web.model.necessidade.NecessidadeModel;
 import com.medic.Web.model.parametro.periodo.PeriodoEnum;
 import com.medic.Web.model.parametro.periodo.PeriodoModel;
 import com.medic.Web.model.parametro.taxa.TaxaEnum;
@@ -241,23 +240,25 @@ public final class TestDataFactory {
         return new MunicipioResponseDTO(model.getId(), model.getDescricao(), model.getCodIbge(), model.getEstado());
     }
 
-    public static NecessidadeModel necessidadeModel() {
+    public static NecessidadeAgrupadoPorCDResponseDTO necessidadeAgrupadoPorCDResponseDTO() {
 
-        var model = new NecessidadeModel();
-        model.setId(UUID.randomUUID());
-        model.setIdEmpresaMunicipio(UUID.randomUUID());
-        model.setCodProduto("P1");
-        model.setEstoque(1);
-        model.setDemanda(2);
-        model.setNecessidade(1);
-        return model;
-    }
-
-    public static NecessidadeResponseDTO necessidadeResponseDTO() {
-
-        var model = necessidadeModel();
-        return new NecessidadeResponseDTO(model.getId(), model.getIdEmpresaMunicipio(), model.getCodProduto(),
-                model.getEstoque(), model.getDemanda(), model.getNecessidade());
+        return new NecessidadeAgrupadoPorCDResponseDTO(
+                "CD",
+                "P1",
+                "Produto",
+                "Marca",
+                "ANVISA",
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+        );
     }
 
     public static PasswordResetCodeModel passwordResetCodeModel() {

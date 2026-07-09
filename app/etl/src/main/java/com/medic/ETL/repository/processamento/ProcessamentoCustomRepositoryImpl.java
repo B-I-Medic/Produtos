@@ -5,15 +5,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class ProcessamentoLockRepository {
+public class ProcessamentoCustomRepositoryImpl implements ProcessamentoCustomRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ProcessamentoLockRepository(@Qualifier("pgJdbcTemplate") JdbcTemplate jdbcTemplate) {
+    public ProcessamentoCustomRepositoryImpl(@Qualifier("pgJdbcTemplate") JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean tentarAdquirirLock(long lockKey) {
+    public boolean lockEmUso(long lockKey) {
 
         Boolean lockAdquirido = jdbcTemplate.queryForObject(
                 "select pg_try_advisory_lock(?)",
@@ -21,7 +21,7 @@ public class ProcessamentoLockRepository {
                 lockKey
         );
 
-        return Boolean.TRUE.equals(lockAdquirido);
+        return !Boolean.TRUE.equals(lockAdquirido);
     }
 
     public void liberarLock(long lockKey) {

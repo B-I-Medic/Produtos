@@ -15,11 +15,11 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class ValePermanenteService {
+public class PrepararConsultaValePermanenteService {
 
     private final ValePermanenteParametroRepository valePermanenteParametroRepository;
 
-    public ValePermanenteService(ValePermanenteParametroRepository valePermanenteParametroRepository) {
+    public PrepararConsultaValePermanenteService(ValePermanenteParametroRepository valePermanenteParametroRepository) {
         this.valePermanenteParametroRepository = valePermanenteParametroRepository;
     }
 
@@ -67,7 +67,7 @@ public class ValePermanenteService {
                         '%s' as Viman,
                         '%s' as CodEmpresa,
                         '%s' AS IdEmpresaMunicipio,
-                        VP.VPCODP AS CodProduto,
+                        TRIM(VP.VPCODP) AS CodProduto,
                         sum(VP.VPQTSE) AS QntDisponivel
                     FROM SYSADM.VETEVP%s AS VP
                     JOIN SYSADM.VETEVA%s AS VA ON VA.VANUME = VP.VPNUME
