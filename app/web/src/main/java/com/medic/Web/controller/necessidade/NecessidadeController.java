@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 @RestController
-@RequestMapping("/necessidade")
+@RequestMapping("/forecast")
 public class NecessidadeController {
 
     private final ConsultaNecessidadeService service;
@@ -21,13 +21,13 @@ public class NecessidadeController {
         this.service = service;
     }
 
-    @GetMapping(value = {"/get/agrupado-filtrado"}, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = {"/get"}, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<NecessidadeAgrupadoResponseDTO> listNecessidadesAgrupadas(@ModelAttribute NecessidadeFilterDTO filter) {
 
         return service.listNecessidadesAgrupadas(filter);
     }
 
-    @GetMapping(value = {"/get/agrupamentos-disponiveis"}, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = {"/agrupamentos-disponiveis/get"}, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<AgrupamentosPadrao> listNecessidadesAgrupadas() {
 
         return Flux.fromArray(AgrupamentosPadrao.values());

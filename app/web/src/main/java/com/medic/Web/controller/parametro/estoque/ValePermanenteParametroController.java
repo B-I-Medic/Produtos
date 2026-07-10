@@ -24,12 +24,6 @@ public class ValePermanenteParametroController {
         this.service = service;
     }
 
-    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ValePermanenteResponseDTO> listValePermanente() {
-
-        return service.listValePermanente();
-    }
-
     @PostMapping("/save")
     public Mono<ValePermanenteResponseDTO> save(@RequestBody @Valid Mono<ValePermanenteRequestDTO> dto,
                                                 @AuthenticationPrincipal UsuarioModel user) {
@@ -50,5 +44,11 @@ public class ValePermanenteParametroController {
     public Mono<Void> delete(@PathVariable @NotNull(message = "O ID do vale permanente e obrigatorio") UUID valePermanenteId) {
 
         return service.delete(valePermanenteId);
+    }
+
+    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ValePermanenteResponseDTO> listValePermanente() {
+
+        return service.listValePermanente();
     }
 }

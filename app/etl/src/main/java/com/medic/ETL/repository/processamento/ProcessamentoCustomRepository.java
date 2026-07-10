@@ -5,4 +5,6 @@ public interface ProcessamentoCustomRepository {
     boolean lockEmUso(long lockKey);
 
     void liberarLock(long lockKey);
+
+    void excluirProcessamentosAntigos();
 }

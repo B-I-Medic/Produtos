@@ -24,12 +24,6 @@ public class EstoqueSegregadoParametroController {
         this.service = service;
     }
 
-    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<EstoqueSegregadoResponseDTO> listEstoqueSegregado() {
-
-        return service.listEstoqueSegregado();
-    }
-
     @PostMapping("/save")
     public Mono<EstoqueSegregadoResponseDTO> save(@RequestBody @Valid Mono<EstoqueSegregadoRequestDTO> dto,
                                                   @AuthenticationPrincipal UsuarioModel user) {
@@ -50,5 +44,11 @@ public class EstoqueSegregadoParametroController {
     public Mono<Void> delete(@PathVariable @NotNull(message = "O ID do estoque segregado e obrigatorio") UUID estoqueSegregadoId) {
 
         return service.delete(estoqueSegregadoId);
+    }
+
+    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<EstoqueSegregadoResponseDTO> listEstoqueSegregado() {
+
+        return service.listEstoqueSegregado();
     }
 }

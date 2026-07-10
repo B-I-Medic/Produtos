@@ -12,7 +12,6 @@ import com.medic.ETL.service.estoque.segregado.ProcessarEstoqueSegregadoService;
 import com.medic.ETL.service.estoque.valePermanente.ProcessarValePermanenteService;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
 import com.medic.ETL.service.produto.ProcessarProdutoService;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -53,14 +52,7 @@ public class Schedule {
         this.processarDemandaService = processarDemandaService;
     }
 
-    @PostConstruct
-    public void init() {
-        atualizarEstoque();
-        atualizarProdutos();
-        atualizarDemanda();
-    }
-
-    @Scheduled(cron = "0 */30 * * * *")
+    @Scheduled(cron = "0 */30 7-19 * * MON-FRI", zone = "America/Sao_Paulo")
     public void atualizarEstoque() {
 
         if (processamentoRepository.lockEmUso(ESTOQUE_LOCK_KEY)) {
@@ -95,7 +87,7 @@ public class Schedule {
         }
     }
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 0 7-19 * * MON-FRI", zone = "America/Sao_Paulo")
     public void atualizarProdutos() {
 
         if (processamentoRepository.lockEmUso(PRODUTO_LOCK_KEY)) {
@@ -125,7 +117,7 @@ public class Schedule {
         }
     }
 
-    @Scheduled(cron = "0 */30 * * * *")
+    @Scheduled(cron = "0 */30 7-19 * * MON-FRI", zone = "America/Sao_Paulo")
     public void atualizarDemanda() {
 
 
@@ -154,5 +146,11 @@ public class Schedule {
 
             processamentoRepository.liberarLock(DEMANDA_LOCK_KEY);
         }
+    }
+
+    @Scheduled(cron = "0 0 7 * * MON-FRI", zone = "America/Sao_Paulo")
+    public void removerProcessamentosAntigos() {
+
+        processamentoRepository.excluirProcessamentosAntigos();
     }
 }

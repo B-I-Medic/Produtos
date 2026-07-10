@@ -1,12 +1,12 @@
 package com.medic.Web.dto.web;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 public record ErrorResponseDTO(
 
-        Instant instant,
-        String error,
-        String message,
+        LocalDateTime dataHora,
+        String erro,
+        String descricao,
         String path
 ) {
 }

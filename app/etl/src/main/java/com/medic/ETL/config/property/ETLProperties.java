@@ -9,12 +9,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "etl")
 public class ETLProperties {
 
-    private Scheduler scheduled = new Scheduler();
     private int threadPoolSize;
-
-    @Getter
-    @Setter
-    public static class Scheduler {
-        private long fixedDelayMs;
-    }
 }

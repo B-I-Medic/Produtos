@@ -24,12 +24,6 @@ public class EstoqueInternoParametroController {
         this.service = service;
     }
 
-    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<EstoqueInternoResponseDTO> listEstoqueInterno() {
-
-        return service.listEstoqueInterno();
-    }
-
     @PostMapping("/save")
     public Mono<EstoqueInternoResponseDTO> save(@RequestBody @Valid Mono<EstoqueInternoRequestDTO> dto,
                                                 @AuthenticationPrincipal UsuarioModel user) {
@@ -50,5 +44,11 @@ public class EstoqueInternoParametroController {
     public Mono<Void> delete(@PathVariable @NotNull(message = "O ID do estoque interno e obrigatorio") UUID estoqueInternoId) {
 
         return service.delete(estoqueInternoId);
+    }
+
+    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<EstoqueInternoResponseDTO> listEstoqueInterno() {
+
+        return service.listEstoqueInterno();
     }
 }

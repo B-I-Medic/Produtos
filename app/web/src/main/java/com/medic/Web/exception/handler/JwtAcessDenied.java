@@ -3,7 +3,6 @@ package com.medic.Web.exception.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.web.server.authorization.ServerAccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -13,12 +12,19 @@ import reactor.core.publisher.Mono;
 @Component
 public class JwtAcessDenied implements ServerAccessDeniedHandler {
 
+    private final ErrorResponseWriter writer;
+
+    public JwtAcessDenied(ErrorResponseWriter writer) {
+        this.writer = writer;
+    }
+
     @Override
     public @NonNull Mono<Void> handle(ServerWebExchange exchange, AccessDeniedException ex) {
-
-        log.error("NÃO AUTORIZADO: {}", ex.getMessage());
-
-        exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-        return exchange.getResponse().setComplete();
+        return writer.write(
+                org.springframework.http.HttpStatus.FORBIDDEN,
+                "Acesso negado",
+                "Voce nao tem permissao para acessar este recurso",
+                exchange
+        );
     }
 }

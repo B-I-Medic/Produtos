@@ -30,14 +30,6 @@ public class AuthController {
                 .flatMap(service::login);
     }
 
-    @PostMapping("/first-acess")
-    public Mono<Void> firstAcess(@RequestBody @Valid Mono<PasswordRequestDTO> dto,
-                                 @AuthenticationPrincipal UsuarioModel user) {
-
-        return dto
-                .flatMap(pss -> service.firstAcess(pss, user.getId()));
-    }
-
     @PostMapping("/forgot-password")
     public Mono<Void> forgotPassword(@RequestParam @Email(message = "O email está inválido") @NotBlank(message = "O email é obrigatório") String mail) {
 
@@ -49,5 +41,13 @@ public class AuthController {
 
         return dto
                 .flatMap(service::resetPassword);
+    }
+
+    @PostMapping("/first-acess")
+    public Mono<Void> firstAcess(@RequestBody @Valid Mono<PasswordRequestDTO> dto,
+                                 @AuthenticationPrincipal UsuarioModel user) {
+
+        return dto
+                .flatMap(pss -> service.firstAcess(pss, user.getId()));
     }
 }

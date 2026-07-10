@@ -1,5 +1,7 @@
 package com.medic.Web.config.auth;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.medic.Web.model.usuario.UsuarioModel;
 import com.medic.Web.repository.usuario.UsuarioRepository;
 import com.medic.Web.service.auth.JwtService;
@@ -39,26 +41,28 @@ public class JwtAuthenticationConfig implements WebFilter {
 
         String token = header.substring(7);
 
-        if (!jwtService.isValid(token)) {
-            return chain.filter(exchange);
+        try {
+            String subject = jwtService.getSubject(token);
+
+            List<SimpleGrantedAuthority> authorities = jwtService.getRoles(token)
+                    .stream()
+                    .map(role -> "ROLE_" + role)
+                    .map(SimpleGrantedAuthority::new)
+                    .toList();
+
+            return repository.findByEmail(subject)
+                    .switchIfEmpty(Mono.error(new BadCredentialsException("Email invalido")))
+                    .filter(UsuarioModel::getAtivo)
+                    .switchIfEmpty(Mono.error(new DisabledException("Usuario inativo")))
+                    .map(u -> new UsernamePasswordAuthenticationToken(u, null, authorities))
+                    .flatMap(auth ->
+                            chain.filter(exchange)
+                                    .contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth))
+                    );
+        } catch (TokenExpiredException ex) {
+            return Mono.error(new BadCredentialsException("Token expirado"));
+        } catch (JWTVerificationException ex) {
+            return Mono.error(new BadCredentialsException("Token invalido"));
         }
-
-        String subject = jwtService.getSubject(token);
-
-        List<SimpleGrantedAuthority> authorities = jwtService.getRoles(token)
-                .stream()
-                .map(role -> "ROLE_" + role)
-                .map(SimpleGrantedAuthority::new)
-                .toList();
-
-        return repository.findByEmail(subject)
-                .switchIfEmpty(Mono.error(new BadCredentialsException("Email inválido")))
-                .filter(UsuarioModel::getAtivo)
-                .switchIfEmpty(Mono.error(new DisabledException("Usuario inativo")))
-                .map(u -> new UsernamePasswordAuthenticationToken(u, null, authorities))
-                .flatMap(auth -> 
-                    chain.filter(exchange)
-                    .contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth))
-                );
     }
 }

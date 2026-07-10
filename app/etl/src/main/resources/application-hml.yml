@@ -24,6 +24,4 @@ app:
       password: ${PRODUTO_ETL_HML_PASSWORD}
 
 etl:
-  scheduler:
-    fixed-delay-ms: 300000
   thread-pool-size: 4
