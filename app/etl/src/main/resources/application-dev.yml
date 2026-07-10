@@ -20,10 +20,8 @@ app:
     produto:
       driver-class-name: org.postgresql.Driver
       url: jdbc:postgresql://localhost:5432/produto
-      username: produtoetl
+      username: app-etl-dev
       password: etl123
 
 etl:
-  scheduler:
-    fixed-delay-ms: 300000
   thread-pool-size: 4

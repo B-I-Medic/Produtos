@@ -68,6 +68,9 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/auth/forgot-password",
                                         "/auth/reset-password"
                                 ).permitAll()
+                                .pathMatchers("/necessidade/agrupado-filtrado",
+                                        "/necessidade/get/agrupamentos-disponiveis"
+                                ).access(hasRole("USER", roleHierarchy))
                                 .pathMatchers("/usuario/save",
                                         "/usuario/update",
                                         "/usuario/disable",

@@ -1,22 +1,25 @@
 package com.medic.Web.repository.necessidade;
 
+import com.medic.Web.dto.necessidade.NecessidadeAgrupadoResponseDTO;
 import com.medic.Web.dto.necessidade.NecessidadeFilterDTO;
-import com.medic.Web.dto.necessidade.NecessidadeAgrupadoPorCDResponseDTO;
+import com.medic.Web.model.necessidade.AgrupamentosPadrao;
+import io.r2dbc.spi.Row;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 
+import java.util.List;
+import java.util.Set;
+
 @Repository
 public class NecessidadeRepositoryCustomImpl implements NecessidadeRepositoryCustom {
 
-    private static final String GROUP_BY_CD_AND_FILTER = """
+    private static final List<AgrupamentosPadrao> DEFAULT_GROUP_BY = List.of(AgrupamentosPadrao.values());
+
+    private static final String BASE_SQL = """
                         select
-                            centro_distribuicao,
-                            cod_produto,
-                            produto,
-                            marca,
-                            anvisa,
+                            %s,
                             sum(estoque_interno) as estoque_interno,
                             sum(estoque_segregado) as estoque_segregado,
                             sum(estoque_vp) as estoque_vp,
@@ -34,7 +37,7 @@ public class NecessidadeRepositoryCustomImpl implements NecessidadeRepositoryCus
                             and (produto ilike :produto or :produto is null)
                             and (cod_produto ilike :produto or :produto is null)
                             and (marca ilike :marca or :marca is null)
-                        group by centro_distribuicao, cod_produto, produto, marca, anvisa
+                        group by %s
                         order by necessidade_de_compra desc;
             """;
 
@@ -45,33 +48,65 @@ public class NecessidadeRepositoryCustomImpl implements NecessidadeRepositoryCus
     }
 
     @Override
-    public Flux<NecessidadeAgrupadoPorCDResponseDTO> findByCDFilter(NecessidadeFilterDTO filter) {
+    public Flux<NecessidadeAgrupadoResponseDTO> findByFilter(NecessidadeFilterDTO filter) {
 
-        var query = databaseClient.sql(GROUP_BY_CD_AND_FILTER);
+        var groupByColumns = resolveGroupByColumns(filter == null ? null : filter.groupBy());
+        var query = databaseClient.sql(buildSql(groupByColumns));
 
-        query = bindNullableText(query, "centro_distribuicao", filter.centroDistribuicao());
-        query = bindNullableText(query, "empresa", filter.empresa());
-        query = bindNullableText(query, "municipio", filter.municipio());
-        query = bindNullableText(query, "produto", filter.produto());
-        query = bindNullableText(query, "marca", filter.marca());
+        query = bindNullableText(query, "centro_distribuicao", filter == null ? null : filter.centroDistribuicao());
+        query = bindNullableText(query, "empresa", filter == null ? null : filter.empresa());
+        query = bindNullableText(query, "municipio", filter == null ? null : filter.municipio());
+        query = bindNullableText(query, "produto", filter == null ? null : filter.produto());
+        query = bindNullableText(query, "marca", filter == null ? null : filter.marca());
 
-        return query.map((row, metadata) -> new NecessidadeAgrupadoPorCDResponseDTO(
-                row.get("centro_distribuicao", String.class),
-                row.get("cod_produto", String.class),
-                row.get("produto", String.class),
-                row.get("marca", String.class),
-                row.get("anvisa", String.class),
-                row.get("estoque_interno", Integer.class),
-                row.get("estoque_segregado", Integer.class),
-                row.get("estoque_vp", Integer.class),
-                row.get("estoque_total", Integer.class),
-                row.get("demanda_orcado", Integer.class),
-                row.get("demanda_aprovado", Integer.class),
-                row.get("demanda_agendado", Integer.class),
-                row.get("demanda_utilizado", Integer.class),
-                row.get("demanda_total", Integer.class),
-                row.get("necessidade_de_compra", Integer.class)
-        )).all();
+        var selectedColumns = Set.copyOf(groupByColumns);
+
+        return query.map((row, metadata) -> new NecessidadeAgrupadoResponseDTO(
+                        readString(row, "centro_distribuicao", selectedColumns),
+                        readString(row, "empresa", selectedColumns),
+                        readString(row, "municipio", selectedColumns),
+                        readString(row, "anvisa", selectedColumns),
+                        readString(row, "marca", selectedColumns),
+                        readString(row, "cod_produto", selectedColumns),
+                        readString(row, "produto", selectedColumns),
+                        row.get("estoque_interno", Long.class),
+                        row.get("estoque_segregado", Long.class),
+                        row.get("estoque_vp", Long.class),
+                        row.get("estoque_total", Long.class),
+                        row.get("demanda_orcado", Long.class),
+                        row.get("demanda_aprovado", Long.class),
+                        row.get("demanda_agendado", Long.class),
+                        row.get("demanda_utilizado", Long.class),
+                        row.get("demanda_total", Long.class),
+                        row.get("necessidade_de_compra", Long.class)
+                ))
+                .all();
+    }
+
+    private String buildSql(List<String> groupByColumns) {
+
+        var selectColumns = String.join(",", groupByColumns);
+        var groupBy = String.join(", ", groupByColumns);
+
+        return BASE_SQL.formatted(selectColumns, groupBy);
+    }
+
+    private List<String> resolveGroupByColumns(List<AgrupamentosPadrao> groupBy) {
+
+        if (groupBy == null || groupBy.isEmpty()) {
+            return DEFAULT_GROUP_BY.stream().map(AgrupamentosPadrao::getDescricao).toList();
+        }
+
+        return groupBy.stream().map(AgrupamentosPadrao::getDescricao).toList();
+    }
+
+    private String readString(Row row, String name, Set<String> selectedColumns) {
+
+        if (selectedColumns.contains(name)) {
+            return row.get(name, String.class);
+        }
+
+        return null;
     }
 
     private DatabaseClient.GenericExecuteSpec bindNullableText(DatabaseClient.GenericExecuteSpec query,

@@ -3,7 +3,7 @@ spring:
     name: produto-web-dev
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/produto
-    username: produtowebapi
+    username: app-web-dev
     password: webapi123
   mail:
     host: smtp.gmail.com

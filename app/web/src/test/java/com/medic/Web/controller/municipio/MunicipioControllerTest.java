@@ -1,6 +1,5 @@
-package com.medic.Web.controller.consulta;
+package com.medic.Web.controller.municipio;
 
-import com.medic.Web.controller.municipio.MunicipioController;
 import com.medic.Web.dto.municipio.MunicipioFilterDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
 import com.medic.Web.service.muncipio.ConsultaMunicipioService;
@@ -14,7 +13,7 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ConsultaControllerTest {
+class MunicipioControllerTest {
 
     @Test
     void shouldHandleMunicipioEndpoint() {
