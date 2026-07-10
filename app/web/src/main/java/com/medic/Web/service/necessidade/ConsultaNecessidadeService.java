@@ -1,7 +1,7 @@
 package com.medic.Web.service.necessidade;
 
 import com.medic.Web.dto.necessidade.NecessidadeFilterDTO;
-import com.medic.Web.dto.necessidade.NecessidadeAgrupadoPorCDResponseDTO;
+import com.medic.Web.dto.necessidade.NecessidadeAgrupadoResponseDTO;
 import com.medic.Web.repository.necessidade.NecessidadeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +17,8 @@ public class ConsultaNecessidadeService {
     }
 
     @Transactional(readOnly = true)
-    public Flux<NecessidadeAgrupadoPorCDResponseDTO> listNecessidadesAgrupadoPorCD(NecessidadeFilterDTO filter) {
+    public Flux<NecessidadeAgrupadoResponseDTO> listNecessidadesAgrupadas(NecessidadeFilterDTO filter) {
 
-        return repository.findByCDFilter(filter);
+        return repository.findByFilter(filter);
     }
 }

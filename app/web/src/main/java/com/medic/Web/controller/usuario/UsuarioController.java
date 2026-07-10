@@ -28,12 +28,6 @@ public class UsuarioController {
         this.consultaService = consultaService;
     }
 
-    @GetMapping("/get/paginado")
-    public Mono<PaginaResponseDTO<UsuarioResponseDTO>> getPage(@ModelAttribute @Valid UsuarioPaginaDTO dto) {
-
-        return consultaService.getPage(dto);
-    }
-
     @PostMapping("/save")
     public Mono<UsuarioResponseDTO> save(@RequestBody @Valid Mono<UsuarioRequestDTO> dto,
                                          @AuthenticationPrincipal UsuarioModel user) {
@@ -63,5 +57,11 @@ public class UsuarioController {
                                            @AuthenticationPrincipal UsuarioModel user) {
 
         return manutencaoService.enable(userId, user.getId());
+    }
+
+    @GetMapping("/get/paginado")
+    public Mono<PaginaResponseDTO<UsuarioResponseDTO>> getPage(@ModelAttribute @Valid UsuarioPaginaDTO dto) {
+
+        return consultaService.getPage(dto);
     }
 }

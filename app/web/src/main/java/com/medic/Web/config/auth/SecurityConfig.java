@@ -68,21 +68,26 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/auth/forgot-password",
                                         "/auth/reset-password"
                                 ).permitAll()
-                                .pathMatchers("/usuario/save",
-                                        "/usuario/update",
-                                        "/usuario/disable",
-                                        "/usuario/enable",
-                                        "/empresa/save",
-                                        "/empresa/update",
-                                        "/empresa/delete"
-                                ).access(hasRole("ADMIN", roleHierarchy))
-                                .pathMatchers("/periodo/definir/**",
-                                        "/taxa/definir/**",
-                                        "/centro-distribuicao/save",
+                                .pathMatchers("/auth/first-acess",
+                                        "/centro-distribuicao/get",
+                                        "/centro-distribuicao/*/empresa-municipio/get",
+                                        "/empresa/get",
+                                        "/empresa/municipio/get",
+                                        "/municipio/get",
+                                        "/forecast/get",
+                                        "/forecast/agrupamentos-disponiveis/get",
+                                        "/estoque/interno/get",
+                                        "/estoque/segregado/get",
+                                        "/vale-permanente/get",
+                                        "/periodo/get",
+                                        "/taxa/get"
+                                ).access(hasRole("USER", roleHierarchy))
+                                .pathMatchers("/centro-distribuicao/save",
                                         "/centro-distribuicao/update",
                                         "/centro-distribuicao/delete",
-                                        "/centro-distribuicao/empresa-municipio/save",
-                                        "/centro-distribuicao/empresa-municipio/delete",
+                                        "/empresa/save",
+                                        "/empresa/update",
+                                        "/empresa/delete",
                                         "/empresa/municipio/save",
                                         "/empresa/municipio/delete",
                                         "/estoque/interno/save",
@@ -93,8 +98,16 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/estoque/segregado/delete",
                                         "/vale-permanente/save",
                                         "/vale-permanente/update",
-                                        "/vale-permanente/delete"
+                                        "/vale-permanente/delete",
+                                        "/periodo/definir",
+                                        "/taxa/definir"
                                 ).access(hasRole("MASTER", roleHierarchy))
+                                .pathMatchers("/usuario/save",
+                                        "/usuario/update",
+                                        "/usuario/enable",
+                                        "/usuario/disable",
+                                        "/usuario/get/paginado"
+                                ).access(hasRole("ADMIN", roleHierarchy))
                                 .anyExchange().authenticated()
                 )
                 .addFilterAt(jwtConfig, SecurityWebFiltersOrder.AUTHENTICATION)

@@ -28,4 +28,15 @@ public class ProcessamentoCustomRepositoryImpl implements ProcessamentoCustomRep
 
         jdbcTemplate.queryForObject("select pg_advisory_unlock(?)", Boolean.class, lockKey);
     }
+
+    public void excluirProcessamentosAntigos() {
+
+        jdbcTemplate.execute("""
+                delete from processamento where concluido_em < (
+                    (CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')::date
+                    - INTERVAL '1 day'
+                    + TIME '07:00:00'
+                    ) AT TIME ZONE 'America/Sao_Paulo'
+                """);
+    }
 }

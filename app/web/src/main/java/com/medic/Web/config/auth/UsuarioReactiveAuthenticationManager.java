@@ -42,11 +42,11 @@ public class UsuarioReactiveAuthenticationManager implements ReactiveAuthenticat
         String senha = credentials.toString();
 
         return repository.findByEmail(email)
-                .switchIfEmpty(Mono.error(new BadCredentialsException("Email inválido")))
+                .switchIfEmpty(Mono.error(new BadCredentialsException("Email invalido")))
                 .filter(UsuarioModel::getAtivo)
                 .switchIfEmpty(Mono.error(new DisabledException("Usuario inativo")))
                 .filter(usuario -> passwordEncoder.matches(senha, usuario.getSenha()))
-                .switchIfEmpty(Mono.error(new BadCredentialsException("Senha inválida")))
+                .switchIfEmpty(Mono.error(new BadCredentialsException("Senha invalida")))
                 .map(this::toAuthentication);
     }
 

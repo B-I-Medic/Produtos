@@ -8,7 +8,7 @@ import com.medic.Web.dto.parametro.estoque.EstoqueInternoResponseDTO;
 import com.medic.Web.dto.parametro.estoque.EstoqueSegregadoResponseDTO;
 import com.medic.Web.dto.parametro.estoque.ValePermanenteResponseDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
-import com.medic.Web.dto.necessidade.NecessidadeAgrupadoPorCDResponseDTO;
+import com.medic.Web.dto.necessidade.NecessidadeAgrupadoResponseDTO;
 import com.medic.Web.dto.parametro.periodo.PeriodoResponseDTO;
 import com.medic.Web.dto.parametro.taxa.TaxaResponseDTO;
 import com.medic.Web.dto.usuario.UsuarioResponseDTO;
@@ -240,24 +240,26 @@ public final class TestDataFactory {
         return new MunicipioResponseDTO(model.getId(), model.getDescricao(), model.getCodIbge(), model.getEstado());
     }
 
-    public static NecessidadeAgrupadoPorCDResponseDTO necessidadeAgrupadoPorCDResponseDTO() {
+    public static NecessidadeAgrupadoResponseDTO necessidadeAgrupadoResponseDTO() {
 
-        return new NecessidadeAgrupadoPorCDResponseDTO(
+        return new NecessidadeAgrupadoResponseDTO(
                 "CD",
+                "Empresa",
+                "Cidade",
+                "ANVISA",
+                "Marca",
                 "P1",
                 "Produto",
-                "Marca",
-                "ANVISA",
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10
+                1L,
+                2L,
+                3L,
+                4L,
+                5L,
+                6L,
+                7L,
+                8L,
+                9L,
+                10L
         );
     }
 

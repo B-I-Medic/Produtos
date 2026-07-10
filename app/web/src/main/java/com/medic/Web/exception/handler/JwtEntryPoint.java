@@ -5,7 +5,6 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -13,12 +12,19 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class JwtEntryPoint implements ServerAuthenticationEntryPoint {
 
+    private final ErrorResponseWriter writer;
+
+    public JwtEntryPoint(ErrorResponseWriter writer) {
+        this.writer = writer;
+    }
+
     @Override
     public @NonNull Mono<Void> commence(ServerWebExchange exchange, AuthenticationException ex) {
-
-        log.error("NÃO AUTORIZADO: {}", ex.getMessage());
-
-        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-        return exchange.getResponse().setComplete();
+        return writer.write(
+                org.springframework.http.HttpStatus.UNAUTHORIZED,
+                "Autenticacao",
+                ex.getMessage() == null ? "Token invalido" : ex.getMessage(),
+                exchange
+        );
     }
 }
