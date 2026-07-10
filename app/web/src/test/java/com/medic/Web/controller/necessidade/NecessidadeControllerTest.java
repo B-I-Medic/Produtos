@@ -34,7 +34,7 @@ class NecessidadeControllerTest {
         WebTestClient.bindToController(new NecessidadeController(service))
                 .build()
                 .get().uri(uriBuilder -> uriBuilder
-                        .path("/necessidade/get/agrupado-filtrado")
+                        .path("/forecast/get")
                         .queryParam("centroDistribuicao", "CD")
                         .queryParam("empresa", "Empresa")
                         .queryParam("municipio", "Cidade")
@@ -55,7 +55,7 @@ class NecessidadeControllerTest {
 
         WebTestClient.bindToController(new NecessidadeController(mock(ConsultaNecessidadeService.class)))
                 .build()
-                .get().uri("/necessidade/get/agrupamentos-disponiveis")
+                .get().uri("/forecast/agrupamentos-disponiveis/get")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(com.medic.Web.model.necessidade.AgrupamentosPadrao.class)
