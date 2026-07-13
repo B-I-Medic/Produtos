@@ -21,6 +21,10 @@ server:
   port: 9092
   forward-headers-strategy: framework
 
+logging:
+  level:
+    root: WARN
+
 springdoc:
   swagger-ui:
     enabled: false
