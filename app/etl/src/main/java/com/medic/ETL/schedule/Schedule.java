@@ -14,6 +14,7 @@ import com.medic.ETL.service.processamento.ControlarProcessamentoService;
 import com.medic.ETL.service.produto.ProcessarProdutoService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +36,9 @@ public class Schedule {
     private final ProcessarProdutoService processarProdutoService;
     private final ProcessarDemandaService processarDemandaService;
 
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
+
     public Schedule(AtualizarViewMaterializadaRepository atualizarViewMaterializadaRepository,
                     ProcessarEstoqueInternoService processarEstoqueInternoService,
                     ProcessarEstoqueSegregadoService processarEstoqueSegregadoService,
@@ -55,7 +59,13 @@ public class Schedule {
 
     @PostConstruct
     public void run() {
-        atualizarEstoque();
+
+        if (activeProfile.equals("hml")) {
+
+            atualizarEstoque();
+            atualizarProdutos();
+            atualizarDemanda();
+        }
     }
 
     @Scheduled(cron = "0 */30 7-19 * * MON-FRI", zone = "America/Sao_Paulo")
