@@ -12,6 +12,7 @@ import com.medic.ETL.service.estoque.segregado.ProcessarEstoqueSegregadoService;
 import com.medic.ETL.service.estoque.valePermanente.ProcessarValePermanenteService;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
 import com.medic.ETL.service.produto.ProcessarProdutoService;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -50,6 +51,11 @@ public class Schedule {
         this.processamentoService = processamentoService;
         this.processamentoRepository = processamentoRepository;
         this.processarDemandaService = processarDemandaService;
+    }
+
+    @PostConstruct
+    public void run() {
+        atualizarEstoque();
     }
 
     @Scheduled(cron = "0 */30 7-19 * * MON-FRI", zone = "America/Sao_Paulo")
