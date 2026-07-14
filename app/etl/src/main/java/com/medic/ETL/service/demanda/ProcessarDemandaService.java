@@ -28,8 +28,6 @@ public class ProcessarDemandaService {
 
         String consulta = prepararConsultaDemandaService.montarConsulta(processamento);
 
-        log.info(consulta);
-
         List<Demanda> demanda = executarConsultaUfx(consulta);
 
         if (demanda.isEmpty()) {

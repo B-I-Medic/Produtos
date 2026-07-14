@@ -30,12 +30,10 @@ public class PrepararConsultaDemandaService {
                 .forEach(periodo -> {
 
                     switch (periodo.getDescricao()) {
-
-                        case "ORCAMENTO": periodos.setOrcamento(new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman()));
-                        case "ORCAMENTO_APROVADO": periodos.setAprovado(new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman()));
-                        case "AGENDAMENTO": periodos.setAgendamento(new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman()));
-                        default:
-                            periodos.setCirurgia(new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman()));
+                        case "ORCAMENTO" -> periodos.setOrcamento(new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman()));
+                        case "ORCAMENTO_APROVADO" -> periodos.setAprovado(new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman()));
+                        case "AGENDAMENTO" -> periodos.setAgendamento(new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman()));
+                        case "CIRURGIA" -> periodos.setCirurgia(new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman()));
                     }
                 });
 
