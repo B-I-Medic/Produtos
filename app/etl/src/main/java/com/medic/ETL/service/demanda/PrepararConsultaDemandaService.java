@@ -51,7 +51,7 @@ public class PrepararConsultaDemandaService {
 
         for (EmpresaModel empresa : empresaRepository.findAllByVimanAndPossuiEstoqueInternoIsTrue("UFX")) {
 
-            consultaList.add("""
+            String consulta = """
                     select
                         Processamento,
                         CodEmpresa,
@@ -141,8 +141,9 @@ public class PrepararConsultaDemandaService {
                             obterTabelaCliente(empresa.getCodigoEmpresa()),
                             parametros.getCirurgia().dataInicio(),
                             parametros.getCirurgia().dataFim()
-                    )
-            );
+                    );
+
+            consultaList.add(consulta);
         }
 
         return String.join("\n\nUNION ALL\n\n", consultaList);
