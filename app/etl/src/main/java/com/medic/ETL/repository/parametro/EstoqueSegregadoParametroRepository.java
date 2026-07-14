@@ -21,7 +21,7 @@ public class EstoqueSegregadoParametroRepository {
 
         String sql = """
                 select
-                    es."compor_subCd" as "subCd",
+                    es.id_empresa_municipio as id_empresa_municipio,
                     es.cod_segregado as "codSegregado",
                     e.viman as "viman",
                     e.codigo_empresa as "codEmpresa"
@@ -29,7 +29,7 @@ public class EstoqueSegregadoParametroRepository {
                 join empresa e
                     on e.id = es.id_empresa
                 order by
-                    es."compor_subCd",
+                    es.id_empresa_municipio,
                     e.codigo_empresa,
                     es.cod_segregado
                 """;
@@ -38,7 +38,7 @@ public class EstoqueSegregadoParametroRepository {
 
             EstoqueSegregadoParametroDTO dto = new EstoqueSegregadoParametroDTO();
 
-            dto.setSubCd(rs.getObject("subCd", UUID.class));
+            dto.setIdEmpresaMunicipio(rs.getObject("id_empresa_municipio", UUID.class));
             dto.setCodSegregado(rs.getString("codSegregado"));
             dto.setViman(rs.getString("viman"));
             dto.setCodEmpresa(rs.getString("codEmpresa"));

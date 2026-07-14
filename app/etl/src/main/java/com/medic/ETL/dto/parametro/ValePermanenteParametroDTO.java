@@ -7,7 +7,7 @@ import java.util.UUID;
 @Data
 public class ValePermanenteParametroDTO {
 
-    private UUID subCd;
+    private UUID idEmpresaMunicipio;
     private String codVp;
     private String viman;
     private String codEmpresa;

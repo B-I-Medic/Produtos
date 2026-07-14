@@ -7,7 +7,7 @@ import java.util.UUID;
 @Data
 public class EstoqueSegregadoParametroDTO {
 
-    private UUID subCd;
+    private UUID idEmpresaMunicipio;
     private String codSegregado;
     private String viman;
     private String codEmpresa;

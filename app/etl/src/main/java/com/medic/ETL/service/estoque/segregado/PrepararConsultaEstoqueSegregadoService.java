@@ -44,7 +44,7 @@ public class PrepararConsultaEstoqueSegregadoService {
             }
 
             ChaveConsultaSegregado chave = new ChaveConsultaSegregado(
-                    parametro.getSubCd(),
+                    parametro.getIdEmpresaMunicipio(),
                     parametro.getCodEmpresa()
             );
 

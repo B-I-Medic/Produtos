@@ -2,6 +2,7 @@ package com.medic.Web.exception.handler;
 
 import com.medic.Web.dto.web.ErrorResponseDTO;
 import com.medic.Web.exception.type.NotFounException;
+import com.medic.Web.exception.type.auth.InvalidTokenException;
 import com.medic.Web.exception.type.auth.PasswordAlreadySetException;
 import com.medic.Web.exception.type.auth.PasswordResetCodeException;
 import jakarta.validation.ConstraintViolationException;
@@ -34,6 +35,11 @@ public class HandlerException {
     @ExceptionHandler({AuthenticationException.class, BadCredentialsException.class, DisabledException.class})
     public Mono<ErrorResponseDTO> handleAuthentication(Exception ex, ServerWebExchange exchange) {
         return writer.body(HttpStatus.UNAUTHORIZED, "Autenticacao", resolveAuthenticationMessage(ex), exchange);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public Mono<ErrorResponseDTO> handleInvalidToken(InvalidTokenException ex, ServerWebExchange exchange) {
+        return writer.body(HttpStatus.UNAUTHORIZED, "Autenticacao", ex.getMessage(), exchange);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
