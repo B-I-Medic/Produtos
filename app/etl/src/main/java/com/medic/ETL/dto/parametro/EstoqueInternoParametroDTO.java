@@ -7,9 +7,7 @@ import java.util.UUID;
 @Data
 public class EstoqueInternoParametroDTO {
 
-    private UUID subCd;
-
+    private UUID idEmpresaMunicipio;
     private String viman;
-
     private String codEmpresa;
 }

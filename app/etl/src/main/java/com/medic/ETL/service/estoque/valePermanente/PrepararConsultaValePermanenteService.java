@@ -47,7 +47,7 @@ public class PrepararConsultaValePermanenteService {
             }
 
             ChaveValePermanente chave = new ChaveValePermanente(
-                    parametro.getSubCd(),
+                    parametro.getIdEmpresaMunicipio(),
                     parametro.getCodEmpresa()
             );
 

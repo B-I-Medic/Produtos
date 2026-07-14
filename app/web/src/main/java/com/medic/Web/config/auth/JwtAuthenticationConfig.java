@@ -3,6 +3,7 @@ package com.medic.Web.config.auth;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.medic.Web.model.usuario.UsuarioModel;
+import com.medic.Web.exception.type.auth.InvalidTokenException;
 import com.medic.Web.repository.usuario.UsuarioRepository;
 import com.medic.Web.service.auth.JwtService;
 import org.jspecify.annotations.NonNull;
@@ -61,8 +62,9 @@ public class JwtAuthenticationConfig implements WebFilter {
                     );
         } catch (TokenExpiredException ex) {
             return Mono.error(new BadCredentialsException("Token expirado"));
+
         } catch (JWTVerificationException ex) {
-            return Mono.error(new BadCredentialsException("Token invalido"));
+            return Mono.error(new InvalidTokenException());
         }
     }
 }

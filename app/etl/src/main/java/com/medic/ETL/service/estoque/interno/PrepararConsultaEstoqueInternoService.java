@@ -41,9 +41,9 @@ public class PrepararConsultaEstoqueInternoService {
     private String montarConsultaUfx(List<EstoqueInternoParametroDTO> estoqueInternoParameters,
                                      String processamentoId) {
 
-        Map<UUID, Set<String>> codigosGenericosPorSubCd = new LinkedHashMap<>();
-        Set<UUID> subCdsComTabela07 = new LinkedHashSet<>();
-        Set<UUID> subCdsComTabela08 = new LinkedHashSet<>();
+        Map<UUID, Set<String>> codigosGenericosPorEmpresaMunicipio = new LinkedHashMap<>();
+        Set<UUID> empresaMunicipioComTabela07 = new LinkedHashSet<>();
+        Set<UUID> empresaMunicipioComTabela08 = new LinkedHashSet<>();
 
         for (EstoqueInternoParametroDTO parameter : estoqueInternoParameters) {
 
@@ -52,28 +52,28 @@ public class PrepararConsultaEstoqueInternoService {
             }
 
             String codViman = parameter.getCodEmpresa();
-            UUID subCd = parameter.getSubCd();
+            UUID empresaMunicipio = parameter.getIdEmpresaMunicipio();
 
             if (CODIGOS_UFX_GENERICOS.contains(codViman)) {
-                codigosGenericosPorSubCd
-                        .computeIfAbsent(subCd, key -> new LinkedHashSet<>())
+                codigosGenericosPorEmpresaMunicipio
+                        .computeIfAbsent(empresaMunicipio, key -> new LinkedHashSet<>())
                         .add(codViman);
                 continue;
             }
 
             if ("07".equals(codViman)) {
-                subCdsComTabela07.add(subCd);
+                empresaMunicipioComTabela07.add(empresaMunicipio);
                 continue;
             }
 
             if ("08".equals(codViman)) {
-                subCdsComTabela08.add(subCd);
+                empresaMunicipioComTabela08.add(empresaMunicipio);
             }
         }
 
         List<String> consultas = new ArrayList<>();
 
-        for (Map.Entry<UUID, Set<String>> entry : codigosGenericosPorSubCd.entrySet()) {
+        for (Map.Entry<UUID, Set<String>> entry : codigosGenericosPorEmpresaMunicipio.entrySet()) {
 
             consultas.add("""
                     SELECT
@@ -96,7 +96,7 @@ public class PrepararConsultaEstoqueInternoService {
             );
         }
 
-        for (UUID subCd : subCdsComTabela07) {
+        for (UUID idEmpresaMunicipio : empresaMunicipioComTabela07) {
             consultas.add("""
                     SELECT
                         '%s' as Processamento,
@@ -108,12 +108,12 @@ public class PrepararConsultaEstoqueInternoService {
                     FROM SYSADM.VETEPR07
                     """.formatted(
                             processamentoId,
-                            escapeSql(subCd.toString())
+                            escapeSql(idEmpresaMunicipio.toString())
                     )
             );
         }
 
-        for (UUID subCd : subCdsComTabela08) {
+        for (UUID idEmpresaMunicipio : empresaMunicipioComTabela08) {
             consultas.add("""
                     SELECT
                         '%s' as Processamento,
@@ -125,7 +125,7 @@ public class PrepararConsultaEstoqueInternoService {
                     FROM SYSADM.VETEPR08
                     """.formatted(
                             processamentoId,
-                            escapeSql(subCd.toString())
+                            escapeSql(idEmpresaMunicipio.toString())
                     )
             );
         }
@@ -136,7 +136,7 @@ public class PrepararConsultaEstoqueInternoService {
     private String montarConsultaS00(List<EstoqueInternoParametroDTO> estoqueInternoParameters,
                                      String processamentoId) {
 
-        Map<UUID, Set<String>> codigosPorSubCd = new LinkedHashMap<>();
+        Map<UUID, Set<String>> codigosPorEmpresaMunicipio = new LinkedHashMap<>();
 
         for (EstoqueInternoParametroDTO parameter : estoqueInternoParameters) {
 
@@ -144,14 +144,14 @@ public class PrepararConsultaEstoqueInternoService {
                 continue;
             }
 
-            codigosPorSubCd
-                    .computeIfAbsent(parameter.getSubCd(), key -> new LinkedHashSet<>())
+            codigosPorEmpresaMunicipio
+                    .computeIfAbsent(parameter.getIdEmpresaMunicipio(), key -> new LinkedHashSet<>())
                     .add(parameter.getCodEmpresa());
         }
 
         List<String> consultas = new ArrayList<>();
 
-        for (Map.Entry<UUID, Set<String>> entry : codigosPorSubCd.entrySet()) {
+        for (Map.Entry<UUID, Set<String>> entry : codigosPorEmpresaMunicipio.entrySet()) {
 
             consultas.add("""
                     SELECT

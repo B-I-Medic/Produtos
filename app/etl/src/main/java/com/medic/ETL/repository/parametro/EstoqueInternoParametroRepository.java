@@ -21,14 +21,14 @@ public class EstoqueInternoParametroRepository {
 
         String sql = """
                 select
-                    ei."compor_subCd" as "subCd",
+                    ei.id_empresa_municipio as id_empresa_municipio,
                     e.viman as viman,
                     e.codigo_empresa as codEmpresa
                 from estoque_interno_parametros ei
                 join empresa e
                     on e.id = ei.id_empresa
                 order by
-                    ei."compor_subCd",
+                    ei.id_empresa_municipio,
                     e.viman,
                     e.codigo_empresa
                 """;
@@ -37,7 +37,7 @@ public class EstoqueInternoParametroRepository {
 
             EstoqueInternoParametroDTO dto = new EstoqueInternoParametroDTO();
 
-            dto.setSubCd(rs.getObject("subCd", UUID.class));
+            dto.setIdEmpresaMunicipio(rs.getObject("id_empresa_municipio", UUID.class));
             dto.setViman(rs.getString("viman"));
             dto.setCodEmpresa(rs.getString("codEmpresa"));
 

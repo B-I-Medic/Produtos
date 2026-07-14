@@ -21,7 +21,7 @@ public class ValePermanenteParametroRepository {
 
         String sql = """
                 select
-                    vp."compor_subCd" as "subCd",
+                    vp.id_empresa_municipio as id_empresa_municipio,
                     vp.cod_vp as "codVp",
                     e.viman as "viman",
                     e.codigo_empresa as "codEmpresa"
@@ -30,7 +30,7 @@ public class ValePermanenteParametroRepository {
                     on e.id = vp.id_empresa
                 order by
                     e.viman,
-                    vp."compor_subCd",
+                    vp.id_empresa_municipio,
                     e.codigo_empresa,
                     vp.cod_vp
                 """;
@@ -39,7 +39,7 @@ public class ValePermanenteParametroRepository {
 
             ValePermanenteParametroDTO dto = new ValePermanenteParametroDTO();
 
-            dto.setSubCd(rs.getObject("subCd", UUID.class));
+            dto.setIdEmpresaMunicipio(rs.getObject("id_empresa_municipio", UUID.class));
             dto.setCodVp(rs.getString("codVp"));
             dto.setViman(rs.getString("viman"));
             dto.setCodEmpresa(rs.getString("codEmpresa"));
