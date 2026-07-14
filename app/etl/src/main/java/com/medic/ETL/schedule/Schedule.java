@@ -60,7 +60,7 @@ public class Schedule {
     @PostConstruct
     public void run() {
 
-        if (activeProfile.equals("hml")) {
+        if (activeProfile.equals("hml") || activeProfile.equals("dev")) {
 
             atualizarDemanda();
             atualizarEstoque();
