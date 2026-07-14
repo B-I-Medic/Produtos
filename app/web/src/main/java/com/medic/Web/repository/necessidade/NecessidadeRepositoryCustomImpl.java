@@ -34,8 +34,10 @@ public class NecessidadeRepositoryCustomImpl implements NecessidadeRepositoryCus
                         where (centro_distribuicao ilike :centro_distribuicao or :centro_distribuicao is null)
                             and (empresa ilike :empresa or :empresa is null)
                             and (municipio ilike :municipio or :municipio is null)
-                            and (produto ilike :produto or :produto is null)
-                            and (cod_produto ilike :produto or :produto is null)
+                            and (
+                                (produto ilike :produto or :produto is null)
+                                or (cod_produto ilike :produto or :produto is null)
+                               )
                             and (marca ilike :marca or :marca is null)
                         group by %s
                         order by necessidade_de_compra desc;
