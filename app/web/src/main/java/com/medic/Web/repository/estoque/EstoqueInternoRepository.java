@@ -1,6 +1,6 @@
 package com.medic.Web.repository.estoque;
 
-import com.medic.Web.model.parametro.estoque.EstoqueInternoParametroModel;
+import com.medic.Web.model.config.estoque.EstoqueInternoParametroModel;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
 import java.util.UUID;

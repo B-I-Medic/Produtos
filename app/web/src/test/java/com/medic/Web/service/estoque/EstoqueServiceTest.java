@@ -1,17 +1,17 @@
 package com.medic.Web.service.estoque;
 
-import com.medic.Web.dto.parametro.estoque.EstoqueInternoRequestDTO;
-import com.medic.Web.dto.parametro.estoque.EstoqueSegregadoRequestDTO;
-import com.medic.Web.dto.parametro.estoque.ValePermanenteRequestDTO;
-import com.medic.Web.mapper.parametro.estoque.EstoqueInternoMapper;
-import com.medic.Web.mapper.parametro.estoque.EstoqueSegregadoMapper;
-import com.medic.Web.mapper.parametro.estoque.ValePermanenteMapper;
+import com.medic.Web.dto.config.estoque.EstoqueInternoRequestDTO;
+import com.medic.Web.dto.config.estoque.EstoqueSegregadoRequestDTO;
+import com.medic.Web.dto.config.estoque.ValePermanenteRequestDTO;
+import com.medic.Web.mapper.config.estoque.EstoqueInternoMapper;
+import com.medic.Web.mapper.config.estoque.EstoqueSegregadoMapper;
+import com.medic.Web.mapper.config.estoque.ValePermanenteMapper;
 import com.medic.Web.repository.estoque.EstoqueInternoRepository;
 import com.medic.Web.repository.estoque.EstoqueSegregadoRepository;
 import com.medic.Web.repository.estoque.ValePermanenteRepository;
-import com.medic.Web.service.parametro.estoque.ManutencaoEstoqueInternoService;
-import com.medic.Web.service.parametro.estoque.ManutencaoEstoqueSegregadoService;
-import com.medic.Web.service.parametro.estoque.ManutencaoValePermanenteService;
+import com.medic.Web.service.config.estoque.ManutencaoEstoqueInternoService;
+import com.medic.Web.service.config.estoque.ManutencaoEstoqueSegregadoService;
+import com.medic.Web.service.config.estoque.ManutencaoValePermanenteService;
 import com.medic.Web.support.TestDataFactory;
 import com.medic.Web.validator.estoque.ValidadorEmpresaEstoqueService;
 import org.junit.jupiter.api.Test;
@@ -59,9 +59,9 @@ class EstoqueServiceTest {
 
         var model = TestDataFactory.estoqueInternoModel();
         var response = TestDataFactory.estoqueInternoResponseDTO();
-        var dto = new EstoqueInternoRequestDTO(model.getIdEmpresa(), model.getComporSubCd());
+        var dto = new EstoqueInternoRequestDTO(model.getIdEmpresa(), model.getIdEmpresaMunicipio());
 
-        when(validador.validarEstoqueInterno(dto.idEmpresa(), dto.comporSubCd())).thenReturn(Mono.just(TestDataFactory.empresaMunicipioModel()));
+        when(validador.validarEstoqueInterno(dto.idEmpresa(), dto.id_empresa_municipio())).thenReturn(Mono.just(TestDataFactory.empresaMunicipioModel()));
 
         when(estoqueInternoMapper.toEntity(ArgumentMatchers.any(), ArgumentMatchers.eq(dto), ArgumentMatchers.any(UUID.class))).thenReturn(model);
         when(estoqueInternoMapper.toDTO(model)).thenReturn(response);
@@ -82,9 +82,9 @@ class EstoqueServiceTest {
 
         var model = TestDataFactory.estoqueSegregadoModel();
         var response = TestDataFactory.estoqueSegregadoResponseDTO();
-        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), model.getComporSubCd());
+        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), model.getIdEmpresaMunicipio());
 
-        when(validador.validarEstoqueSegregado(dto.idEmpresa(), dto.comporSubCd())).thenReturn(Mono.just(TestDataFactory.empresaMunicipioModel()));
+        when(validador.validarEstoqueSegregado(dto.idEmpresa(), dto.id_empresa_municipio())).thenReturn(Mono.just(TestDataFactory.empresaMunicipioModel()));
 
         when(estoqueSegregadoMapper.toEntity(ArgumentMatchers.any(), ArgumentMatchers.eq(dto), ArgumentMatchers.any(UUID.class))).thenReturn(model);
         when(estoqueSegregadoMapper.toDTO(model)).thenReturn(response);
@@ -105,9 +105,9 @@ class EstoqueServiceTest {
 
         var model = TestDataFactory.valePermanenteModel();
         var response = TestDataFactory.valePermanenteResponseDTO();
-        var dto = new ValePermanenteRequestDTO(model.getIdEmpresa(), model.getCodVp(), model.getComporSubCd());
+        var dto = new ValePermanenteRequestDTO(model.getIdEmpresa(), model.getCodVp(), model.getIdEmpresaMunicipio());
 
-        when(validador.validarValePermanente(dto.idEmpresa(), dto.comporSubCd())).thenReturn(Mono.just(TestDataFactory.empresaMunicipioModel()));
+        when(validador.validarValePermanente(dto.idEmpresa(), dto.id_empresa_municipio())).thenReturn(Mono.just(TestDataFactory.empresaMunicipioModel()));
 
         when(valePermanenteMapper.toEntity(ArgumentMatchers.any(), ArgumentMatchers.eq(dto), ArgumentMatchers.any(UUID.class))).thenReturn(model);
         when(valePermanenteMapper.toDTO(model)).thenReturn(response);

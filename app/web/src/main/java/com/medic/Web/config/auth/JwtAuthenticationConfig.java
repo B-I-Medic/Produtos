@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.medic.Web.model.usuario.UsuarioModel;
 import com.medic.Web.exception.type.auth.InvalidTokenException;
+import com.medic.Web.exception.handler.JwtEntryPoint;
 import com.medic.Web.repository.usuario.UsuarioRepository;
 import com.medic.Web.service.auth.JwtService;
 import org.jspecify.annotations.NonNull;
@@ -25,10 +26,12 @@ public class JwtAuthenticationConfig implements WebFilter {
 
     private final JwtService jwtService;
     private final UsuarioRepository repository;
+    private final JwtEntryPoint entryPoint;
 
-    public JwtAuthenticationConfig(JwtService jwtService, UsuarioRepository repository) {
+    public JwtAuthenticationConfig(JwtService jwtService, UsuarioRepository repository, JwtEntryPoint entryPoint) {
         this.jwtService = jwtService;
         this.repository = repository;
+        this.entryPoint = entryPoint;
     }
 
     @Override
@@ -61,10 +64,10 @@ public class JwtAuthenticationConfig implements WebFilter {
                                     .contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth))
                     );
         } catch (TokenExpiredException ex) {
-            return Mono.error(new BadCredentialsException("Token expirado"));
+            return entryPoint.commence(exchange, new BadCredentialsException("Token expirado"));
 
         } catch (JWTVerificationException ex) {
-            return Mono.error(new InvalidTokenException());
+            return entryPoint.commence(exchange, new InvalidTokenException());
         }
     }
 }

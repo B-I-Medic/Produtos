@@ -72,7 +72,7 @@ public class PrepararConsultaEstoqueSegregadoService {
                     """.formatted(
                     processamentoId,
                     escapeSql(chave.codEmpresa()),
-                    escapeSql(chave.subCd().toString()),
+                    escapeSql(chave.empresaMunicipio().toString()),
                     escapeSql(chave.codEmpresa()),
                     quotedValues(entry.getValue())
             ));
@@ -99,6 +99,6 @@ public class PrepararConsultaEstoqueSegregadoService {
         return value.replace("'", "''");
     }
 
-    private record ChaveConsultaSegregado(UUID subCd, String codEmpresa) {
+    private record ChaveConsultaSegregado(UUID empresaMunicipio, String codEmpresa) {
     }
 }

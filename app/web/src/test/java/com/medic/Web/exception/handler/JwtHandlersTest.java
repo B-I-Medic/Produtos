@@ -1,5 +1,6 @@
 package com.medic.Web.exception.handler;
 
+import com.medic.Web.exception.type.auth.InvalidTokenException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
@@ -28,6 +29,19 @@ class JwtHandlersTest {
         assertTrue(readBody(exchange).contains("\"erro\":\"Autenticacao\""));
         assertTrue(readBody(exchange).contains("\"descricao\":\"Token expirado\""));
         assertTrue(readBody(exchange).contains("\"path\":\"/auth/login\""));
+    }
+
+    @Test
+    void shouldWriteJwtUnauthorizedBodyForInvalidToken() {
+        var exchange = exchange("/swagger-ui/index.html");
+
+        StepVerifier.create(entryPoint.commence(exchange, new InvalidTokenException()))
+                .verifyComplete();
+
+        assertEquals(HttpStatus.UNAUTHORIZED, exchange.getResponse().getStatusCode());
+        assertTrue(readBody(exchange).contains("\"erro\":\"Autenticacao\""));
+        assertTrue(readBody(exchange).contains("\"descricao\":\"Token inválido\""));
+        assertTrue(readBody(exchange).contains("\"path\":\"/swagger-ui/index.html\""));
     }
 
     @Test
