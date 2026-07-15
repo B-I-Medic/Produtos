@@ -2,6 +2,7 @@ package com.medic.Web.exception.handler;
 
 import com.medic.Web.dto.web.ErrorResponseDTO;
 import com.medic.Web.exception.type.NotFounException;
+import com.medic.Web.exception.type.auth.InvalidTokenException;
 import com.medic.Web.exception.type.auth.PasswordAlreadySetException;
 import com.medic.Web.exception.type.auth.PasswordResetCodeException;
 import jakarta.validation.ConstraintViolation;
@@ -52,6 +53,15 @@ class HandlerExceptionTest {
 
         StepVerifier.create(handler.handleAuthentication(new org.springframework.security.authentication.BadCredentialsException("Token expirado"), exchange))
                 .assertNext(body -> assertBody(body, "Autenticacao", "Token expirado", "/auth/me"))
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldHandleAuthenticationInvalidToken() {
+        var exchange = exchange("/swagger-ui/index.html");
+
+        StepVerifier.create(handler.handleAuthentication(new InvalidTokenException(), exchange))
+                .assertNext(body -> assertBody(body, "Autenticacao", "Token inválido", "/swagger-ui/index.html"))
                 .verifyComplete();
     }
 

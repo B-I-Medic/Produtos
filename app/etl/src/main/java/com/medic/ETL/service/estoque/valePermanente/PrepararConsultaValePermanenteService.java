@@ -80,7 +80,7 @@ public class PrepararConsultaValePermanenteService {
                     processamentoId,
                     viman,
                     escapeSql(chave.codEmpresa()),
-                    escapeSql(chave.subCd().toString()),
+                    escapeSql(chave.empresaMunicipio().toString()),
                     escapeSql(chave.codEmpresa()),
                     escapeSql(chave.codEmpresa()),
                     quotedValues(entry.getValue())
@@ -108,6 +108,6 @@ public class PrepararConsultaValePermanenteService {
         return value.replace("'", "''");
     }
 
-    private record ChaveValePermanente(UUID subCd, String codEmpresa) {
+    private record ChaveValePermanente(UUID empresaMunicipio, String codEmpresa) {
     }
 }

@@ -4,13 +4,13 @@ import com.medic.Web.dto.cd.CdEmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.cd.CentroDistribuicaoResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaResponseDTO;
-import com.medic.Web.dto.parametro.estoque.EstoqueInternoResponseDTO;
-import com.medic.Web.dto.parametro.estoque.EstoqueSegregadoResponseDTO;
-import com.medic.Web.dto.parametro.estoque.ValePermanenteResponseDTO;
+import com.medic.Web.dto.config.estoque.EstoqueInternoResponseDTO;
+import com.medic.Web.dto.config.estoque.EstoqueSegregadoResponseDTO;
+import com.medic.Web.dto.config.estoque.ValePermanenteResponseDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
 import com.medic.Web.dto.necessidade.NecessidadeAgrupadoResponseDTO;
-import com.medic.Web.dto.parametro.periodo.PeriodoResponseDTO;
-import com.medic.Web.dto.parametro.taxa.TaxaResponseDTO;
+import com.medic.Web.dto.config.periodo.PeriodoResponseDTO;
+import com.medic.Web.dto.config.taxa.TaxaResponseDTO;
 import com.medic.Web.dto.usuario.UsuarioResponseDTO;
 import com.medic.Web.model.auth.PasswordResetCodeModel;
 import com.medic.Web.model.cd.CdEmpresaMunicipioModel;
@@ -19,13 +19,13 @@ import com.medic.Web.model.municipio.MunicipioModel;
 import com.medic.Web.model.empresa.EmpresaModel;
 import com.medic.Web.model.empresa.EmpresaMunicipioModel;
 import com.medic.Web.model.empresa.Viman;
-import com.medic.Web.model.parametro.estoque.EstoqueInternoParametroModel;
-import com.medic.Web.model.parametro.estoque.EstoqueSegregadoParametroModel;
-import com.medic.Web.model.parametro.estoque.ValePermanenteParametroModel;
-import com.medic.Web.model.parametro.periodo.PeriodoEnum;
-import com.medic.Web.model.parametro.periodo.PeriodoModel;
-import com.medic.Web.model.parametro.taxa.TaxaEnum;
-import com.medic.Web.model.parametro.taxa.TaxaModel;
+import com.medic.Web.model.config.estoque.EstoqueInternoParametroModel;
+import com.medic.Web.model.config.estoque.EstoqueSegregadoParametroModel;
+import com.medic.Web.model.config.estoque.ValePermanenteParametroModel;
+import com.medic.Web.model.config.periodo.PeriodoEnum;
+import com.medic.Web.model.config.periodo.PeriodoModel;
+import com.medic.Web.model.config.taxa.TaxaEnum;
+import com.medic.Web.model.config.taxa.TaxaModel;
 import com.medic.Web.model.usuario.Role;
 import com.medic.Web.model.usuario.UsuarioModel;
 
@@ -179,7 +179,7 @@ public final class TestDataFactory {
         var model = new EstoqueInternoParametroModel();
         model.setId(UUID.randomUUID());
         model.setIdEmpresa(UUID.randomUUID());
-        model.setComporSubCd(UUID.randomUUID());
+        model.setIdEmpresaMunicipio(UUID.randomUUID());
         model.setCriadoPor(UUID.randomUUID());
         return model;
     }
@@ -187,7 +187,7 @@ public final class TestDataFactory {
     public static EstoqueInternoResponseDTO estoqueInternoResponseDTO() {
 
         var model = estoqueInternoModel();
-        return new EstoqueInternoResponseDTO(model.getId(), model.getIdEmpresa(), model.getComporSubCd());
+        return new EstoqueInternoResponseDTO(model.getId(), model.getIdEmpresa(), model.getIdEmpresaMunicipio());
     }
 
     public static EstoqueSegregadoParametroModel estoqueSegregadoModel() {
@@ -196,7 +196,7 @@ public final class TestDataFactory {
         model.setId(UUID.randomUUID());
         model.setIdEmpresa(UUID.randomUUID());
         model.setCodSegregado(10);
-        model.setComporSubCd(UUID.randomUUID());
+        model.setIdEmpresaMunicipio(UUID.randomUUID());
         model.setCriadoPor(UUID.randomUUID());
         return model;
     }
@@ -204,7 +204,7 @@ public final class TestDataFactory {
     public static EstoqueSegregadoResponseDTO estoqueSegregadoResponseDTO() {
 
         var model = estoqueSegregadoModel();
-        return new EstoqueSegregadoResponseDTO(model.getId(), model.getIdEmpresa(), model.getCodSegregado(), model.getComporSubCd());
+        return new EstoqueSegregadoResponseDTO(model.getId(), model.getIdEmpresa(), model.getCodSegregado(), model.getIdEmpresaMunicipio());
     }
 
     public static ValePermanenteParametroModel valePermanenteModel() {
@@ -213,7 +213,7 @@ public final class TestDataFactory {
         model.setId(UUID.randomUUID());
         model.setIdEmpresa(UUID.randomUUID());
         model.setCodVp(20);
-        model.setComporSubCd(UUID.randomUUID());
+        model.setIdEmpresaMunicipio(UUID.randomUUID());
         model.setCriadoPor(UUID.randomUUID());
         return model;
     }
@@ -221,7 +221,7 @@ public final class TestDataFactory {
     public static ValePermanenteResponseDTO valePermanenteResponseDTO() {
 
         var model = valePermanenteModel();
-        return new ValePermanenteResponseDTO(model.getId(), model.getIdEmpresa(), model.getCodVp(), model.getComporSubCd());
+        return new ValePermanenteResponseDTO(model.getId(), model.getIdEmpresa(), model.getCodVp(), model.getIdEmpresaMunicipio());
     }
 
     public static MunicipioModel municipioModel() {

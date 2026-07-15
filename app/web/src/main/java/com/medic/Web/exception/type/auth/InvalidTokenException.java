@@ -1,8 +1,10 @@
 package com.medic.Web.exception.type.auth;
 
-public class InvalidTokenException extends RuntimeException {
+import org.springframework.security.core.AuthenticationException;
+
+public class InvalidTokenException extends AuthenticationException {
 
     public InvalidTokenException() {
-        super("Token invalido");
+        super("Token inválido");
     }
 }

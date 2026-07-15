@@ -1,15 +1,15 @@
 package com.medic.Web.controller.estoque;
 
-import com.medic.Web.controller.parametro.estoque.EstoqueInternoParametroController;
-import com.medic.Web.controller.parametro.estoque.EstoqueSegregadoParametroController;
-import com.medic.Web.controller.parametro.estoque.ValePermanenteParametroController;
-import com.medic.Web.dto.parametro.estoque.EstoqueInternoRequestDTO;
-import com.medic.Web.dto.parametro.estoque.EstoqueSegregadoRequestDTO;
-import com.medic.Web.dto.parametro.estoque.ValePermanenteRequestDTO;
+import com.medic.Web.controller.config.estoque.EstoqueInternoParametroController;
+import com.medic.Web.controller.config.estoque.EstoqueSegregadoParametroController;
+import com.medic.Web.controller.config.estoque.ValePermanenteParametroController;
+import com.medic.Web.dto.config.estoque.EstoqueInternoRequestDTO;
+import com.medic.Web.dto.config.estoque.EstoqueSegregadoRequestDTO;
+import com.medic.Web.dto.config.estoque.ValePermanenteRequestDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
-import com.medic.Web.service.parametro.estoque.ManutencaoEstoqueInternoService;
-import com.medic.Web.service.parametro.estoque.ManutencaoEstoqueSegregadoService;
-import com.medic.Web.service.parametro.estoque.ManutencaoValePermanenteService;
+import com.medic.Web.service.config.estoque.ManutencaoEstoqueInternoService;
+import com.medic.Web.service.config.estoque.ManutencaoEstoqueSegregadoService;
+import com.medic.Web.service.config.estoque.ManutencaoValePermanenteService;
 import com.medic.Web.support.FixedAuthenticationPrincipalResolver;
 import com.medic.Web.support.TestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +55,7 @@ class EstoqueControllerTest {
     void shouldHandleEstoqueInternoEndpoints() {
 
         var response = TestDataFactory.estoqueInternoResponseDTO();
-        var dto = new EstoqueInternoRequestDTO(response.idEmpresa(), response.comporSubCd());
+        var dto = new EstoqueInternoRequestDTO(response.idEmpresa(), response.id_empresa_municipio());
         UUID id = UUID.randomUUID();
         when(internoService.listEstoqueInterno()).thenReturn(Flux.fromIterable(List.of(response)));
         when(internoService.save(dto, user.getId())).thenReturn(Mono.just(response));
@@ -72,7 +72,7 @@ class EstoqueControllerTest {
     void shouldHandleEstoqueSegregadoEndpoints() {
 
         var response = TestDataFactory.estoqueSegregadoResponseDTO();
-        var dto = new EstoqueSegregadoRequestDTO(response.idEmpresa(), response.codSegregado(), response.comporSubCd());
+        var dto = new EstoqueSegregadoRequestDTO(response.idEmpresa(), response.codSegregado(), response.id_empresa_municipio());
         UUID id = UUID.randomUUID();
         when(segregadoService.listEstoqueSegregado()).thenReturn(Flux.fromIterable(List.of(response)));
         when(segregadoService.save(dto, user.getId())).thenReturn(Mono.just(response));
@@ -89,7 +89,7 @@ class EstoqueControllerTest {
     void shouldHandleValePermanenteEndpoints() {
 
         var response = TestDataFactory.valePermanenteResponseDTO();
-        var dto = new ValePermanenteRequestDTO(response.idEmpresa(), response.codVp(), response.comporSubCd());
+        var dto = new ValePermanenteRequestDTO(response.idEmpresa(), response.codVp(), response.id_empresa_municipio());
         UUID id = UUID.randomUUID();
 
         when(valeService.listValePermanente()).thenReturn(Flux.fromIterable(List.of(response)));

@@ -87,6 +87,7 @@ public class HandlerException {
             case "Senha invalida" -> "Senha invalida";
             case "Token expirado" -> "Token expirado";
             case "Token invalido" -> "Token invalido";
+            case "Token inválido" -> "Token inválido";
             case "Credenciais invalidas" -> "Credenciais invalidas";
             default -> message;
         };

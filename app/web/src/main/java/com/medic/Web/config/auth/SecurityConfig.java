@@ -80,7 +80,8 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/estoque/segregado/get",
                                         "/vale-permanente/get",
                                         "/periodo/get",
-                                        "/taxa/get"
+                                        "/taxa/get",
+                                        "/schedule/get"
                                 ).access(hasRole("USER", roleHierarchy))
                                 .pathMatchers("/centro-distribuicao/save",
                                         "/centro-distribuicao/update",
@@ -100,13 +101,17 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/vale-permanente/update",
                                         "/vale-permanente/delete",
                                         "/periodo/definir",
-                                        "/taxa/definir"
+                                        "/taxa/definir",
+                                        "/relatorio/forecast"
                                 ).access(hasRole("MASTER", roleHierarchy))
                                 .pathMatchers("/usuario/save",
                                         "/usuario/update",
                                         "/usuario/enable",
                                         "/usuario/disable",
-                                        "/usuario/get/paginado"
+                                        "/usuario/get/paginado",
+                                        "/schedule/update",
+                                        "/schedule/enable",
+                                        "/schedule/disable"
                                 ).access(hasRole("ADMIN", roleHierarchy))
                                 .anyExchange().authenticated()
                 )
