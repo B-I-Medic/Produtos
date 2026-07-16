@@ -17,7 +17,7 @@ public class CorsConfig {
         var configuration = new CorsConfiguration();
 
 //        Definir sub-dominio do Front-end
-//        configuration.setAllowedOrigins(List.of("http://produto.medic.com"));
+        configuration.setAllowedOrigins(List.of("http://produtos.surgilog.com.br/**"));
         configuration.setAllowedOrigins(List.of("http://localhost:8080/**"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
