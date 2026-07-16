@@ -1,10 +1,8 @@
-package com.medic.Web.dto.necessidade;
-
-import com.medic.Web.model.necessidade.AgrupamentosPadrao;
+package com.medic.Web.dto.forecast;
 
 import java.util.List;
 
-public record NecessidadeFilterDTO(
+public record ForecastFilterDTO(
 
         String centroDistribuicao,
         String empresa,

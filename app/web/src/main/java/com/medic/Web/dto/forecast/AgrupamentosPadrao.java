@@ -1,4 +1,4 @@
-package com.medic.Web.model.necessidade;
+package com.medic.Web.dto.forecast;
 
 import lombok.Getter;
 
