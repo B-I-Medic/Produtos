@@ -13,6 +13,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -85,7 +86,8 @@ class ScheduleControllerTest {
                 UUID.randomUUID(),
                 ScheduleJob.ATUALIZAR_ESTOQUE,
                 "0 0 * * * *",
-                true
+                true,
+                ZonedDateTime.now()
         );
     }
 }
