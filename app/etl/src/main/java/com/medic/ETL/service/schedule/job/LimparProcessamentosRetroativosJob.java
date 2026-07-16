@@ -2,6 +2,7 @@ package com.medic.ETL.service.schedule.job;
 
 import com.medic.ETL.model.schedule.ScheduleJob;
 import com.medic.ETL.repository.processamento.ProcessamentoCustomRepositoryImpl;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,7 @@ public class LimparProcessamentosRetroativosJob implements Job {
         return ScheduleJob.EXCLUIR_PROCESSAMENTOS_ANTIGOS;
     }
 
+    
     @Override
     public void run() {
 

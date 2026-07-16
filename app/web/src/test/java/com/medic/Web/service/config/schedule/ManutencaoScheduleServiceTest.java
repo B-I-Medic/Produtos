@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -103,7 +104,8 @@ class ManutencaoScheduleServiceTest {
                 UUID.randomUUID(),
                 ScheduleJob.ATUALIZAR_ESTOQUE,
                 "0 0 * * * *",
-                true
+                true,
+                ZonedDateTime.now()
         );
     }
 }

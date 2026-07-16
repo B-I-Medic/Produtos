@@ -8,6 +8,7 @@ import com.medic.ETL.model.schedule.ScheduleJob;
 import com.medic.ETL.repository.processamento.ProcessamentoCustomRepository;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
 import com.medic.ETL.service.produto.ProcessarProdutoService;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +35,7 @@ public class AtualizarProdutosJob implements Job {
         return ScheduleJob.ATUALIZAR_PRODUTOS;
     }
 
+    
     @Override
     public void run() {
 

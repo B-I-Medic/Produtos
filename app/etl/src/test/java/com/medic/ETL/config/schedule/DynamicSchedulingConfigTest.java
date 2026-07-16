@@ -3,11 +3,11 @@ package com.medic.ETL.config.schedule;
 import com.medic.ETL.model.schedule.ScheduleJob;
 import com.medic.ETL.service.schedule.ConsultaConfigScheduleService;
 import com.medic.ETL.service.schedule.job.Job;
+import com.medic.ETL.repository.schedule.ScheduleRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.scheduling.Trigger;
@@ -36,6 +36,9 @@ class DynamicSchedulingConfigTest {
     private ConsultaConfigScheduleService consultaConfigScheduleService;
 
     @Mock
+    private ScheduleRepository scheduleRepository;
+
+    @Mock
     private Job jobAtivo;
 
     @Mock
@@ -60,7 +63,7 @@ class DynamicSchedulingConfigTest {
         when(consultaConfigScheduleService.getCron(ScheduleJob.ATUALIZAR_DEMANDA))
                 .thenReturn(Optional.empty());
 
-        new DynamicSchedulingConfig(consultaConfigScheduleService, List.of(jobAtivo, jobInativo))
+        new DynamicSchedulingConfig(consultaConfigScheduleService, scheduleRepository, List.of(jobAtivo, jobInativo))
                 .configureTasks(taskRegistrar);
 
         verify(taskRegistrar, times(2)).addTriggerTask(runnableCaptor.capture(), triggerCaptor.capture());
@@ -78,6 +81,8 @@ class DynamicSchedulingConfigTest {
         runnableCaptor.getAllValues().get(0).run();
         runnableCaptor.getAllValues().get(1).run();
 
+        verify(scheduleRepository).atualizarUltimaExecucao(ScheduleJob.ATUALIZAR_ESTOQUE, fixedInstant);
+        verify(scheduleRepository).atualizarUltimaExecucao(ScheduleJob.ATUALIZAR_DEMANDA, fixedInstant);
         verify(jobAtivo).run();
         verify(jobInativo, never()).run();
     }
