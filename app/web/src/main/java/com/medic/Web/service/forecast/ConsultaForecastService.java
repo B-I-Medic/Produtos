@@ -2,7 +2,7 @@ package com.medic.Web.service.forecast;
 
 import com.medic.Web.dto.forecast.ForecastFilterDTO;
 import com.medic.Web.dto.forecast.ForecastAgrupadoResponseDTO;
-import com.medic.Web.repository.forecast.ForecastRepositoryCustomImpl;
+import com.medic.Web.repository.forecast.ForecastRepositoryCustom;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -10,9 +10,9 @@ import reactor.core.publisher.Flux;
 @Service
 public class ConsultaForecastService {
 
-    private final ForecastRepositoryCustomImpl repository;
+    private final ForecastRepositoryCustom repository;
 
-    public ConsultaForecastService(ForecastRepositoryCustomImpl repository) {
+    public ConsultaForecastService(ForecastRepositoryCustom repository) {
         this.repository = repository;
     }
 

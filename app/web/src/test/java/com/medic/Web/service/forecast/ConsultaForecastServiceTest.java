@@ -1,7 +1,7 @@
 package com.medic.Web.service.forecast;
 
 import com.medic.Web.dto.forecast.ForecastFilterDTO;
-import com.medic.Web.repository.forecast.ForecastRepository;
+import com.medic.Web.repository.forecast.ForecastRepositoryCustom;
 import com.medic.Web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 class ConsultaForecastServiceTest {
 
     @Mock
-    private ForecastRepository forecastRepository;
+    private ForecastRepositoryCustom forecastRepository;
 
     @InjectMocks
     private ConsultaForecastService forecastService;
