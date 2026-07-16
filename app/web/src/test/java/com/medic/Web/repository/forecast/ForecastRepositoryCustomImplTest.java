@@ -1,8 +1,8 @@
-package com.medic.Web.repository.necessidade;
+package com.medic.Web.repository.forecast;
 
-import com.medic.Web.dto.necessidade.NecessidadeAgrupadoResponseDTO;
-import com.medic.Web.dto.necessidade.NecessidadeFilterDTO;
-import com.medic.Web.model.necessidade.AgrupamentosPadrao;
+import com.medic.Web.dto.forecast.ForecastAgrupadoResponseDTO;
+import com.medic.Web.dto.forecast.ForecastFilterDTO;
+import com.medic.Web.dto.forecast.AgrupamentosPadrao;
 import com.medic.Web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,22 +28,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class NecessidadeRepositoryCustomImplTest {
+class ForecastRepositoryCustomImplTest {
 
     @Mock
     private DatabaseClient databaseClient;
     @Mock
     private DatabaseClient.GenericExecuteSpec executeSpec;
     @Mock
-    private RowsFetchSpec<NecessidadeAgrupadoResponseDTO> rowsFetchSpec;
+    private RowsFetchSpec<ForecastAgrupadoResponseDTO> rowsFetchSpec;
 
     @Test
     void shouldUseDefaultGroupByWhenFilterIsNull() {
 
-        var response = TestDataFactory.necessidadeAgrupadoResponseDTO();
+        var response = TestDataFactory.forecastAgrupadoResponseDTO();
         stubQuery(response);
 
-        var repository = new NecessidadeRepositoryCustomImpl(databaseClient);
+        var repository = new ForecastRepositoryCustomImpl(databaseClient);
 
         StepVerifier.create(repository.findByFilter(null))
                 .expectNext(response)
@@ -64,11 +64,11 @@ class NecessidadeRepositoryCustomImplTest {
     @Test
     void shouldBindFiltersAndCustomGroupBy() {
 
-        var response = TestDataFactory.necessidadeAgrupadoResponseDTO();
+        var response = TestDataFactory.forecastAgrupadoResponseDTO();
         stubQuery(response);
 
-        var repository = new NecessidadeRepositoryCustomImpl(databaseClient);
-        var filter = new NecessidadeFilterDTO(
+        var repository = new ForecastRepositoryCustomImpl(databaseClient);
+        var filter = new ForecastFilterDTO(
                 "CD",
                 "Empresa",
                 "SP",
@@ -96,12 +96,12 @@ class NecessidadeRepositoryCustomImplTest {
         verify(executeSpec).bind("produto", "%Produto%");
     }
 
-    private void stubQuery(NecessidadeAgrupadoResponseDTO response) {
+    private void stubQuery(ForecastAgrupadoResponseDTO response) {
 
         when(databaseClient.sql(anyString())).thenReturn(executeSpec);
         lenient().when(executeSpec.bind(anyString(), any())).thenReturn(executeSpec);
         lenient().when(executeSpec.bindNull(anyString(), eq(String.class))).thenReturn(executeSpec);
-        when(executeSpec.map(org.mockito.ArgumentMatchers.<BiFunction<Row, RowMetadata, NecessidadeAgrupadoResponseDTO>>any()))
+        when(executeSpec.map(org.mockito.ArgumentMatchers.<BiFunction<Row, RowMetadata, ForecastAgrupadoResponseDTO>>any()))
                 .thenReturn(rowsFetchSpec);
         when(rowsFetchSpec.all()).thenReturn(Flux.just(response));
     }

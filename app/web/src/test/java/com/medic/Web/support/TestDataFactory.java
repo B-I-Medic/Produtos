@@ -8,7 +8,7 @@ import com.medic.Web.dto.config.estoque.interno.EstoqueInternoResponseDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
 import com.medic.Web.dto.config.estoque.vp.ValePermanenteResponseDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
-import com.medic.Web.dto.necessidade.NecessidadeAgrupadoResponseDTO;
+import com.medic.Web.dto.forecast.ForecastAgrupadoResponseDTO;
 import com.medic.Web.dto.config.periodo.PeriodoResponseDTO;
 import com.medic.Web.dto.config.taxa.TaxaResponseDTO;
 import com.medic.Web.dto.usuario.UsuarioResponseDTO;
@@ -246,9 +246,9 @@ public final class TestDataFactory {
         return new MunicipioResponseDTO(model.getId(), model.getDescricao(), model.getCodIbge(), model.getEstado());
     }
 
-    public static NecessidadeAgrupadoResponseDTO necessidadeAgrupadoResponseDTO() {
+    public static ForecastAgrupadoResponseDTO forecastAgrupadoResponseDTO() {
 
-        return new NecessidadeAgrupadoResponseDTO(
+        return new ForecastAgrupadoResponseDTO(
                 "CD",
                 "Empresa",
                 "SP",

@@ -1,6 +1,8 @@
-package com.medic.Web.controller.necessidade;
+package com.medic.Web.controller.forecast;
 
-import com.medic.Web.service.necessidade.ConsultaNecessidadeService;
+import com.medic.Web.dto.forecast.AgrupamentosPadrao;
+import com.medic.Web.dto.forecast.ForecastAgrupadoResponseDTO;
+import com.medic.Web.service.forecast.ConsultaForecastService;
 import com.medic.Web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -12,17 +14,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class NecessidadeControllerTest {
+class ForecastControllerTest {
 
     @Test
-    void shouldHandleNecessidadeEndpoint() {
+    void shouldHandleForecastEndpoint() {
 
-        ConsultaNecessidadeService service = mock(ConsultaNecessidadeService.class);
-        var response = TestDataFactory.necessidadeAgrupadoResponseDTO();
+        ConsultaForecastService service = mock(ConsultaForecastService.class);
+        var response = TestDataFactory.forecastAgrupadoResponseDTO();
 
-        when(service.listNecessidadesAgrupadas(any())).thenReturn(Flux.fromIterable(List.of(response)));
+        when(service.listForecastAgrupado(any())).thenReturn(Flux.fromIterable(List.of(response)));
 
-        WebTestClient.bindToController(new NecessidadeController(service))
+        WebTestClient.bindToController(new ForecastController(service))
                 .build()
                 .get().uri(uriBuilder -> uriBuilder
                         .path("/forecast/get")
@@ -38,7 +40,7 @@ class NecessidadeControllerTest {
                         .build())
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(com.medic.Web.dto.necessidade.NecessidadeAgrupadoResponseDTO.class)
+                .expectBodyList(ForecastAgrupadoResponseDTO.class)
                 .hasSize(1)
                 .contains(response);
     }
@@ -46,12 +48,12 @@ class NecessidadeControllerTest {
     @Test
     void shouldListAvailableGroupingOptions() {
 
-        WebTestClient.bindToController(new NecessidadeController(mock(ConsultaNecessidadeService.class)))
+        WebTestClient.bindToController(new ForecastController(mock(ConsultaForecastService.class)))
                 .build()
                 .get().uri("/forecast/agrupamentos-disponiveis/get")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(com.medic.Web.model.necessidade.AgrupamentosPadrao.class)
-                .hasSize(com.medic.Web.model.necessidade.AgrupamentosPadrao.values().length);
+                .expectBodyList(AgrupamentosPadrao.class)
+                .hasSize(AgrupamentosPadrao.values().length);
     }
 }

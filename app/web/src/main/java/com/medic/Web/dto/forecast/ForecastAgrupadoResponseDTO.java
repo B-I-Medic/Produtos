@@ -1,9 +1,9 @@
-package com.medic.Web.dto.necessidade;
+package com.medic.Web.dto.forecast;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record NecessidadeAgrupadoResponseDTO(
+public record ForecastAgrupadoResponseDTO(
 
         String centroDistribuicao,
         String empresa,

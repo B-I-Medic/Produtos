@@ -1,8 +1,8 @@
-package com.medic.Web.repository.necessidade;
+package com.medic.Web.repository.forecast;
 
-import com.medic.Web.dto.necessidade.NecessidadeAgrupadoResponseDTO;
-import com.medic.Web.dto.necessidade.NecessidadeFilterDTO;
-import com.medic.Web.model.necessidade.AgrupamentosPadrao;
+import com.medic.Web.dto.forecast.ForecastAgrupadoResponseDTO;
+import com.medic.Web.dto.forecast.ForecastFilterDTO;
+import com.medic.Web.dto.forecast.AgrupamentosPadrao;
 import io.r2dbc.spi.Row;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public class NecessidadeRepositoryCustomImpl implements NecessidadeRepositoryCustom {
+public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
 
     private static final List<AgrupamentosPadrao> DEFAULT_GROUP_BY = List.of(AgrupamentosPadrao.values());
 
@@ -29,7 +29,10 @@ public class NecessidadeRepositoryCustomImpl implements NecessidadeRepositoryCus
                             sum(demanda_agendado) as demanda_agendado,
                             sum(demanda_utilizado) as demanda_utilizado,
                             sum(demanda_total) as demanda_total,
-                            sum(necessidade_de_compra) as necessidade_de_compra
+                            case
+                                when sum(necessidade_de_compra) >= 0 then 0
+                                else (sum(necessidade_de_compra) * -1)
+                            end as necessidade_de_compra_real,
                         from necessidade_de_compra
                         where (centro_distribuicao ilike :centro_distribuicao or :centro_distribuicao is null)
                             and (empresa ilike :empresa or :empresa is null)
@@ -42,17 +45,20 @@ public class NecessidadeRepositoryCustomImpl implements NecessidadeRepositoryCus
                             and (anvisa like :anvisa or :anvisa is null)
                             and (estado like :estado or :estado is null)
                         group by %s
-                        order by necessidade_de_compra desc;
+                        order by
+                            centro_distribuicao asc,
+                            empresa asc,
+                            necessidade_de_compra desc;
             """;
 
     private final DatabaseClient databaseClient;
 
-    public NecessidadeRepositoryCustomImpl(DatabaseClient databaseClient) {
+    public ForecastRepositoryCustomImpl(DatabaseClient databaseClient) {
         this.databaseClient = databaseClient;
     }
 
     @Override
-    public Flux<NecessidadeAgrupadoResponseDTO> findByFilter(NecessidadeFilterDTO filter) {
+    public Flux<ForecastAgrupadoResponseDTO> findByFilter(ForecastFilterDTO filter) {
 
         var groupByColumns = resolveGroupByColumns(filter == null ? null : filter.groupBy());
         var query = databaseClient.sql(buildSql(groupByColumns));
@@ -67,7 +73,7 @@ public class NecessidadeRepositoryCustomImpl implements NecessidadeRepositoryCus
 
         var selectedColumns = Set.copyOf(groupByColumns);
 
-        return query.map((row, metadata) -> new NecessidadeAgrupadoResponseDTO(
+        return query.map((row, metadata) -> new ForecastAgrupadoResponseDTO(
                         readString(row, "centro_distribuicao", selectedColumns),
                         readString(row, "empresa", selectedColumns),
                         readString(row, "estado", selectedColumns),
@@ -85,7 +91,7 @@ public class NecessidadeRepositoryCustomImpl implements NecessidadeRepositoryCus
                         row.get("demanda_agendado", Long.class),
                         row.get("demanda_utilizado", Long.class),
                         row.get("demanda_total", Long.class),
-                        row.get("necessidade_de_compra", Long.class)
+                        row.get("necessidade_de_compra_real", Long.class)
                 ))
                 .all();
     }
