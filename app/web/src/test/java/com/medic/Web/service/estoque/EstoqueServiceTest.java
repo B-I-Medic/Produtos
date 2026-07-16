@@ -1,14 +1,14 @@
 package com.medic.Web.service.estoque;
 
-import com.medic.Web.dto.config.estoque.EstoqueInternoRequestDTO;
-import com.medic.Web.dto.config.estoque.EstoqueSegregadoRequestDTO;
-import com.medic.Web.dto.config.estoque.ValePermanenteRequestDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoRequestDTO;
+import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoRequestDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteRequestDTO;
 import com.medic.Web.mapper.config.estoque.EstoqueInternoMapper;
 import com.medic.Web.mapper.config.estoque.EstoqueSegregadoMapper;
 import com.medic.Web.mapper.config.estoque.ValePermanenteMapper;
-import com.medic.Web.repository.estoque.EstoqueInternoRepository;
-import com.medic.Web.repository.estoque.EstoqueSegregadoRepository;
-import com.medic.Web.repository.estoque.ValePermanenteRepository;
+import com.medic.Web.repository.config.estoque.interno.EstoqueInternoRepository;
+import com.medic.Web.repository.config.estoque.segregado.EstoqueSegregadoRepository;
+import com.medic.Web.repository.config.estoque.vp.ValePermanenteRepository;
 import com.medic.Web.service.config.estoque.ManutencaoEstoqueInternoService;
 import com.medic.Web.service.config.estoque.ManutencaoEstoqueSegregadoService;
 import com.medic.Web.service.config.estoque.ManutencaoValePermanenteService;
@@ -27,6 +27,7 @@ import reactor.test.StepVerifier;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,16 +65,15 @@ class EstoqueServiceTest {
         when(validador.validarEstoqueInterno(dto.idEmpresa(), dto.id_empresa_municipio())).thenReturn(Mono.just(TestDataFactory.empresaMunicipioModel()));
 
         when(estoqueInternoMapper.toEntity(ArgumentMatchers.any(), ArgumentMatchers.eq(dto), ArgumentMatchers.any(UUID.class))).thenReturn(model);
-        when(estoqueInternoMapper.toDTO(model)).thenReturn(response);
 
         when(estoqueInternoRepository.save(model)).thenReturn(Mono.just(model));
         when(estoqueInternoRepository.findById(model.getId())).thenReturn(Mono.just(model));
-        when(estoqueInternoRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
+        when(estoqueInternoRepository.getAllAndFilter(any())).thenReturn(Flux.fromIterable(List.of(response)));
         when(estoqueInternoRepository.deleteById(model.getId())).thenReturn(Mono.empty());
 
-        StepVerifier.create(estoqueInternoService.save(dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(estoqueInternoService.update(model.getId(), dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(estoqueInternoService.listEstoqueInterno()).expectNext(response).verifyComplete();
+        StepVerifier.create(estoqueInternoService.save(dto, UUID.randomUUID())).verifyComplete();
+        StepVerifier.create(estoqueInternoService.update(model.getId(), dto, UUID.randomUUID())).verifyComplete();
+        StepVerifier.create(estoqueInternoService.listEstoqueInterno(null)).expectNext(response).verifyComplete();
         StepVerifier.create(estoqueInternoService.delete(model.getId())).verifyComplete();
     }
 
@@ -87,16 +87,15 @@ class EstoqueServiceTest {
         when(validador.validarEstoqueSegregado(dto.idEmpresa(), dto.id_empresa_municipio())).thenReturn(Mono.just(TestDataFactory.empresaMunicipioModel()));
 
         when(estoqueSegregadoMapper.toEntity(ArgumentMatchers.any(), ArgumentMatchers.eq(dto), ArgumentMatchers.any(UUID.class))).thenReturn(model);
-        when(estoqueSegregadoMapper.toDTO(model)).thenReturn(response);
 
         when(estoqueSegregadoRepository.save(model)).thenReturn(Mono.just(model));
         when(estoqueSegregadoRepository.findById(model.getId())).thenReturn(Mono.just(model));
-        when(estoqueSegregadoRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
+        when(estoqueSegregadoRepository.getAllAndFilter(any())).thenReturn(Flux.fromIterable(List.of(response)));
         when(estoqueSegregadoRepository.deleteById(model.getId())).thenReturn(Mono.empty());
 
-        StepVerifier.create(estoqueSegregadoService.save(dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(estoqueSegregadoService.update(model.getId(), dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(estoqueSegregadoService.listEstoqueSegregado()).expectNext(response).verifyComplete();
+        StepVerifier.create(estoqueSegregadoService.save(dto, UUID.randomUUID())).verifyComplete();
+        StepVerifier.create(estoqueSegregadoService.update(model.getId(), dto, UUID.randomUUID())).verifyComplete();
+        StepVerifier.create(estoqueSegregadoService.listEstoqueSegregado(null)).expectNext(response).verifyComplete();
         StepVerifier.create(estoqueSegregadoService.delete(model.getId())).verifyComplete();
     }
 
@@ -110,16 +109,15 @@ class EstoqueServiceTest {
         when(validador.validarValePermanente(dto.idEmpresa(), dto.id_empresa_municipio())).thenReturn(Mono.just(TestDataFactory.empresaMunicipioModel()));
 
         when(valePermanenteMapper.toEntity(ArgumentMatchers.any(), ArgumentMatchers.eq(dto), ArgumentMatchers.any(UUID.class))).thenReturn(model);
-        when(valePermanenteMapper.toDTO(model)).thenReturn(response);
 
         when(valePermanenteRepository.save(model)).thenReturn(Mono.just(model));
         when(valePermanenteRepository.findById(model.getId())).thenReturn(Mono.just(model));
-        when(valePermanenteRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
+        when(valePermanenteRepository.getAllAndFilter(any())).thenReturn(Flux.fromIterable(List.of(response)));
         when(valePermanenteRepository.deleteById(model.getId())).thenReturn(Mono.empty());
 
-        StepVerifier.create(valePermanenteService.save(dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(valePermanenteService.update(model.getId(), dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(valePermanenteService.listValePermanente()).expectNext(response).verifyComplete();
+        StepVerifier.create(valePermanenteService.save(dto, UUID.randomUUID())).verifyComplete();
+        StepVerifier.create(valePermanenteService.update(model.getId(), dto, UUID.randomUUID())).verifyComplete();
+        StepVerifier.create(valePermanenteService.listValePermanente(null)).expectNext(response).verifyComplete();
         StepVerifier.create(valePermanenteService.delete(model.getId())).verifyComplete();
     }
 }

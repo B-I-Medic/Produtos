@@ -1,4 +1,4 @@
-package com.medic.Web.dto.config.estoque;
+package com.medic.Web.dto.config.estoque.segregado;
 
 import java.util.UUID;
 

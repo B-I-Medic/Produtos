@@ -1,7 +1,6 @@
 package com.medic.Web.mapper.config.estoque;
 
-import com.medic.Web.dto.config.estoque.EstoqueSegregadoRequestDTO;
-import com.medic.Web.dto.config.estoque.EstoqueSegregadoResponseDTO;
+import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoRequestDTO;
 import com.medic.Web.model.config.estoque.EstoqueSegregadoParametroModel;
 import org.springframework.stereotype.Component;
 
@@ -30,15 +29,5 @@ public class EstoqueSegregadoMapper {
         }
 
         return entity;
-    }
-
-    public EstoqueSegregadoResponseDTO toDTO(EstoqueSegregadoParametroModel entity) {
-
-        return new EstoqueSegregadoResponseDTO(
-                entity.getId(),
-                entity.getIdEmpresa(),
-                entity.getCodSegregado(),
-                entity.getIdEmpresaMunicipio()
-        );
     }
 }

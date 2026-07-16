@@ -98,7 +98,7 @@ class EmpresaServiceTest {
         when(empresaMunicipioRepository.save(model)).thenReturn(Mono.just(model));
         when(cdEmpresaMunipioRepository.save(cdModel)).thenReturn(Mono.just(cdModel));
         when(empresaMunicipioRepository.findByIdCustom(model.getId())).thenReturn(Mono.just(response));
-        when(empresaMunicipioRepository.findByFiltro(empresaId, filter)).thenReturn(Flux.fromIterable(List.of(response)));
+        when(empresaMunicipioRepository.getAllAndFilter(empresaId, filter)).thenReturn(Flux.fromIterable(List.of(response)));
         when(empresaMunicipioRepository.deleteById(model.getId())).thenReturn(Mono.empty());
 
         StepVerifier.create(empresaMunicipioService.save(empresaId, dto, UUID.randomUUID())).expectNext(response).verifyComplete();

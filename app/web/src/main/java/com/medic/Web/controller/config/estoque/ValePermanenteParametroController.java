@@ -1,7 +1,8 @@
 package com.medic.Web.controller.config.estoque;
 
-import com.medic.Web.dto.config.estoque.ValePermanenteRequestDTO;
-import com.medic.Web.dto.config.estoque.ValePermanenteResponseDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteFIlterDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteRequestDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteResponseDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
 import com.medic.Web.service.config.estoque.ManutencaoValePermanenteService;
 import jakarta.validation.Valid;
@@ -25,14 +26,14 @@ public class ValePermanenteParametroController {
     }
 
     @PostMapping("/save")
-    public Mono<ValePermanenteResponseDTO> save(@RequestBody @Valid Mono<ValePermanenteRequestDTO> dto,
+    public Mono<Void> save(@RequestBody @Valid Mono<ValePermanenteRequestDTO> dto,
                                                 @AuthenticationPrincipal UsuarioModel user) {
 
         return dto.flatMap(valePermanente -> service.save(valePermanente, user.getId()));
     }
 
     @PutMapping("/update/{valePermanenteId}")
-    public Mono<ValePermanenteResponseDTO> update(@RequestBody @Valid Mono<ValePermanenteRequestDTO> dto,
+    public Mono<Void> update(@RequestBody @Valid Mono<ValePermanenteRequestDTO> dto,
                                                   @PathVariable @NotNull(message = "O ID do vale permanente e obrigatorio") UUID valePermanenteId,
                                                   @AuthenticationPrincipal UsuarioModel user) {
 
@@ -47,8 +48,8 @@ public class ValePermanenteParametroController {
     }
 
     @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ValePermanenteResponseDTO> listValePermanente() {
+    public Flux<ValePermanenteResponseDTO> listValePermanente(@ModelAttribute ValePermanenteFIlterDTO filter) {
 
-        return service.listValePermanente();
+        return service.listValePermanente(filter);
     }
 }

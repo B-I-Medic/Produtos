@@ -12,10 +12,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 @Slf4j
 @Configuration
 public class DataSourceConfig {
+
+    private static final String POSTGRES_TIME_ZONE = "-c TimeZone=America/Sao_Paulo";
 
     @Bean(name = "UFXDataSource")
     public DataSource ufxDataSource(UFXDataSourceProperties properties) {
@@ -65,6 +68,7 @@ public class DataSourceConfig {
         dataSource.setUrl(properties.getUrl());
         dataSource.setUsername(properties.getUsername());
         dataSource.setPassword(properties.getPassword());
+        dataSource.setConnectionProperties(postgresConnectionProperties());
 
         return dataSource;
     }
@@ -73,5 +77,12 @@ public class DataSourceConfig {
     public JdbcTemplate produtoJbcTemplate(@Qualifier("pgDataSource") DataSource origemDataSource) {
 
         return new JdbcTemplate(origemDataSource);
+    }
+
+    private Properties postgresConnectionProperties() {
+
+        Properties properties = new Properties();
+        properties.setProperty("options", POSTGRES_TIME_ZONE);
+        return properties;
     }
 }

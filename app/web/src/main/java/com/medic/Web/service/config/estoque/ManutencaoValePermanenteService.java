@@ -1,10 +1,11 @@
 package com.medic.Web.service.config.estoque;
 
-import com.medic.Web.dto.config.estoque.ValePermanenteRequestDTO;
-import com.medic.Web.dto.config.estoque.ValePermanenteResponseDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteFIlterDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteRequestDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteResponseDTO;
 import com.medic.Web.mapper.config.estoque.ValePermanenteMapper;
 import com.medic.Web.model.config.estoque.ValePermanenteParametroModel;
-import com.medic.Web.repository.estoque.ValePermanenteRepository;
+import com.medic.Web.repository.config.estoque.vp.ValePermanenteRepository;
 import com.medic.Web.validator.estoque.ValidadorEmpresaEstoqueService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,18 +30,18 @@ public class ManutencaoValePermanenteService {
     }
 
     @Transactional
-    public Mono<ValePermanenteResponseDTO> save(ValePermanenteRequestDTO dto,
+    public Mono<Void> save(ValePermanenteRequestDTO dto,
                                                 UUID userId) {
 
         return validadorEmpresaEstoqueService.validarValePermanente(dto.idEmpresa(), dto.id_empresa_municipio())
                 .then(Mono.just(new ValePermanenteParametroModel()))
                 .map(valePermanente -> mapper.toEntity(valePermanente, dto, userId))
                 .flatMap(repository::save)
-                .map(mapper::toDTO);
+                .then();
     }
 
     @Transactional
-    public Mono<ValePermanenteResponseDTO> update(UUID valePermanenteId,
+    public Mono<Void> update(UUID valePermanenteId,
                                                   ValePermanenteRequestDTO dto,
                                                   UUID userId) {
 
@@ -48,7 +49,7 @@ public class ManutencaoValePermanenteService {
                 .then(repository.findById(valePermanenteId))
                 .map(valePermanente -> mapper.toEntity(valePermanente, dto, userId))
                 .flatMap(repository::save)
-                .map(mapper::toDTO);
+                .then();
     }
 
     @Transactional
@@ -58,9 +59,8 @@ public class ManutencaoValePermanenteService {
     }
 
     @Transactional(readOnly = true)
-    public Flux<ValePermanenteResponseDTO> listValePermanente() {
+    public Flux<ValePermanenteResponseDTO> listValePermanente(ValePermanenteFIlterDTO filter) {
 
-        return repository.findAll()
-                .map(mapper::toDTO);
+        return repository.getAllAndFilter(filter);
     }
 }

@@ -1,7 +1,6 @@
 package com.medic.Web.mapper.config.estoque;
 
-import com.medic.Web.dto.config.estoque.ValePermanenteRequestDTO;
-import com.medic.Web.dto.config.estoque.ValePermanenteResponseDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteRequestDTO;
 import com.medic.Web.model.config.estoque.ValePermanenteParametroModel;
 import org.springframework.stereotype.Component;
 
@@ -30,15 +29,5 @@ public class ValePermanenteMapper {
         }
 
         return entity;
-    }
-
-    public ValePermanenteResponseDTO toDTO(ValePermanenteParametroModel entity) {
-
-        return new ValePermanenteResponseDTO(
-                entity.getId(),
-                entity.getIdEmpresa(),
-                entity.getCodVp(),
-                entity.getIdEmpresaMunicipio()
-        );
     }
 }

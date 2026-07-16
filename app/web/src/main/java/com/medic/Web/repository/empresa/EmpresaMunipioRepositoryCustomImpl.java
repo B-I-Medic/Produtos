@@ -36,8 +36,8 @@ public class EmpresaMunipioRepositoryCustomImpl implements EmpresaMunipioReposit
     }
 
     @Override
-    public Flux<EmpresaMunicipioResponseDTO> findByFiltro(UUID empresaId,
-                                                          EmpresaMunicipioFilterDTO filter) {
+    public Flux<EmpresaMunicipioResponseDTO> getAllAndFilter(UUID empresaId,
+                                                             EmpresaMunicipioFilterDTO filter) {
         var query = databaseClient.sql(FIND_BY_FILTRO_SQL)
                 .bind("empresaId", empresaId);
         query = bindNullableText(query, "municipio", filter == null ? null : filter.municipio());

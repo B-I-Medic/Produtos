@@ -65,7 +65,7 @@ public class ManutencaoEmpresaMunicipioService {
     @Transactional(readOnly = true)
     public Flux<EmpresaMunicipioResponseDTO> listEmpresasMunicipio(UUID empresaId, EmpresaMunicipioFilterDTO filter) {
 
-        return repository.findByFiltro(empresaId, filter);
+        return repository.getAllAndFilter(empresaId, filter);
     }
 
     @Transactional(readOnly = true)

@@ -39,6 +39,8 @@ public class NecessidadeRepositoryCustomImpl implements NecessidadeRepositoryCus
                                 or (cod_produto ilike :produto or :produto is null)
                                )
                             and (marca ilike :marca or :marca is null)
+                            and (anvisa like :anvisa or :anvisa is null)
+                            and (estado like :estado or :estado is null)
                         group by %s
                         order by necessidade_de_compra desc;
             """;
@@ -57,15 +59,18 @@ public class NecessidadeRepositoryCustomImpl implements NecessidadeRepositoryCus
 
         query = bindNullableText(query, "centro_distribuicao", filter == null ? null : filter.centroDistribuicao());
         query = bindNullableText(query, "empresa", filter == null ? null : filter.empresa());
+        query = bindNullableText(query, "estado", filter == null ? null : filter.estado());
         query = bindNullableText(query, "municipio", filter == null ? null : filter.municipio());
-        query = bindNullableText(query, "produto", filter == null ? null : filter.produto());
+        query = bindNullableText(query, "anvisa", filter == null ? null : filter.anvisa());
         query = bindNullableText(query, "marca", filter == null ? null : filter.marca());
+        query = bindNullableText(query, "produto", filter == null ? null : filter.produto());
 
         var selectedColumns = Set.copyOf(groupByColumns);
 
         return query.map((row, metadata) -> new NecessidadeAgrupadoResponseDTO(
                         readString(row, "centro_distribuicao", selectedColumns),
                         readString(row, "empresa", selectedColumns),
+                        readString(row, "estado", selectedColumns),
                         readString(row, "municipio", selectedColumns),
                         readString(row, "anvisa", selectedColumns),
                         readString(row, "marca", selectedColumns),

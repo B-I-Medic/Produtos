@@ -7,6 +7,7 @@ public enum AgrupamentosPadrao {
 
     CENTRO_DISTRIBUICAO("centro_distribuicao"),
     EMPRESA("empresa"),
+    ESTADO("estado"),
     MUNICIPIO("municipio"),
     ANVISA("anvisa"),
     MARCA("marca"),

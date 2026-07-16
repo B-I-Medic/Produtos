@@ -1,10 +1,11 @@
 package com.medic.Web.service.config.estoque;
 
-import com.medic.Web.dto.config.estoque.EstoqueInternoRequestDTO;
-import com.medic.Web.dto.config.estoque.EstoqueInternoResponseDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoFIlterDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoRequestDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoResponseDTO;
 import com.medic.Web.mapper.config.estoque.EstoqueInternoMapper;
 import com.medic.Web.model.config.estoque.EstoqueInternoParametroModel;
-import com.medic.Web.repository.estoque.EstoqueInternoRepository;
+import com.medic.Web.repository.config.estoque.interno.EstoqueInternoRepository;
 import com.medic.Web.validator.estoque.ValidadorEmpresaEstoqueService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,18 +30,18 @@ public class ManutencaoEstoqueInternoService {
     }
 
     @Transactional
-    public Mono<EstoqueInternoResponseDTO> save(EstoqueInternoRequestDTO dto,
+    public Mono<Void> save(EstoqueInternoRequestDTO dto,
                                                 UUID userId) {
 
         return validadorEmpresaEstoqueService.validarEstoqueInterno(dto.idEmpresa(), dto.id_empresa_municipio())
                 .then(Mono.just(new EstoqueInternoParametroModel()))
                 .map(estoqueInterno -> mapper.toEntity(estoqueInterno, dto, userId))
                 .flatMap(repository::save)
-                .map(mapper::toDTO);
+                .then();
     }
 
     @Transactional
-    public Mono<EstoqueInternoResponseDTO> update(UUID estoqueInternoId,
+    public Mono<Void> update(UUID estoqueInternoId,
                                                   EstoqueInternoRequestDTO dto,
                                                   UUID userId) {
 
@@ -48,7 +49,7 @@ public class ManutencaoEstoqueInternoService {
                 .then(repository.findById(estoqueInternoId))
                 .map(estoqueInterno -> mapper.toEntity(estoqueInterno, dto, userId))
                 .flatMap(repository::save)
-                .map(mapper::toDTO);
+                .then();
     }
 
     @Transactional
@@ -58,9 +59,8 @@ public class ManutencaoEstoqueInternoService {
     }
 
     @Transactional(readOnly = true)
-    public Flux<EstoqueInternoResponseDTO> listEstoqueInterno() {
+    public Flux<EstoqueInternoResponseDTO> listEstoqueInterno(EstoqueInternoFIlterDTO filter) {
 
-        return repository.findAll()
-                .map(mapper::toDTO);
+        return repository.getAllAndFilter(filter);
     }
 }

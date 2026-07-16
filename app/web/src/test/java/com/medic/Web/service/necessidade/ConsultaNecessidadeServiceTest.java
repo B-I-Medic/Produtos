@@ -27,7 +27,7 @@ class ConsultaNecessidadeServiceTest {
     @Test
     void shouldListNecessidadesAgrupadas() {
 
-        var filter = new NecessidadeFilterDTO("CD", "Empresa", "Cidade", "Produto", "Marca", null);
+        var filter = new NecessidadeFilterDTO("CD", "Empresa", "SP", "Cidade", "Anvisa", "Marca", "Produto", null);
         var response = TestDataFactory.necessidadeAgrupadoResponseDTO();
         when(necessidadeRepository.findByFilter(filter)).thenReturn(Flux.fromIterable(List.of(response)));
 

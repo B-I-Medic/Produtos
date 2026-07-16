@@ -4,9 +4,9 @@ import com.medic.Web.dto.cd.CdEmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.cd.CentroDistribuicaoResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaResponseDTO;
-import com.medic.Web.dto.config.estoque.EstoqueInternoResponseDTO;
-import com.medic.Web.dto.config.estoque.EstoqueSegregadoResponseDTO;
-import com.medic.Web.dto.config.estoque.ValePermanenteResponseDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoResponseDTO;
+import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteResponseDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
 import com.medic.Web.dto.necessidade.NecessidadeAgrupadoResponseDTO;
 import com.medic.Web.dto.config.periodo.PeriodoResponseDTO;
@@ -187,7 +187,13 @@ public final class TestDataFactory {
     public static EstoqueInternoResponseDTO estoqueInternoResponseDTO() {
 
         var model = estoqueInternoModel();
-        return new EstoqueInternoResponseDTO(model.getId(), model.getIdEmpresa(), model.getIdEmpresaMunicipio());
+        return new EstoqueInternoResponseDTO(
+                model.getId(),
+                "CD",
+                "Empresa",
+                "Cidade",
+                "SP"
+        );
     }
 
     public static EstoqueSegregadoParametroModel estoqueSegregadoModel() {
@@ -245,6 +251,7 @@ public final class TestDataFactory {
         return new NecessidadeAgrupadoResponseDTO(
                 "CD",
                 "Empresa",
+                "SP",
                 "Cidade",
                 "ANVISA",
                 "Marca",
