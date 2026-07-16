@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface ValePermanenteRepository extends
         ReactiveCrudRepository<ValePermanenteParametroModel, UUID>,
-        ValePermanenteRepositoryCustom {
+        ValePermanenteRepositoryCustom
+{
 }

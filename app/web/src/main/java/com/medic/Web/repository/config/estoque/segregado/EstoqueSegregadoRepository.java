@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface EstoqueSegregadoRepository extends
         ReactiveCrudRepository<EstoqueSegregadoParametroModel, UUID>,
-        EstoqueSegregadoRepositoryCustom {
+        EstoqueSegregadoRepositoryCustom
+{
 }
