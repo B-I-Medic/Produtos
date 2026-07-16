@@ -40,4 +40,7 @@ public class ScheduleModel implements Serializable {
 
     @Column(updatable = false, insertable = false)
     private Instant atualizadoEm;
+
+    @Column(name = "ultima_execucao")
+    private Instant ultimaExecucao;
 }

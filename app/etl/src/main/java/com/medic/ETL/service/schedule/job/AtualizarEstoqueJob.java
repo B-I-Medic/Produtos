@@ -11,6 +11,7 @@ import com.medic.ETL.service.estoque.interno.ProcessarEstoqueInternoService;
 import com.medic.ETL.service.estoque.segregado.ProcessarEstoqueSegregadoService;
 import com.medic.ETL.service.estoque.valePermanente.ProcessarValePermanenteService;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -50,6 +51,7 @@ public class AtualizarEstoqueJob implements Job {
         return ScheduleJob.ATUALIZAR_ESTOQUE;
     }
 
+    
     @Override
     public void run() {
 

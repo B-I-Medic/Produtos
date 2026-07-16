@@ -35,6 +35,7 @@ public class AtualizarDemandaJob implements Job {
         return ScheduleJob.ATUALIZAR_DEMANDA;
     }
 
+    
     @Override
     public void run() {
 
