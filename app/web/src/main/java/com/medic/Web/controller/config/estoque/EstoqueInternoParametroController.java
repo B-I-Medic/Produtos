@@ -1,7 +1,8 @@
 package com.medic.Web.controller.config.estoque;
 
-import com.medic.Web.dto.config.estoque.EstoqueInternoRequestDTO;
-import com.medic.Web.dto.config.estoque.EstoqueInternoResponseDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoFIlterDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoRequestDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoResponseDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
 import com.medic.Web.service.config.estoque.ManutencaoEstoqueInternoService;
 import jakarta.validation.Valid;
@@ -25,14 +26,14 @@ public class EstoqueInternoParametroController {
     }
 
     @PostMapping("/save")
-    public Mono<EstoqueInternoResponseDTO> save(@RequestBody @Valid Mono<EstoqueInternoRequestDTO> dto,
+    public Mono<Void> save(@RequestBody @Valid Mono<EstoqueInternoRequestDTO> dto,
                                                 @AuthenticationPrincipal UsuarioModel user) {
 
         return dto.flatMap(estoqueInterno -> service.save(estoqueInterno, user.getId()));
     }
 
     @PutMapping("/update/{estoqueInternoId}")
-    public Mono<EstoqueInternoResponseDTO> update(@RequestBody @Valid Mono<EstoqueInternoRequestDTO> dto,
+    public Mono<Void> update(@RequestBody @Valid Mono<EstoqueInternoRequestDTO> dto,
                                                   @PathVariable @NotNull(message = "O ID do estoque interno e obrigatorio") UUID estoqueInternoId,
                                                   @AuthenticationPrincipal UsuarioModel user) {
 
@@ -47,8 +48,8 @@ public class EstoqueInternoParametroController {
     }
 
     @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<EstoqueInternoResponseDTO> listEstoqueInterno() {
+    public Flux<EstoqueInternoResponseDTO> listEstoqueInterno(@ModelAttribute EstoqueInternoFIlterDTO filter) {
 
-        return service.listEstoqueInterno();
+        return service.listEstoqueInterno(filter);
     }
 }

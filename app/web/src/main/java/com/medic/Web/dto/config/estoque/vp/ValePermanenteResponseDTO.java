@@ -1,11 +1,12 @@
-package com.medic.Web.dto.config.estoque;
+package com.medic.Web.dto.config.estoque.vp;
 
 import java.util.UUID;
 
-public record EstoqueInternoResponseDTO(
+public record ValePermanenteResponseDTO(
 
         UUID id,
         UUID idEmpresa,
+        int codVp,
         UUID id_empresa_municipio
 ) {
 }

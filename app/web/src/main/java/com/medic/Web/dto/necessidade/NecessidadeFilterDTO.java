@@ -8,9 +8,11 @@ public record NecessidadeFilterDTO(
 
         String centroDistribuicao,
         String empresa,
+        String estado,
         String municipio,
-        String produto,
+        String anvisa,
         String marca,
+        String produto,
         List<AgrupamentosPadrao> groupBy
 ) {
 }

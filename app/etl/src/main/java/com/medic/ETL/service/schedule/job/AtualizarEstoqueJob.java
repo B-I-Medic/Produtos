@@ -11,7 +11,6 @@ import com.medic.ETL.service.estoque.interno.ProcessarEstoqueInternoService;
 import com.medic.ETL.service.estoque.segregado.ProcessarEstoqueSegregadoService;
 import com.medic.ETL.service.estoque.valePermanente.ProcessarValePermanenteService;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -51,7 +50,7 @@ public class AtualizarEstoqueJob implements Job {
         return ScheduleJob.ATUALIZAR_ESTOQUE;
     }
 
-    @PostConstruct
+    @Override
     public void run() {
 
         if (processamentoRepository.lockEmUso(ESTOQUE_LOCK_KEY)) {

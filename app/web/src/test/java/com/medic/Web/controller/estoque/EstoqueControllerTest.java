@@ -3,9 +3,9 @@ package com.medic.Web.controller.estoque;
 import com.medic.Web.controller.config.estoque.EstoqueInternoParametroController;
 import com.medic.Web.controller.config.estoque.EstoqueSegregadoParametroController;
 import com.medic.Web.controller.config.estoque.ValePermanenteParametroController;
-import com.medic.Web.dto.config.estoque.EstoqueInternoRequestDTO;
-import com.medic.Web.dto.config.estoque.EstoqueSegregadoRequestDTO;
-import com.medic.Web.dto.config.estoque.ValePermanenteRequestDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoRequestDTO;
+import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoRequestDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteRequestDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
 import com.medic.Web.service.config.estoque.ManutencaoEstoqueInternoService;
 import com.medic.Web.service.config.estoque.ManutencaoEstoqueSegregadoService;
@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,12 +55,13 @@ class EstoqueControllerTest {
     @Test
     void shouldHandleEstoqueInternoEndpoints() {
 
+        var model = TestDataFactory.estoqueInternoModel();
         var response = TestDataFactory.estoqueInternoResponseDTO();
-        var dto = new EstoqueInternoRequestDTO(response.idEmpresa(), response.id_empresa_municipio());
+        var dto = new EstoqueInternoRequestDTO(model.getIdEmpresa(), model.getIdEmpresaMunicipio());
         UUID id = UUID.randomUUID();
-        when(internoService.listEstoqueInterno()).thenReturn(Flux.fromIterable(List.of(response)));
-        when(internoService.save(dto, user.getId())).thenReturn(Mono.just(response));
-        when(internoService.update(id, dto, user.getId())).thenReturn(Mono.just(response));
+        when(internoService.listEstoqueInterno(any())).thenReturn(Flux.fromIterable(List.of(response)));
+        when(internoService.save(dto, user.getId())).thenReturn(Mono.empty());
+        when(internoService.update(id, dto, user.getId())).thenReturn(Mono.empty());
         when(internoService.delete(id)).thenReturn(Mono.empty());
 
         internoClient.get().uri("/estoque/interno/get").exchange().expectStatus().isOk();
@@ -74,9 +76,9 @@ class EstoqueControllerTest {
         var response = TestDataFactory.estoqueSegregadoResponseDTO();
         var dto = new EstoqueSegregadoRequestDTO(response.idEmpresa(), response.codSegregado(), response.id_empresa_municipio());
         UUID id = UUID.randomUUID();
-        when(segregadoService.listEstoqueSegregado()).thenReturn(Flux.fromIterable(List.of(response)));
-        when(segregadoService.save(dto, user.getId())).thenReturn(Mono.just(response));
-        when(segregadoService.update(id, dto, user.getId())).thenReturn(Mono.just(response));
+        when(segregadoService.listEstoqueSegregado(any())).thenReturn(Flux.fromIterable(List.of(response)));
+        when(segregadoService.save(dto, user.getId())).thenReturn(Mono.empty());
+        when(segregadoService.update(id, dto, user.getId())).thenReturn(Mono.empty());
         when(segregadoService.delete(id)).thenReturn(Mono.empty());
 
         segregadoClient.get().uri("/estoque/segregado/get").exchange().expectStatus().isOk();
@@ -92,9 +94,9 @@ class EstoqueControllerTest {
         var dto = new ValePermanenteRequestDTO(response.idEmpresa(), response.codVp(), response.id_empresa_municipio());
         UUID id = UUID.randomUUID();
 
-        when(valeService.listValePermanente()).thenReturn(Flux.fromIterable(List.of(response)));
-        when(valeService.save(dto, user.getId())).thenReturn(Mono.just(response));
-        when(valeService.update(id, dto, user.getId())).thenReturn(Mono.just(response));
+        when(valeService.listValePermanente(any())).thenReturn(Flux.fromIterable(List.of(response)));
+        when(valeService.save(dto, user.getId())).thenReturn(Mono.empty());
+        when(valeService.update(id, dto, user.getId())).thenReturn(Mono.empty());
         when(valeService.delete(id)).thenReturn(Mono.empty());
 
         valeClient.get().uri("/vale-permanente/get").exchange().expectStatus().isOk();

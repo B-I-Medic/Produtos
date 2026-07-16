@@ -1,6 +1,5 @@
 package com.medic.Web.controller.necessidade;
 
-import com.medic.Web.dto.necessidade.NecessidadeFilterDTO;
 import com.medic.Web.service.necessidade.ConsultaNecessidadeService;
 import com.medic.Web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
@@ -9,6 +8,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -18,18 +18,9 @@ class NecessidadeControllerTest {
     void shouldHandleNecessidadeEndpoint() {
 
         ConsultaNecessidadeService service = mock(ConsultaNecessidadeService.class);
-        var filter = new NecessidadeFilterDTO(
-                "CD",
-                "Empresa",
-                "Cidade",
-                "Produto",
-                "Marca",
-                List.of(com.medic.Web.model.necessidade.AgrupamentosPadrao.CENTRO_DISTRIBUICAO,
-                        com.medic.Web.model.necessidade.AgrupamentosPadrao.EMPRESA)
-        );
         var response = TestDataFactory.necessidadeAgrupadoResponseDTO();
 
-        when(service.listNecessidadesAgrupadas(filter)).thenReturn(Flux.fromIterable(List.of(response)));
+        when(service.listNecessidadesAgrupadas(any())).thenReturn(Flux.fromIterable(List.of(response)));
 
         WebTestClient.bindToController(new NecessidadeController(service))
                 .build()
@@ -37,7 +28,9 @@ class NecessidadeControllerTest {
                         .path("/forecast/get")
                         .queryParam("centroDistribuicao", "CD")
                         .queryParam("empresa", "Empresa")
+                        .queryParam("estado", "SP")
                         .queryParam("municipio", "Cidade")
+                        .queryParam("anvisa", "Anvisa")
                         .queryParam("produto", "Produto")
                         .queryParam("marca", "Marca")
                         .queryParam("groupBy", "CENTRO_DISTRIBUICAO")

@@ -7,6 +7,7 @@ public record NecessidadeAgrupadoResponseDTO(
 
         String centroDistribuicao,
         String empresa,
+        String estado,
         String municipio,
         String anvisa,
         String marca,

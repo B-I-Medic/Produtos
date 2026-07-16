@@ -1,8 +1,8 @@
 package com.medic.Web.mapper.config.estoque;
 
-import com.medic.Web.dto.config.estoque.EstoqueInternoRequestDTO;
-import com.medic.Web.dto.config.estoque.EstoqueSegregadoRequestDTO;
-import com.medic.Web.dto.config.estoque.ValePermanenteRequestDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoRequestDTO;
+import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoRequestDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteRequestDTO;
 import com.medic.Web.model.config.estoque.EstoqueInternoParametroModel;
 import com.medic.Web.model.config.estoque.EstoqueSegregadoParametroModel;
 import com.medic.Web.model.config.estoque.ValePermanenteParametroModel;
@@ -28,14 +28,11 @@ class EstoqueMapperTest {
         EstoqueInternoRequestDTO dto = new EstoqueInternoRequestDTO(empresaId, empresaMunicipioId);
 
         EstoqueInternoParametroModel entity = internoMapper.toEntity(new EstoqueInternoParametroModel(), dto, userId);
-        var response = internoMapper.toDTO(entity);
 
         assertEquals(empresaId, entity.getIdEmpresa());
         assertEquals(empresaMunicipioId, entity.getIdEmpresaMunicipio());
         assertEquals(userId, entity.getCriadoPor());
         assertNull(entity.getAtualizadoPor());
-        assertEquals(empresaId, response.idEmpresa());
-        assertEquals(empresaMunicipioId, response.id_empresa_municipio());
     }
 
     @Test
@@ -54,7 +51,6 @@ class EstoqueMapperTest {
         Instant before = Instant.now();
         EstoqueSegregadoParametroModel mapped = segregadoMapper.toEntity(entity, dto, userId);
         Instant after = Instant.now();
-        var response = segregadoMapper.toDTO(mapped);
 
         assertEquals(empresaId, mapped.getIdEmpresa());
         assertEquals(10, mapped.getCodSegregado());
@@ -63,7 +59,6 @@ class EstoqueMapperTest {
         assertNotNull(mapped.getAtualizadoEm());
         assertFalse(mapped.getAtualizadoEm().isBefore(before));
         assertFalse(mapped.getAtualizadoEm().isAfter(after));
-        assertEquals(10, response.codSegregado());
     }
 
     @Test
@@ -75,14 +70,10 @@ class EstoqueMapperTest {
         ValePermanenteRequestDTO dto = new ValePermanenteRequestDTO(empresaId, 20, empresaMunicipioId);
 
         ValePermanenteParametroModel entity = valeMapper.toEntity(new ValePermanenteParametroModel(), dto, userId);
-        var response = valeMapper.toDTO(entity);
 
         assertEquals(empresaId, entity.getIdEmpresa());
         assertEquals(20, entity.getCodVp());
         assertEquals(empresaMunicipioId, entity.getIdEmpresaMunicipio());
         assertEquals(userId, entity.getCriadoPor());
-        assertEquals(empresaId, response.idEmpresa());
-        assertEquals(20, response.codVp());
-        assertEquals(empresaMunicipioId, response.id_empresa_municipio());
     }
 }

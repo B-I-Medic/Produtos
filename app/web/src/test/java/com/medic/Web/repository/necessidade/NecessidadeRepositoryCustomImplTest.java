@@ -51,12 +51,14 @@ class NecessidadeRepositoryCustomImplTest {
 
         var sqlCaptor = ArgumentCaptor.forClass(String.class);
         verify(databaseClient).sql(sqlCaptor.capture());
-        assertTrue(sqlCaptor.getValue().contains("group by centro_distribuicao, empresa, municipio, anvisa, marca, cod_produto, produto"));
+        assertTrue(sqlCaptor.getValue().contains("group by centro_distribuicao, empresa, estado, municipio, anvisa, marca, cod_produto, produto"));
         verify(executeSpec).bindNull("centro_distribuicao", String.class);
         verify(executeSpec).bindNull("empresa", String.class);
+        verify(executeSpec).bindNull("estado", String.class);
         verify(executeSpec).bindNull("municipio", String.class);
-        verify(executeSpec).bindNull("produto", String.class);
+        verify(executeSpec).bindNull("anvisa", String.class);
         verify(executeSpec).bindNull("marca", String.class);
+        verify(executeSpec).bindNull("produto", String.class);
     }
 
     @Test
@@ -69,9 +71,11 @@ class NecessidadeRepositoryCustomImplTest {
         var filter = new NecessidadeFilterDTO(
                 "CD",
                 "Empresa",
-                "Cidade",
-                "Produto",
+                "SP",
+                "Municipio",
+                "Anvisa",
                 "Marca",
+                "Produto",
                 List.of(AgrupamentosPadrao.EMPRESA, AgrupamentosPadrao.MUNICIPIO)
         );
 
@@ -85,9 +89,11 @@ class NecessidadeRepositoryCustomImplTest {
         assertTrue(sqlCaptor.getValue().contains("group by empresa, municipio"));
         verify(executeSpec).bind("centro_distribuicao", "%CD%");
         verify(executeSpec).bind("empresa", "%Empresa%");
-        verify(executeSpec).bind("municipio", "%Cidade%");
-        verify(executeSpec).bind("produto", "%Produto%");
+        verify(executeSpec).bind("estado", "%SP%");
+        verify(executeSpec).bind("municipio", "%Municipio%");
+        verify(executeSpec).bind("anvisa", "%Anvisa%");
         verify(executeSpec).bind("marca", "%Marca%");
+        verify(executeSpec).bind("produto", "%Produto%");
     }
 
     private void stubQuery(NecessidadeAgrupadoResponseDTO response) {
