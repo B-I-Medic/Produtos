@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -45,10 +46,7 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
                             and (anvisa like :anvisa or :anvisa is null)
                             and (estado like :estado or :estado is null)
                         group by %s
-                        order by
-                            centro_distribuicao asc,
-                            empresa asc,
-                            necessidade_de_compra_real desc;
+                        order by %s;
             """;
 
     private final DatabaseClient databaseClient;
@@ -98,10 +96,28 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
 
     private String buildSql(List<String> groupByColumns) {
 
-        var selectColumns = String.join(",", groupByColumns);
+        var selectColumns = String.join(", ", groupByColumns);
         var groupBy = String.join(", ", groupByColumns);
+        var orderBy = buildOrderBy(groupByColumns);
 
-        return BASE_SQL.formatted(selectColumns, groupBy);
+        return BASE_SQL.formatted(selectColumns, groupBy, orderBy);
+    }
+
+    private String buildOrderBy(List<String> groupByColumns) {
+
+        var orderByColumns = new ArrayList<String>();
+
+        if (groupByColumns.contains(AgrupamentosPadrao.CENTRO_DISTRIBUICAO.getDescricao())) {
+            orderByColumns.add("centro_distribuicao asc");
+        }
+
+        if (groupByColumns.contains(AgrupamentosPadrao.EMPRESA.getDescricao())) {
+            orderByColumns.add("empresa asc");
+        }
+
+        orderByColumns.add("necessidade_de_compra_real desc");
+
+        return String.join(", ", orderByColumns);
     }
 
     private List<String> resolveGroupByColumns(List<AgrupamentosPadrao> groupBy) {
