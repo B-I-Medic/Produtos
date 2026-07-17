@@ -73,8 +73,9 @@ class EstoqueControllerTest {
     @Test
     void shouldHandleEstoqueSegregadoEndpoints() {
 
+        var model = TestDataFactory.estoqueSegregadoModel();
         var response = TestDataFactory.estoqueSegregadoResponseDTO();
-        var dto = new EstoqueSegregadoRequestDTO(response.idEmpresa(), response.codSegregado(), response.id_empresa_municipio());
+        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), model.getIdEmpresaMunicipio());
         UUID id = UUID.randomUUID();
         when(segregadoService.listEstoqueSegregado(any())).thenReturn(Flux.fromIterable(List.of(response)));
         when(segregadoService.save(dto, user.getId())).thenReturn(Mono.empty());
@@ -90,8 +91,9 @@ class EstoqueControllerTest {
     @Test
     void shouldHandleValePermanenteEndpoints() {
 
+        var model = TestDataFactory.valePermanenteModel();
         var response = TestDataFactory.valePermanenteResponseDTO();
-        var dto = new ValePermanenteRequestDTO(response.idEmpresa(), response.codVp(), response.id_empresa_municipio());
+        var dto = new ValePermanenteRequestDTO(model.getIdEmpresa(), model.getCodVp(), model.getIdEmpresaMunicipio());
         UUID id = UUID.randomUUID();
 
         when(valeService.listValePermanente(any())).thenReturn(Flux.fromIterable(List.of(response)));

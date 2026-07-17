@@ -14,7 +14,7 @@ public class EstoqueInternoRepositoryCustomImpl implements EstoqueInternoReposit
 
     private static final String FIND_ALL = """
             select eip.id as id,
-                cd.descricao as centro_distribuicao,
+                cd.descricao as cd,
                 e.descricao as empresa,
                 m.descricao as municipio,
                 m.estado as estado
@@ -52,7 +52,7 @@ public class EstoqueInternoRepositoryCustomImpl implements EstoqueInternoReposit
 
         return query.map((row, metadata) -> new EstoqueInternoResponseDTO(
                     row.get("id", UUID.class),
-                    row.get("centro_distribuicao", String.class),
+                    row.get("cd", String.class),
                     row.get("empresa", String.class),
                     row.get("municipio", String.class),
                     row.get("estado", String.class)

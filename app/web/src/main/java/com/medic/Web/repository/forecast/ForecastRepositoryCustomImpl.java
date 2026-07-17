@@ -32,7 +32,7 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
                             case
                                 when sum(necessidade_de_compra) >= 0 then 0
                                 else (sum(necessidade_de_compra) * -1)
-                            end as necessidade_de_compra_real,
+                            end as necessidade_de_compra_real
                         from necessidade_de_compra
                         where (centro_distribuicao ilike :centro_distribuicao or :centro_distribuicao is null)
                             and (empresa ilike :empresa or :empresa is null)

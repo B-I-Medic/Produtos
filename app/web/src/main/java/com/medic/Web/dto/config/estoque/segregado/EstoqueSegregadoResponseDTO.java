@@ -5,8 +5,10 @@ import java.util.UUID;
 public record EstoqueSegregadoResponseDTO(
 
         UUID id,
-        UUID idEmpresa,
+        String centro_distribuicao,
+        String empresa,
         int codSegregado,
-        UUID id_empresa_municipio
+        String municipio,
+        String estado
 ) {
 }
