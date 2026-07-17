@@ -7,6 +7,8 @@ import com.medic.Web.mapper.usuario.UsuarioMapper;
 import com.medic.Web.model.usuario.Role;
 import com.medic.Web.model.usuario.UsuarioModel;
 import com.medic.Web.repository.usuario.UsuarioRepository;
+import com.medic.Web.service.mail.MailService;
+import com.medic.Web.service.mail.MailTemplateService;
 import com.medic.Web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +22,7 @@ import reactor.test.StepVerifier;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +32,10 @@ class UsuarioServiceTest {
     private UsuarioRepository repository;
     @Mock
     private UsuarioMapper mapper;
+    @Mock
+    private MailService mailService;
+    @Mock
+    private MailTemplateService mailTemplateService;
 
     @InjectMocks
     private ManutencaoUsuarioService manutencaoService;
@@ -43,11 +50,17 @@ class UsuarioServiceTest {
         UsuarioRequestDTO dto = new UsuarioRequestDTO("teste@medic.com", "Teste", Role.ADMIN);
         when(mapper.toEntity(org.mockito.ArgumentMatchers.any(UsuarioModel.class), org.mockito.ArgumentMatchers.eq(dto), org.mockito.ArgumentMatchers.any(UUID.class))).thenReturn(user);
         when(repository.save(user)).thenReturn(Mono.just(user));
+        when(mailTemplateService.newUserAccess(user.getNome(), System.getenv("PRODUTO_SENHA_PADRAO"), "https://produtos.surgilog.com.br/homolog/"))
+                .thenReturn(Mono.just("body"));
+        when(mailService.sendSimpleEmail(user.getEmail(), "Acesso liberado", "body"))
+                .thenReturn(Mono.empty());
         when(mapper.toDTO(user)).thenReturn(response);
 
         StepVerifier.create(manutencaoService.save(dto, UUID.randomUUID()))
                 .expectNext(response)
                 .verifyComplete();
+
+        verify(mailService).sendSimpleEmail(user.getEmail(), "Acesso liberado", "body");
     }
 
     @Test

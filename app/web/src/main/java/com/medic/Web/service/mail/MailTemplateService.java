@@ -14,7 +14,26 @@ public class MailTemplateService {
 
     public Mono<String> forgotPassword(String nome, String codigo) {
 
-        Resource resource = new ClassPathResource("templates/forgot-password.html");
+        return readTemplate("templates/forgot-password.html")
+                .map(template -> template
+                        .replace("{nome}", nome)
+                        .replace("{codigo}", codigo));
+    }
+
+    public Mono<String> newUserAccess(String nome,
+                                      String senha,
+                                      String linkAplicacao) {
+
+        return readTemplate("templates/new-user-access.html")
+                .map(template -> template
+                        .replace("{nome}", nome)
+                        .replace("{senha}", senha)
+                        .replace("{linkAplicacao}", linkAplicacao));
+    }
+
+    private Mono<String> readTemplate(String path) {
+
+        Resource resource = new ClassPathResource(path);
 
         return DataBufferUtils
                 .read(resource, new DefaultDataBufferFactory(), 4096)
@@ -27,7 +46,6 @@ public class MailTemplateService {
 
                     return builder.append(new String(bytes, StandardCharsets.UTF_8));
                 })
-                .map(StringBuilder::toString)
-                .map(s -> s.replace("{nome}", nome).replace("{codigo}", codigo));
+                .map(StringBuilder::toString);
     }
 }
