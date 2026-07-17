@@ -14,4 +14,19 @@ class MailTemplateServiceTest {
                 .expectNextMatches(body -> body.contains("Joao") && body.contains("123456"))
                 .verifyComplete();
     }
+
+    @Test
+    void shouldRenderNewUserAccessTemplate() {
+
+        StepVerifier.create(service.newUserAccess(
+                        "Joao",
+                        "senha-padrao",
+                        "https://produtos.surgilog.com.br/homolog/"
+                ))
+                .expectNextMatches(body -> body.contains("Joao")
+                        && body.contains("senha-padrao")
+                        && body.contains("https://produtos.surgilog.com.br/homolog/")
+                        && body.contains("primeiro acesso"))
+                .verifyComplete();
+    }
 }

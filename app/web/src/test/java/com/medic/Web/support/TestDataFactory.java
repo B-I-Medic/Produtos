@@ -140,6 +140,7 @@ public final class TestDataFactory {
         var model = empresaMunicipioModel();
         return new EmpresaMunicipioResponseDTO(
                 model.getId(),
+                "UFX",
                 "Empresa",
                 "Cidade",
                 "SP",
@@ -151,6 +152,7 @@ public final class TestDataFactory {
 
         return new EmpresaMunicipioResponseDTO(
                 model.getId(),
+                "UFX",
                 "Empresa",
                 "Cidade",
                 "SP",

@@ -1,4 +1,4 @@
-package com.medic.Web.controller.empresa;
+package com.medic.Web.controller.empresaMunicipioCd;
 
 import com.medic.Web.dto.empresa.EmpresaMunicipioFilterDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioRequestDTO;
@@ -25,13 +25,12 @@ public class EmpresaMunicipioController {
         this.service = service;
     }
 
-    @PostMapping("/save/{empresaId}")
-    public Mono<EmpresaMunicipioResponseDTO> save(@PathVariable @NotNull(message = "O ID da Empresa é obrigatório") UUID empresaId,
-                                                  @RequestBody @Valid Mono<EmpresaMunicipioRequestDTO> dto,
+    @PostMapping("/save")
+    public Mono<EmpresaMunicipioResponseDTO> save(@RequestBody @Valid Mono<EmpresaMunicipioRequestDTO> dto,
                                                   @AuthenticationPrincipal UsuarioModel user) {
 
         return dto.flatMap(empresaMunicipio ->
-                service.save(empresaId, empresaMunicipio, user.getId()));
+                service.save(empresaMunicipio, user.getId()));
     }
 
     @DeleteMapping("/delete/{empresaMunicipioId}")
@@ -40,10 +39,9 @@ public class EmpresaMunicipioController {
         return service.delete(empresaMunicipioId);
     }
 
-    @GetMapping(value = "/get/{empresaId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<EmpresaMunicipioResponseDTO> listEmpresasMunicipio(@PathVariable @NotNull(message = "O ID da empresa é obrigatório") UUID empresaId,
-                                                                   @ModelAttribute EmpresaMunicipioFilterDTO filter) {
+    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<EmpresaMunicipioResponseDTO> listEmpresasMunicipio(@ModelAttribute EmpresaMunicipioFilterDTO filter) {
 
-        return service.listEmpresasMunicipio(empresaId, filter);
+        return service.listEmpresasMunicipio(filter);
     }
 }

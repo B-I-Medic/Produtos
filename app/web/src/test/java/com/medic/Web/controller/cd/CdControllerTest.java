@@ -1,21 +1,16 @@
 package com.medic.Web.controller.cd;
 
-import com.medic.Web.dto.cd.CdEmpresaMunicipioFilterDTO;
-import com.medic.Web.dto.cd.CdEmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.cd.CentroDistribuicaoRequestDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
 import com.medic.Web.service.cd.ManutencaoCDService;
-import com.medic.Web.service.cd.ManutencaoCdEmpresaMunicipioService;
 import com.medic.Web.support.FixedAuthenticationPrincipalResolver;
 import com.medic.Web.support.TestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.Mockito.mock;
@@ -24,7 +19,6 @@ import static org.mockito.Mockito.when;
 class CdControllerTest {
 
     private final ManutencaoCDService cdService = mock(ManutencaoCDService.class);
-    private final ManutencaoCdEmpresaMunicipioService vinculoService = mock(ManutencaoCdEmpresaMunicipioService.class);
     private WebTestClient cdClient;
     private UsuarioModel user;
 
@@ -32,7 +26,7 @@ class CdControllerTest {
     void setUp() {
 
         user = TestDataFactory.usuarioModel();
-        cdClient = WebTestClient.bindToController(new CdController(cdService, vinculoService))
+        cdClient = WebTestClient.bindToController(new CdController(cdService))
                 .argumentResolvers(configurer -> configurer.addCustomResolver(new FixedAuthenticationPrincipalResolver(user)))
                 .build();
     }
@@ -43,36 +37,12 @@ class CdControllerTest {
         var response = TestDataFactory.centroDistribuicaoResponseDTO();
         var dto = new CentroDistribuicaoRequestDTO("CD");
         UUID id = UUID.randomUUID();
-        when(cdService.listCDs()).thenReturn(Flux.fromIterable(List.of(response)));
         when(cdService.save(dto, user.getId())).thenReturn(Mono.just(response));
         when(cdService.update(id, dto, user.getId())).thenReturn(Mono.just(response));
         when(cdService.delete(id)).thenReturn(Mono.empty());
 
-        cdClient.get().uri("/centro-distribuicao/get").exchange().expectStatus().isOk();
         cdClient.post().uri("/centro-distribuicao/save").contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
         cdClient.put().uri("/centro-distribuicao/update/" + id).contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
         cdClient.delete().uri("/centro-distribuicao/delete/" + id).exchange().expectStatus().isOk();
-    }
-
-    @Test
-    void shouldHandleCdEmpresaMunicipioListEndpoint() {
-
-        var response = TestDataFactory.cdEmpresaMunipioConsultaResponseDTO();
-        UUID cdId = UUID.randomUUID();
-
-        when(vinculoService.listCdEmpresaMunicipio(cdId, new CdEmpresaMunicipioFilterDTO("Empresa", "Cidade", "SP")))
-                .thenReturn(Flux.fromIterable(List.of(response)));
-
-        cdClient.get().uri(uriBuilder -> uriBuilder
-                        .path("/centro-distribuicao/" + cdId + "/empresa-municipio/get")
-                        .queryParam("empresa", "Empresa")
-                        .queryParam("municipio", "Cidade")
-                        .queryParam("estado", "SP")
-                        .build())
-                .exchange()
-                .expectStatus().isOk()
-                .expectBodyList(CdEmpresaMunicipioResponseDTO.class)
-                .hasSize(1)
-                .contains(response);
     }
 }

@@ -36,12 +36,11 @@ public class ManutencaoEmpresaMunicipioService {
     }
 
     @Transactional
-    public Mono<EmpresaMunicipioResponseDTO> save(UUID empresaId,
-                                                  EmpresaMunicipioRequestDTO dto,
+    public Mono<EmpresaMunicipioResponseDTO> save(EmpresaMunicipioRequestDTO dto,
                                                   UUID userId) {
 
         return Mono.just(new EmpresaMunicipioModel())
-                .map(empresaMunicipio -> mapper.toEntity(empresaMunicipio, empresaId, dto.municipioId(), userId))
+                .map(empresaMunicipio -> mapper.toEntity(empresaMunicipio, dto.empresaId(), dto.municipioId(), userId))
                 .flatMap(repository::save)
                 .flatMap(empresaMunicipio -> cdEmpresaMunipioRepository
                         .save(
@@ -63,9 +62,9 @@ public class ManutencaoEmpresaMunicipioService {
     }
 
     @Transactional(readOnly = true)
-    public Flux<EmpresaMunicipioResponseDTO> listEmpresasMunicipio(UUID empresaId, EmpresaMunicipioFilterDTO filter) {
+    public Flux<EmpresaMunicipioResponseDTO> listEmpresasMunicipio(EmpresaMunicipioFilterDTO filter) {
 
-        return repository.getAllAndFilter(empresaId, filter);
+        return repository.getAllAndFilter(filter);
     }
 
     @Transactional(readOnly = true)
