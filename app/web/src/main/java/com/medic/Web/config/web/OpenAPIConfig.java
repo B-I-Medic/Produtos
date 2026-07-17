@@ -33,7 +33,7 @@ public class OpenAPIConfig {
                 );
 
         if (activeProfile.equals("hml")) {
-            openApi.servers(List.of(new Server().url("https://produtos.surgilog/homolog/v1/api")));
+            openApi.servers(List.of(new Server().url("https://produtos.surgilog.com.br/homolog/v1/api")));
         }
 
         return openApi;
