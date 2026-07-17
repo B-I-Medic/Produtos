@@ -48,7 +48,7 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
                         order by
                             centro_distribuicao asc,
                             empresa asc,
-                            necessidade_de_compra desc;
+                            necessidade_de_compra_real desc;
             """;
 
     private final DatabaseClient databaseClient;
