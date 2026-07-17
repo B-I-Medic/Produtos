@@ -1,5 +1,6 @@
 package com.medic.Web.controller.empresa;
 
+import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaRequestDTO;
 import com.medic.Web.dto.empresa.EmpresaResponseDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
@@ -50,5 +51,11 @@ public class EmpresaController {
     public Flux<EmpresaResponseDTO> listEmpresas() {
 
         return service.listEmpresas();
+    }
+
+    @GetMapping(value = "/{idEmpresa}/empresa-municipio/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<EmpresaMunicipioResponseDTO> listEmpresaMunicipioByIDEmpresa(@PathVariable @NotNull(message = "O ID da empresa é obrigatório") UUID idEmpresa) {
+
+        return service.listEmpresaMunicipioByIDEmpresa(idEmpresa);
     }
 }

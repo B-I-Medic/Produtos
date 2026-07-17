@@ -10,6 +10,7 @@ public record ValePermanenteRequestDTO(
         @NotNull(message = "O id da empresa e obrigatorio")
         UUID idEmpresa,
 
+        @NotNull(message = "O codigo se segregado é obrigatório")
         @Min(value = 0, message = "O codigo vp nao pode ser negativo")
         int codVp,
 

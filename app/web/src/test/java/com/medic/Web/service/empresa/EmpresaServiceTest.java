@@ -52,6 +52,7 @@ class EmpresaServiceTest {
 
         var model = TestDataFactory.empresaModel();
         var response = TestDataFactory.empresaResponseDTO();
+        var empresaMunicipioResponse = TestDataFactory.empresaMunicipioResponseDTO();
         var dto = new EmpresaRequestDTO("Empresa", Viman.UFX, "001", true, true, true);
 
         when(empresaMapper.toEntity(
@@ -63,11 +64,14 @@ class EmpresaServiceTest {
         when(empresaRepository.save(model)).thenReturn(Mono.just(model));
         when(empresaRepository.findById(model.getId())).thenReturn(Mono.just(model));
         when(empresaRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
+        when(empresaRepository.listEmpresaMunicipioByIdEmpresa(model.getId()))
+                .thenReturn(Flux.fromIterable(List.of(empresaMunicipioResponse)));
         when(empresaRepository.deleteById(model.getId())).thenReturn(Mono.empty());
 
         StepVerifier.create(empresaService.save(dto, UUID.randomUUID())).expectNext(response).verifyComplete();
         StepVerifier.create(empresaService.update(model.getId(), dto, UUID.randomUUID())).expectNext(response).verifyComplete();
         StepVerifier.create(empresaService.listEmpresas()).expectNext(response).verifyComplete();
+        StepVerifier.create(empresaService.listEmpresaMunicipioByIDEmpresa(model.getId())).expectNext(empresaMunicipioResponse).verifyComplete();
         StepVerifier.create(empresaService.delete(model.getId())).verifyComplete();
     }
 
