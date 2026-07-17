@@ -5,8 +5,10 @@ import java.util.UUID;
 public record ValePermanenteResponseDTO(
 
         UUID id,
-        UUID idEmpresa,
+        String centro_distribuicao,
+        String empresa,
         int codVp,
-        UUID id_empresa_municipio
+        String municipio,
+        String estado
 ) {
 }

@@ -14,9 +14,11 @@ public class ValePermanenteRepositoryCustomImpl implements ValePermanenteReposit
 
     private static final String FIND_ALL = """
             select vp.id as id,
-                vp.id_empresa as id_empresa,
-                vp.id_empresa_municipio as id_empresa_municipio,
-                vp.cod_vp as cod_vp
+                cd.descricao as cd,
+                e.descricao as empresa,
+                vp.cod_vp as cod_vp,
+                m.descricao as municipio,
+                m.estado as estado
             from vale_permanente_parametros vp
             join empresa_municipio em
                 on em.id = vp.id_empresa_municipio
@@ -54,9 +56,11 @@ public class ValePermanenteRepositoryCustomImpl implements ValePermanenteReposit
 
         return query.map((row, metadata) -> new ValePermanenteResponseDTO(
                         row.get("id", UUID.class),
-                        row.get("id_empresa", UUID.class),
+                        row.get("cd", String.class),
+                        row.get("empresa", String.class),
                         row.get("cod_vp", Integer.class),
-                        row.get("id_empresa_municipio", UUID.class)
+                        row.get("municipio", String.class),
+                        row.get("estado", String.class)
                 ))
                 .all();
     }
