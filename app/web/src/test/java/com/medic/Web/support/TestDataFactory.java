@@ -94,7 +94,6 @@ public final class TestDataFactory {
         var model = new CentroDistribuicaoModel();
         model.setId(UUID.randomUUID());
         model.setDescricao("CD");
-        model.setIdMunicipio(UUID.randomUUID());
         model.setCriadoPor(UUID.randomUUID());
         return model;
     }
@@ -102,13 +101,7 @@ public final class TestDataFactory {
     public static CentroDistribuicaoResponseDTO centroDistribuicaoResponseDTO() {
 
         var model = centroDistribuicaoModel();
-        return new CentroDistribuicaoResponseDTO(
-                model.getId(),
-                model.getDescricao(),
-                model.getIdMunicipio(),
-                "Cidade",
-                "SP"
-        );
+        return new CentroDistribuicaoResponseDTO(model.getId(), model.getDescricao());
     }
 
     public static EmpresaModel empresaModel() {
@@ -260,22 +253,13 @@ public final class TestDataFactory {
         model.setDescricao("Cidade");
         model.setCodIbge("123");
         model.setEstado("SP");
-        model.setLatitude(new BigDecimal("-23.550520"));
-        model.setLongitude(new BigDecimal("-46.633308"));
         return model;
     }
 
     public static MunicipioResponseDTO municipioResponseDTO() {
 
         var model = municipioModel();
-        return new MunicipioResponseDTO(
-                model.getId(),
-                model.getDescricao(),
-                model.getCodIbge(),
-                model.getEstado(),
-                model.getLatitude(),
-                model.getLongitude()
-        );
+        return new MunicipioResponseDTO(model.getId(), model.getDescricao(), model.getCodIbge(), model.getEstado());
     }
 
     public static ForecastAgrupadoResponseDTO forecastAgrupadoResponseDTO() {
