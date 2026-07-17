@@ -15,6 +15,7 @@ public class EmpresaMunipioRepositoryCustomImpl implements EmpresaMunipioReposit
 
     private static final String FIND_BY_FILTRO_SQL = """
                         SELECT em.id AS id,
+                            e.viman as viman,
                             e.descricao AS empresa,
                             m.descricao AS municipio,
                             m.estado AS estado,
@@ -24,9 +25,11 @@ public class EmpresaMunipioRepositoryCustomImpl implements EmpresaMunipioReposit
                         JOIN municipio m ON m.id = em.id_municipio
                         JOIN cd_empresa_municipio cem ON cem.id_empresa_municipio = em.id
                         JOIN centro_distribuicao cd ON cd.id = cem.id_cd
-                        WHERE e.id = :empresaId
-                          AND (:municipio IS NULL OR m.descricao ILIKE :municipio)
-                          AND (:estado IS NULL OR m.estado ILIKE :estado)
+                        WHERE (cd.descricao ILIKE :cd OR :cd IS NULL)
+                          AND (e.descricao ILIKE :empresa OR :empresa IS NULL)
+                          AND (m.descricao ILIKE :municipio OR :municipio IS NULL)
+                          AND (m.estado ILIKE :estado OR :estado IS NULL)
+                        ORDER BY centro_distribuicao, empresa, viman desc, estado, municipio;
             """;
 
     private final DatabaseClient databaseClient;
@@ -36,15 +39,18 @@ public class EmpresaMunipioRepositoryCustomImpl implements EmpresaMunipioReposit
     }
 
     @Override
-    public Flux<EmpresaMunicipioResponseDTO> getAllAndFilter(UUID empresaId,
-                                                             EmpresaMunicipioFilterDTO filter) {
-        var query = databaseClient.sql(FIND_BY_FILTRO_SQL)
-                .bind("empresaId", empresaId);
+    public Flux<EmpresaMunicipioResponseDTO> getAllAndFilter(EmpresaMunicipioFilterDTO filter) {
+
+        var query = databaseClient.sql(FIND_BY_FILTRO_SQL);
+
+        query = bindNullableText(query, "cd", filter == null ? null : filter.centroDistribuicao());
+        query = bindNullableText(query, "empresa", filter == null ? null : filter.empresa());
         query = bindNullableText(query, "municipio", filter == null ? null : filter.municipio());
         query = bindNullableText(query, "estado", filter == null ? null : filter.estado());
 
         return query.map((row, metadata) -> new EmpresaMunicipioResponseDTO(
                         row.get("id", UUID.class),
+                        row.get("viman", String.class),
                         row.get("empresa", String.class),
                         row.get("municipio", String.class),
                         row.get("estado", String.class),
@@ -58,6 +64,7 @@ public class EmpresaMunipioRepositoryCustomImpl implements EmpresaMunipioReposit
 
         var sql = """
                 SELECT em.id AS id,
+                    e.viman as viman,
                     e.descricao AS empresa,
                     m.descricao AS municipio,
                     m.estado AS estado,
@@ -68,6 +75,7 @@ public class EmpresaMunipioRepositoryCustomImpl implements EmpresaMunipioReposit
                 JOIN cd_empresa_municipio cem ON cem.id_empresa_municipio = em.id
                 JOIN centro_distribuicao cd ON cd.id = cem.id_cd
                 WHERE em.id = :empresaId
+                ORDER BY estado, municipio;
         """;
 
         var query = databaseClient
@@ -76,6 +84,7 @@ public class EmpresaMunipioRepositoryCustomImpl implements EmpresaMunipioReposit
 
         return query.map((row, metaData) -> new EmpresaMunicipioResponseDTO(
                 row.get("id", UUID.class),
+                row.get("viman", String.class),
                 row.get("empresa", String.class),
                 row.get("municipio", String.class),
                 row.get("estado", String.class),

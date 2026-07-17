@@ -77,12 +77,12 @@ class EmpresaServiceTest {
         var model = TestDataFactory.empresaMunicipioModel();
         UUID empresaId = UUID.randomUUID();
         UUID cdId = UUID.randomUUID();
-        var dto = new EmpresaMunicipioRequestDTO(cdId, model.getIdMunicipio());
+        var dto = new EmpresaMunicipioRequestDTO(empresaId, cdId, model.getIdMunicipio());
         var cdModel = TestDataFactory.cdEmpresaMunipioModel();
         cdModel.setIdCd(cdId);
         cdModel.setIdEmpresaMunicipio(model.getId());
         var response = TestDataFactory.empresaMunicipioResponseDTO(model, cdId);
-        var filter = new EmpresaMunicipioFilterDTO("Cidade", "SP");
+        var filter = new EmpresaMunicipioFilterDTO("Empresa", "Cidade", "SP", "CD");
 
         when(empresaMunicipioMapper.toEntity(
                 ArgumentMatchers.any(),
@@ -98,11 +98,11 @@ class EmpresaServiceTest {
         when(empresaMunicipioRepository.save(model)).thenReturn(Mono.just(model));
         when(cdEmpresaMunipioRepository.save(cdModel)).thenReturn(Mono.just(cdModel));
         when(empresaMunicipioRepository.findByIdCustom(model.getId())).thenReturn(Mono.just(response));
-        when(empresaMunicipioRepository.getAllAndFilter(empresaId, filter)).thenReturn(Flux.fromIterable(List.of(response)));
+        when(empresaMunicipioRepository.getAllAndFilter(filter)).thenReturn(Flux.fromIterable(List.of(response)));
         when(empresaMunicipioRepository.deleteById(model.getId())).thenReturn(Mono.empty());
 
-        StepVerifier.create(empresaMunicipioService.save(empresaId, dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(empresaMunicipioService.listEmpresasMunicipio(empresaId, filter)).expectNext(response).verifyComplete();
+        StepVerifier.create(empresaMunicipioService.save(dto, UUID.randomUUID())).expectNext(response).verifyComplete();
+        StepVerifier.create(empresaMunicipioService.listEmpresasMunicipio(filter)).expectNext(response).verifyComplete();
         StepVerifier.create(empresaMunicipioService.delete(model.getId())).verifyComplete();
     }
 }

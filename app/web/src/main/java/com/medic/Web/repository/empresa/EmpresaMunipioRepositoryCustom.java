@@ -9,8 +9,7 @@ import java.util.UUID;
 
 public interface EmpresaMunipioRepositoryCustom {
 
-    Flux<EmpresaMunicipioResponseDTO> getAllAndFilter(UUID empresaId,
-                                                      EmpresaMunicipioFilterDTO filter);
+    Flux<EmpresaMunicipioResponseDTO> getAllAndFilter(EmpresaMunicipioFilterDTO filter);
 
     Mono<EmpresaMunicipioResponseDTO> findByIdCustom(UUID id);
 }
