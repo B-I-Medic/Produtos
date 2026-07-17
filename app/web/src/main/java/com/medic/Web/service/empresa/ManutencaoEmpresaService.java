@@ -1,5 +1,6 @@
 package com.medic.Web.service.empresa;
 
+import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaRequestDTO;
 import com.medic.Web.dto.empresa.EmpresaResponseDTO;
 import com.medic.Web.mapper.empresa.EmpresaMapper;
@@ -56,4 +57,11 @@ public class ManutencaoEmpresaService {
         return repository.findAll()
                 .map(mapper::toDTO);
     }
+
+    @Transactional(readOnly = true)
+    public Flux<EmpresaMunicipioResponseDTO> listEmpresaMunicipioByIDEmpresa(UUID idEmpresa) {
+
+        return repository.listEmpresaMunicipioByIdEmpresa(idEmpresa);
+    }
+
 }

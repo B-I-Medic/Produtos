@@ -10,6 +10,7 @@ public record EstoqueSegregadoRequestDTO(
         @NotNull(message = "O id da empresa e obrigatorio")
         UUID idEmpresa,
 
+        @NotNull(message = "O codigo se segregado é obrigatório")
         @Min(value = 0, message = "O codigo segregado nao pode ser negativo")
         int codSegregado,
 
