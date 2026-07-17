@@ -19,6 +19,7 @@ import reactor.test.StepVerifier;
 import java.util.List;
 import java.util.function.BiFunction;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -52,6 +53,7 @@ class ForecastRepositoryCustomImplTest {
         var sqlCaptor = ArgumentCaptor.forClass(String.class);
         verify(databaseClient).sql(sqlCaptor.capture());
         assertTrue(sqlCaptor.getValue().contains("group by centro_distribuicao, empresa, estado, municipio, anvisa, marca, cod_produto, produto"));
+        assertTrue(sqlCaptor.getValue().contains("order by centro_distribuicao asc, empresa asc, necessidade_de_compra_real desc"));
         verify(executeSpec).bindNull("centro_distribuicao", String.class);
         verify(executeSpec).bindNull("empresa", String.class);
         verify(executeSpec).bindNull("estado", String.class);
@@ -87,6 +89,8 @@ class ForecastRepositoryCustomImplTest {
         verify(databaseClient).sql(sqlCaptor.capture());
         assertTrue(sqlCaptor.getValue().contains("select"));
         assertTrue(sqlCaptor.getValue().contains("group by empresa, municipio"));
+        assertFalse(sqlCaptor.getValue().contains("centro_distribuicao asc"));
+        assertTrue(sqlCaptor.getValue().contains("order by empresa asc, necessidade_de_compra_real desc"));
         verify(executeSpec).bind("centro_distribuicao", "%CD%");
         verify(executeSpec).bind("empresa", "%Empresa%");
         verify(executeSpec).bind("estado", "%SP%");
@@ -94,6 +98,35 @@ class ForecastRepositoryCustomImplTest {
         verify(executeSpec).bind("anvisa", "%Anvisa%");
         verify(executeSpec).bind("marca", "%Marca%");
         verify(executeSpec).bind("produto", "%Produto%");
+    }
+
+    @Test
+    void shouldNotOrderByColumnsThatAreNotGrouped() {
+
+        var response = TestDataFactory.forecastAgrupadoResponseDTO();
+        stubQuery(response);
+
+        var repository = new ForecastRepositoryCustomImpl(databaseClient);
+        var filter = new ForecastFilterDTO(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                List.of(AgrupamentosPadrao.CENTRO_DISTRIBUICAO)
+        );
+
+        StepVerifier.create(repository.findByFilter(filter))
+                .expectNext(response)
+                .verifyComplete();
+
+        var sqlCaptor = ArgumentCaptor.forClass(String.class);
+        verify(databaseClient).sql(sqlCaptor.capture());
+        assertTrue(sqlCaptor.getValue().contains("group by centro_distribuicao"));
+        assertTrue(sqlCaptor.getValue().contains("order by centro_distribuicao asc, necessidade_de_compra_real desc"));
+        assertFalse(sqlCaptor.getValue().contains("empresa asc"));
     }
 
     private void stubQuery(ForecastAgrupadoResponseDTO response) {
