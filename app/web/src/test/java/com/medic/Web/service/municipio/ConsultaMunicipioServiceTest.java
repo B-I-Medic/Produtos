@@ -4,7 +4,7 @@ import com.medic.Web.dto.municipio.MunicipioFilterDTO;
 import com.medic.Web.mapper.municipio.MunicipioMapper;
 import com.medic.Web.model.municipio.MunicipioModel;
 import com.medic.Web.repository.cd.MunicipioRepository;
-import com.medic.Web.service.muncipio.ConsultaMunicipioService;
+import com.medic.Web.service.municipio.ConsultaMunicipioService;
 import com.medic.Web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

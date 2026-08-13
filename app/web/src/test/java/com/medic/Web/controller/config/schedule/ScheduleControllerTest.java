@@ -13,7 +13,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,31 +52,47 @@ class ScheduleControllerTest {
     }
 
     @Test
-    void shouldUpdateEnableAndDisableSchedule() {
+    void shouldUpdateSchedule() {
 
         UUID scheduleId = UUID.randomUUID();
         var response = scheduleResponse();
         when(service.atualizar(scheduleId, "0 0 * * * *", user.getId())).thenReturn(Mono.just(response));
-        when(service.enable(scheduleId, user.getId())).thenReturn(Mono.just(response));
-        when(service.disable(scheduleId, user.getId())).thenReturn(Mono.just(response));
 
         client.put()
                 .uri("/schedule/update/" + scheduleId + "?cron=0 0 * * * *")
                 .exchange()
                 .expectStatus().isOk();
 
+        verify(service).atualizar(scheduleId, "0 0 * * * *", user.getId());
+    }
+
+    @Test
+    void shouldEnableSchedule() {
+
+        UUID scheduleId = UUID.randomUUID();
+        var response = scheduleResponse();
+        when(service.enable(scheduleId, user.getId())).thenReturn(Mono.just(response));
+
         client.put()
                 .uri("/schedule/enable/" + scheduleId)
                 .exchange()
                 .expectStatus().isOk();
+
+        verify(service).enable(scheduleId, user.getId());
+    }
+
+    @Test
+    void shouldDisableSchedule() {
+
+        UUID scheduleId = UUID.randomUUID();
+        var response = scheduleResponse();
+        when(service.disable(scheduleId, user.getId())).thenReturn(Mono.just(response));
 
         client.put()
                 .uri("/schedule/disable/" + scheduleId)
                 .exchange()
                 .expectStatus().isOk();
 
-        verify(service).atualizar(scheduleId, "0 0 * * * *", user.getId());
-        verify(service).enable(scheduleId, user.getId());
         verify(service).disable(scheduleId, user.getId());
     }
 
@@ -87,7 +103,7 @@ class ScheduleControllerTest {
                 ScheduleJob.ATUALIZAR_ESTOQUE,
                 "0 0 * * * *",
                 true,
-                ZonedDateTime.now()
+                Instant.now()
         );
     }
 }

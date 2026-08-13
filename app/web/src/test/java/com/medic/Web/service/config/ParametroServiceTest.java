@@ -46,7 +46,7 @@ class ParametroServiceTest {
     private ManutencaoTaxaService taxaService;
 
     @Test
-    void shouldDefinirPeriodoAndList() {
+    void shouldDefinirPeriodo() {
 
         PeriodoModel model = TestDataFactory.periodoModel();
         PeriodoResponseDTO response = TestDataFactory.periodoResponseDTO();
@@ -55,11 +55,18 @@ class ParametroServiceTest {
         when(periodoMapper.map(model, dto, model.getId())).thenReturn(model);
         when(periodoRepository.save(model)).thenReturn(Mono.just(model));
         when(periodoMapper.toDTO(model)).thenReturn(response);
-        when(periodoRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
-
         StepVerifier.create(periodoService.definirPeriodo(model.getId(), dto, model.getId()))
                 .expectNext(response)
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldListPeriodos() {
+
+        PeriodoModel model = TestDataFactory.periodoModel();
+        PeriodoResponseDTO response = TestDataFactory.periodoResponseDTO();
+        when(periodoRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
+        when(periodoMapper.toDTO(model)).thenReturn(response);
 
         StepVerifier.create(periodoService.listPeriods())
                 .expectNext(response)
@@ -67,7 +74,7 @@ class ParametroServiceTest {
     }
 
     @Test
-    void shouldSetTaxaAndList() {
+    void shouldSetTaxa() {
 
         TaxaModel model = TestDataFactory.taxaModel();
         TaxaResponseDTO response = TestDataFactory.taxaResponseDTO();
@@ -76,11 +83,18 @@ class ParametroServiceTest {
         when(taxaMapper.update(model, dto, model.getId())).thenReturn(model);
         when(taxaRepository.save(model)).thenReturn(Mono.just(model));
         when(taxaMapper.toDTO(model)).thenReturn(response);
-        when(taxaRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
-
         StepVerifier.create(taxaService.setRate(model.getId(), dto, model.getId()))
                 .expectNext(response)
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldListTaxas() {
+
+        TaxaModel model = TestDataFactory.taxaModel();
+        TaxaResponseDTO response = TestDataFactory.taxaResponseDTO();
+        when(taxaRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
+        when(taxaMapper.toDTO(model)).thenReturn(response);
 
         StepVerifier.create(taxaService.listRates())
                 .expectNext(response)

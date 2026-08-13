@@ -1,6 +1,6 @@
 package com.medic.Web.dto.config.estoque.segregado;
 
-public record EstoqueSegregadoFIlterDTO(
+public record EstoqueSegregadoFilterDTO(
 
         String cd,
         String empresa,

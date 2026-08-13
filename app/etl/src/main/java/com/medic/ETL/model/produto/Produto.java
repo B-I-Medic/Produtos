@@ -2,7 +2,7 @@ package com.medic.ETL.model.produto;
 
 import lombok.Data;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Data
 public class Produto {
@@ -16,5 +16,5 @@ public class Produto {
     private Long anvisa;
     private String situacao;
     private String criadoPor;
-    private Timestamp criadoEm;
+    private Instant criadoEm;
 }

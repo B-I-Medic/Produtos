@@ -1,6 +1,6 @@
 package com.medic.Web.controller.config.estoque;
 
-import com.medic.Web.dto.config.estoque.interno.EstoqueInternoFIlterDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoFilterDTO;
 import com.medic.Web.dto.config.estoque.interno.EstoqueInternoRequestDTO;
 import com.medic.Web.dto.config.estoque.interno.EstoqueInternoResponseDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
@@ -48,7 +48,7 @@ public class EstoqueInternoParametroController {
     }
 
     @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<EstoqueInternoResponseDTO> listEstoqueInterno(@ModelAttribute EstoqueInternoFIlterDTO filter) {
+    public Flux<EstoqueInternoResponseDTO> listEstoqueInterno(@ModelAttribute EstoqueInternoFilterDTO filter) {
 
         return service.listEstoqueInterno(filter);
     }

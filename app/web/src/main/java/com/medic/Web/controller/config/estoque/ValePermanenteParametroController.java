@@ -1,6 +1,6 @@
 package com.medic.Web.controller.config.estoque;
 
-import com.medic.Web.dto.config.estoque.vp.ValePermanenteFIlterDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteFilterDTO;
 import com.medic.Web.dto.config.estoque.vp.ValePermanenteRequestDTO;
 import com.medic.Web.dto.config.estoque.vp.ValePermanenteResponseDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
@@ -48,7 +48,7 @@ public class ValePermanenteParametroController {
     }
 
     @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ValePermanenteResponseDTO> listValePermanente(@ModelAttribute ValePermanenteFIlterDTO filter) {
+    public Flux<ValePermanenteResponseDTO> listValePermanente(@ModelAttribute ValePermanenteFilterDTO filter) {
 
         return service.listValePermanente(filter);
     }

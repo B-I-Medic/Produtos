@@ -44,10 +44,10 @@ public class AuthController {
     }
 
     @PostMapping("/first-acess")
-    public Mono<Void> firstAcess(@RequestBody @Valid Mono<PasswordRequestDTO> dto,
+    public Mono<Void> firstAccess(@RequestBody @Valid Mono<PasswordRequestDTO> dto,
                                  @AuthenticationPrincipal UsuarioModel user) {
 
         return dto
-                .flatMap(pss -> service.firstAcess(pss, user.getId()));
+                .flatMap(pss -> service.firstAccess(pss, user.getId()));
     }
 }

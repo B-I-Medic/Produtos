@@ -1,6 +1,6 @@
 package com.medic.Web.dto.config.estoque.vp;
 
-public record ValePermanenteFIlterDTO(
+public record ValePermanenteFilterDTO(
 
         String cd,
         String empresa,

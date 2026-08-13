@@ -80,7 +80,7 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void shouldDisableAndEnableUsuario() {
+    void shouldDisableUsuario() {
 
         UsuarioModel user = TestDataFactory.usuarioModel();
         UsuarioResponseDTO response = TestDataFactory.usuarioResponseDTO();
@@ -91,6 +91,16 @@ class UsuarioServiceTest {
         StepVerifier.create(manutencaoService.disable(user.getId(), UUID.randomUUID()))
                 .expectNext(response)
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldEnableUsuario() {
+
+        UsuarioModel user = TestDataFactory.usuarioModel();
+        UsuarioResponseDTO response = TestDataFactory.usuarioResponseDTO();
+        when(repository.findById(user.getId())).thenReturn(Mono.just(user));
+        when(repository.save(user)).thenReturn(Mono.just(user));
+        when(mapper.toDTO(user)).thenReturn(response);
 
         StepVerifier.create(manutencaoService.enable(user.getId(), UUID.randomUUID()))
                 .expectNext(response)

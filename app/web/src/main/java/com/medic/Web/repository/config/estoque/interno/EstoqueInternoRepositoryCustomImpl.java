@@ -1,6 +1,6 @@
 package com.medic.Web.repository.config.estoque.interno;
 
-import com.medic.Web.dto.config.estoque.interno.EstoqueInternoFIlterDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoFilterDTO;
 import com.medic.Web.dto.config.estoque.interno.EstoqueInternoResponseDTO;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
@@ -41,7 +41,7 @@ public class EstoqueInternoRepositoryCustomImpl implements EstoqueInternoReposit
         this.databaseClient = databaseClient;
     }
 
-    public Flux<EstoqueInternoResponseDTO> getAllAndFilter(EstoqueInternoFIlterDTO filter) {
+    public Flux<EstoqueInternoResponseDTO> getAllAndFilter(EstoqueInternoFilterDTO filter) {
 
         var query = databaseClient.sql(FIND_ALL);
 

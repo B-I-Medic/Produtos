@@ -10,11 +10,11 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
-public class JwtAcessDenied implements ServerAccessDeniedHandler {
+public class JwtAccessDenied implements ServerAccessDeniedHandler {
 
     private final ErrorResponseWriter writer;
 
-    public JwtAcessDenied(ErrorResponseWriter writer) {
+    public JwtAccessDenied(ErrorResponseWriter writer) {
         this.writer = writer;
     }
 

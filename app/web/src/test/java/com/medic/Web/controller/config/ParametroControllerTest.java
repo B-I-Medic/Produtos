@@ -45,28 +45,52 @@ class ParametroControllerTest {
     }
 
     @Test
-    void shouldHandlePeriodoEndpoints() {
+    void shouldListPeriodos() {
+
+        var response = TestDataFactory.periodoResponseDTO();
+        when(periodoService.listPeriods()).thenReturn(Flux.fromIterable(List.of(response)));
+
+        periodoClient.get().uri("/periodo/get").exchange().expectStatus().isOk();
+    }
+
+    @Test
+    void shouldDefinirPeriodo() {
 
         var response = TestDataFactory.periodoResponseDTO();
         var dto = new PeriodoRequestDTO(LocalDate.now(), LocalDate.now().plusDays(1));
         UUID id = UUID.randomUUID();
-        when(periodoService.listPeriods()).thenReturn(Flux.fromIterable(List.of(response)));
         when(periodoService.definirPeriodo(id, dto, user.getId())).thenReturn(Mono.just(response));
 
-        periodoClient.get().uri("/periodo/get").exchange().expectStatus().isOk();
-        periodoClient.put().uri("/periodo/definir/" + id).contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
+        periodoClient.put()
+                .uri("/periodo/definir/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
     }
 
     @Test
-    void shouldHandleTaxaEndpoints() {
+    void shouldListTaxas() {
+
+        var response = TestDataFactory.taxaResponseDTO();
+        when(taxaService.listRates()).thenReturn(Flux.fromIterable(List.of(response)));
+
+        taxaClient.get().uri("/taxa/get").exchange().expectStatus().isOk();
+    }
+
+    @Test
+    void shouldDefinirTaxa() {
 
         var response = TestDataFactory.taxaResponseDTO();
         var dto = new TaxaRequestDTO(BigDecimal.ONE);
         UUID id = UUID.randomUUID();
-        when(taxaService.listRates()).thenReturn(Flux.fromIterable(List.of(response)));
         when(taxaService.setRate(id, dto, user.getId())).thenReturn(Mono.just(response));
 
-        taxaClient.get().uri("/taxa/get").exchange().expectStatus().isOk();
-        taxaClient.put().uri("/taxa/definir/" + id).contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
+        taxaClient.put()
+                .uri("/taxa/definir/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
     }
 }

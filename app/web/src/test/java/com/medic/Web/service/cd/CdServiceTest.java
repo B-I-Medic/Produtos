@@ -37,10 +37,9 @@ class CdServiceTest {
     private ManutencaoCdEmpresaMunicipioService manutencaoCdEmpresaMunicipioService;
 
     @Test
-    void shouldCrudCentroDistribuicao() {
+    void shouldSaveCentroDistribuicao() {
 
         CentroDistribuicaoModel model = TestDataFactory.centroDistribuicaoModel();
-
         var response = TestDataFactory.centroDistribuicaoResponseDTO();
         var dto = new CentroDistribuicaoRequestDTO("CD");
 
@@ -49,16 +48,53 @@ class CdServiceTest {
                 ArgumentMatchers.eq(dto),
                 ArgumentMatchers.any(UUID.class))).thenReturn(model);
         when(centroDistribuicaoMapper.toDTO(model)).thenReturn(response);
-
         when(centroDistribuicaoRepository.save(model)).thenReturn(Mono.just(model));
+
+        StepVerifier.create(manutencaoCDService.save(dto, UUID.randomUUID()))
+                .expectNext(response)
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldUpdateCentroDistribuicao() {
+
+        CentroDistribuicaoModel model = TestDataFactory.centroDistribuicaoModel();
+        var response = TestDataFactory.centroDistribuicaoResponseDTO();
+        var dto = new CentroDistribuicaoRequestDTO("CD");
         when(centroDistribuicaoRepository.findById(model.getId())).thenReturn(Mono.just(model));
+        when(centroDistribuicaoMapper.toEntity(
+                ArgumentMatchers.any(),
+                ArgumentMatchers.eq(dto),
+                ArgumentMatchers.any(UUID.class))).thenReturn(model);
+        when(centroDistribuicaoRepository.save(model)).thenReturn(Mono.just(model));
+        when(centroDistribuicaoMapper.toDTO(model)).thenReturn(response);
+
+        StepVerifier.create(manutencaoCDService.update(model.getId(), dto, UUID.randomUUID()))
+                .expectNext(response)
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldListCentroDistribuicao() {
+
+        CentroDistribuicaoModel model = TestDataFactory.centroDistribuicaoModel();
+        var response = TestDataFactory.centroDistribuicaoResponseDTO();
         when(centroDistribuicaoRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
+        when(centroDistribuicaoMapper.toDTO(model)).thenReturn(response);
+
+        StepVerifier.create(manutencaoCDService.listCDs())
+                .expectNext(response)
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldDeleteCentroDistribuicao() {
+
+        CentroDistribuicaoModel model = TestDataFactory.centroDistribuicaoModel();
         when(centroDistribuicaoRepository.deleteById(model.getId())).thenReturn(Mono.empty());
 
-        StepVerifier.create(manutencaoCDService.save(dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(manutencaoCDService.update(model.getId(), dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(manutencaoCDService.listCDs()).expectNext(response).verifyComplete();
-        StepVerifier.create(manutencaoCDService.delete(model.getId())).verifyComplete();
+        StepVerifier.create(manutencaoCDService.delete(model.getId()))
+                .verifyComplete();
     }
 
     @Test

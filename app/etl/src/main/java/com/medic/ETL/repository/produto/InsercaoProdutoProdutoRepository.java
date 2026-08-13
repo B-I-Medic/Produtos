@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -70,12 +70,12 @@ public class InsercaoProdutoProdutoRepository {
                 ps.setString(8, item.getSituacao());
                 ps.setString(9, item.getCriadoPor());
 
-                Timestamp criadoEm = item.getCriadoEm();
+                Instant criadoEm = item.getCriadoEm();
 
                 if (criadoEm == null) {
-                    ps.setNull(10, Types.TIMESTAMP);
+                    ps.setNull(10, Types.TIMESTAMP_WITH_TIMEZONE);
                 } else {
-                    ps.setTimestamp(10, criadoEm);
+                    ps.setObject(10, criadoEm, Types.TIMESTAMP_WITH_TIMEZONE);
                 }
             }
 

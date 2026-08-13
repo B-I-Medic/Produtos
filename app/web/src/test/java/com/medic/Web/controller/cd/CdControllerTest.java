@@ -36,15 +36,10 @@ class CdControllerTest {
     }
 
     @Test
-    void shouldHandleCdEndpoints() {
+    void shouldListCds() {
 
         var response = TestDataFactory.centroDistribuicaoResponseDTO();
-        var dto = new CentroDistribuicaoRequestDTO("CD");
-        UUID id = UUID.randomUUID();
         when(cdService.listCDs()).thenReturn(Flux.fromIterable(List.of(response)));
-        when(cdService.save(dto, user.getId())).thenReturn(Mono.just(response));
-        when(cdService.update(id, dto, user.getId())).thenReturn(Mono.just(response));
-        when(cdService.delete(id)).thenReturn(Mono.empty());
 
         cdClient.get().uri("/centro-distribuicao/get")
                 .exchange()
@@ -52,10 +47,55 @@ class CdControllerTest {
                 .expectBodyList(CentroDistribuicaoResponseDTO.class)
                 .hasSize(1)
                 .contains(response);
-        cdClient.post().uri("/centro-distribuicao/save").contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
-        cdClient.put().uri("/centro-distribuicao/update/" + id).contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
-        cdClient.delete().uri("/centro-distribuicao/delete/" + id).exchange().expectStatus().isOk();
-
         verify(cdService).listCDs();
+    }
+
+    @Test
+    void shouldSaveCd() {
+
+        var response = TestDataFactory.centroDistribuicaoResponseDTO();
+        var dto = new CentroDistribuicaoRequestDTO("CD");
+        when(cdService.save(dto, user.getId())).thenReturn(Mono.just(response));
+
+        cdClient.post()
+                .uri("/centro-distribuicao/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(cdService).save(dto, user.getId());
+    }
+
+    @Test
+    void shouldUpdateCd() {
+
+        var response = TestDataFactory.centroDistribuicaoResponseDTO();
+        var dto = new CentroDistribuicaoRequestDTO("CD");
+        UUID id = UUID.randomUUID();
+        when(cdService.update(id, dto, user.getId())).thenReturn(Mono.just(response));
+
+        cdClient.put()
+                .uri("/centro-distribuicao/update/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(cdService).update(id, dto, user.getId());
+    }
+
+    @Test
+    void shouldDeleteCd() {
+
+        UUID id = UUID.randomUUID();
+        when(cdService.delete(id)).thenReturn(Mono.empty());
+
+        cdClient.delete()
+                .uri("/centro-distribuicao/delete/" + id)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(cdService).delete(id);
     }
 }

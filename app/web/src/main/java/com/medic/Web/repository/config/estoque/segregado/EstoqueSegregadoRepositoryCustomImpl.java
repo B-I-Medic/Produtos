@@ -1,6 +1,6 @@
 package com.medic.Web.repository.config.estoque.segregado;
 
-import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoFIlterDTO;
+import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoFilterDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
@@ -44,7 +44,7 @@ public class EstoqueSegregadoRepositoryCustomImpl implements EstoqueSegregadoRep
     }
 
     @Override
-    public Flux<EstoqueSegregadoResponseDTO> getAllAndFilter(EstoqueSegregadoFIlterDTO filter) {
+    public Flux<EstoqueSegregadoResponseDTO> getAllAndFilter(EstoqueSegregadoFilterDTO filter) {
 
         var query = databaseClient.sql(FIND_ALL);
 

@@ -75,7 +75,7 @@ class AuthServiceTest {
         when(passwordEncoder.encode("nova")).thenReturn("hash");
         when(repository.save(user)).thenReturn(Mono.just(user));
 
-        StepVerifier.create(service.firstAcess(new PasswordRequestDTO("nova"), user.getId()))
+        StepVerifier.create(service.firstAccess(new PasswordRequestDTO("nova"), user.getId()))
                 .verifyComplete();
     }
 

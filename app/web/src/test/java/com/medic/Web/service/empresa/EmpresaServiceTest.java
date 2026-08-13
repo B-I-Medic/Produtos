@@ -48,7 +48,7 @@ class EmpresaServiceTest {
     private ManutencaoEmpresaMunicipioService empresaMunicipioService;
 
     @Test
-    void shouldCrudEmpresa() {
+    void shouldSaveEmpresa() {
 
         var model = TestDataFactory.empresaModel();
         var response = TestDataFactory.empresaResponseDTO();
@@ -62,21 +62,68 @@ class EmpresaServiceTest {
         when(empresaMapper.toDTO(model)).thenReturn(response);
 
         when(empresaRepository.save(model)).thenReturn(Mono.just(model));
-        when(empresaRepository.findById(model.getId())).thenReturn(Mono.just(model));
-        when(empresaRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
-        when(empresaRepository.listEmpresaMunicipioByIdEmpresa(model.getId()))
-                .thenReturn(Flux.fromIterable(List.of(empresaMunicipioResponse)));
-        when(empresaRepository.deleteById(model.getId())).thenReturn(Mono.empty());
-
-        StepVerifier.create(empresaService.save(dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(empresaService.update(model.getId(), dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(empresaService.listEmpresas()).expectNext(response).verifyComplete();
-        StepVerifier.create(empresaService.listEmpresaMunicipioByIDEmpresa(model.getId())).expectNext(empresaMunicipioResponse).verifyComplete();
-        StepVerifier.create(empresaService.delete(model.getId())).verifyComplete();
+        StepVerifier.create(empresaService.save(dto, UUID.randomUUID()))
+                .expectNext(response)
+                .verifyComplete();
     }
 
     @Test
-    void shouldCrudEmpresaMunicipio() {
+    void shouldUpdateEmpresa() {
+
+        var model = TestDataFactory.empresaModel();
+        var response = TestDataFactory.empresaResponseDTO();
+        var dto = new EmpresaRequestDTO("Empresa", Viman.UFX, "001", true, true, true);
+        when(empresaRepository.findById(model.getId())).thenReturn(Mono.just(model));
+        when(empresaMapper.toEntity(
+                ArgumentMatchers.any(),
+                ArgumentMatchers.eq(dto),
+                ArgumentMatchers.any(UUID.class))).thenReturn(model);
+        when(empresaRepository.save(model)).thenReturn(Mono.just(model));
+        when(empresaMapper.toDTO(model)).thenReturn(response);
+
+        StepVerifier.create(empresaService.update(model.getId(), dto, UUID.randomUUID()))
+                .expectNext(response)
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldListEmpresas() {
+
+        var model = TestDataFactory.empresaModel();
+        var response = TestDataFactory.empresaResponseDTO();
+        when(empresaRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
+        when(empresaMapper.toDTO(model)).thenReturn(response);
+
+        StepVerifier.create(empresaService.listEmpresas())
+                .expectNext(response)
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldListEmpresaMunicipioByEmpresa() {
+
+        var model = TestDataFactory.empresaModel();
+        var response = TestDataFactory.empresaMunicipioResponseDTO();
+        when(empresaRepository.listEmpresaMunicipioByIdEmpresa(model.getId()))
+                .thenReturn(Flux.fromIterable(List.of(response)));
+
+        StepVerifier.create(empresaService.listEmpresaMunicipioByIDEmpresa(model.getId()))
+                .expectNext(response)
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldDeleteEmpresa() {
+
+        var model = TestDataFactory.empresaModel();
+        when(empresaRepository.deleteById(model.getId())).thenReturn(Mono.empty());
+
+        StepVerifier.create(empresaService.delete(model.getId()))
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldSaveEmpresaMunicipio() {
 
         var model = TestDataFactory.empresaMunicipioModel();
         UUID empresaId = UUID.randomUUID();
@@ -102,11 +149,30 @@ class EmpresaServiceTest {
         when(empresaMunicipioRepository.save(model)).thenReturn(Mono.just(model));
         when(cdEmpresaMunipioRepository.save(cdModel)).thenReturn(Mono.just(cdModel));
         when(empresaMunicipioRepository.findByIdCustom(model.getId())).thenReturn(Mono.just(response));
+        StepVerifier.create(empresaMunicipioService.save(dto, UUID.randomUUID()))
+                .expectNext(response)
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldListEmpresasMunicipio() {
+
+        var response = TestDataFactory.empresaMunicipioResponseDTO();
+        var filter = new EmpresaMunicipioFilterDTO("Empresa", "Cidade", "SP", "CD");
         when(empresaMunicipioRepository.getAllAndFilter(filter)).thenReturn(Flux.fromIterable(List.of(response)));
+
+        StepVerifier.create(empresaMunicipioService.listEmpresasMunicipio(filter))
+                .expectNext(response)
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldDeleteEmpresaMunicipio() {
+
+        var model = TestDataFactory.empresaMunicipioModel();
         when(empresaMunicipioRepository.deleteById(model.getId())).thenReturn(Mono.empty());
 
-        StepVerifier.create(empresaMunicipioService.save(dto, UUID.randomUUID())).expectNext(response).verifyComplete();
-        StepVerifier.create(empresaMunicipioService.listEmpresasMunicipio(filter)).expectNext(response).verifyComplete();
-        StepVerifier.create(empresaMunicipioService.delete(model.getId())).verifyComplete();
+        StepVerifier.create(empresaMunicipioService.delete(model.getId()))
+                .verifyComplete();
     }
 }
