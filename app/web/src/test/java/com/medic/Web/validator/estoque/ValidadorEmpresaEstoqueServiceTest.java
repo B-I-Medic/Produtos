@@ -27,7 +27,7 @@ class ValidadorEmpresaEstoqueServiceTest {
     private ValidadorEmpresaEstoqueService service;
 
     @Test
-    void shouldValidateEstoqueInternoSegregadoAndVp() {
+    void shouldValidateEstoqueInterno() {
 
         EmpresaMunicipioModel empresaMunicipio = TestDataFactory.empresaMunicipioModel();
         EmpresaModel empresa = TestDataFactory.empresaModel();
@@ -40,9 +40,30 @@ class ValidadorEmpresaEstoqueServiceTest {
                 .expectNext(empresaMunicipio)
                 .verifyComplete();
 
+    }
+
+    @Test
+    void shouldValidateEstoqueSegregado() {
+
+        EmpresaMunicipioModel empresaMunicipio = TestDataFactory.empresaMunicipioModel();
+        EmpresaModel empresa = TestDataFactory.empresaModel();
+        empresaMunicipio.setIdEmpresa(empresa.getId());
+        when(empresaMunicipioRepository.findById(empresaMunicipio.getId())).thenReturn(Mono.just(empresaMunicipio));
+        when(empresaRepository.findById(empresa.getId())).thenReturn(Mono.just(empresa));
+
         StepVerifier.create(service.validarEstoqueSegregado(empresa.getId(), empresaMunicipio.getId()))
                 .expectNext(empresaMunicipio)
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldValidateValePermanente() {
+
+        EmpresaMunicipioModel empresaMunicipio = TestDataFactory.empresaMunicipioModel();
+        EmpresaModel empresa = TestDataFactory.empresaModel();
+        empresaMunicipio.setIdEmpresa(empresa.getId());
+        when(empresaMunicipioRepository.findById(empresaMunicipio.getId())).thenReturn(Mono.just(empresaMunicipio));
+        when(empresaRepository.findById(empresa.getId())).thenReturn(Mono.just(empresa));
 
         StepVerifier.create(service.validarValePermanente(empresa.getId(), empresaMunicipio.getId()))
                 .expectNext(empresaMunicipio)

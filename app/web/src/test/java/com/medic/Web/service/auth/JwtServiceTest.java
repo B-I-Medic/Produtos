@@ -11,16 +11,42 @@ class JwtServiceTest {
     private final JwtService service = new JwtService();
 
     @Test
-    void shouldGenerateAndReadToken() {
+    void shouldGenerateToken() {
 
         UsuarioModel user = TestDataFactory.usuarioModel();
 
-        String token = service.generateToken(user);
+        assertNotNull(service.generateToken(user));
+    }
 
-        assertTrue(service.isValid(token));
-        assertEquals(user.getEmail(), service.getSubject(token));
-        assertEquals(user.getRole().name(), service.getRoles(token).getFirst());
-        assertNotNull(service.getExpires_in(token));
+    @Test
+    void shouldValidateGeneratedToken() {
+
+        assertTrue(service.isValid(generatedToken()));
+    }
+
+    @Test
+    void shouldReadTokenSubject() {
+
+        UsuarioModel user = TestDataFactory.usuarioModel();
+        assertEquals(user.getEmail(), service.getSubject(service.generateToken(user)));
+    }
+
+    @Test
+    void shouldReadTokenRoles() {
+
+        UsuarioModel user = TestDataFactory.usuarioModel();
+        assertEquals(user.getRole().name(), service.getRoles(service.generateToken(user)).getFirst());
+    }
+
+    @Test
+    void shouldReadTokenExpiration() {
+
+        assertNotNull(service.getExpires_in(generatedToken()));
+    }
+
+    private String generatedToken() {
+
+        return service.generateToken(TestDataFactory.usuarioModel());
     }
 
     @Test

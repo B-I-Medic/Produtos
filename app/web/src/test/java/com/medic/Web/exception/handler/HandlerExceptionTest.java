@@ -1,7 +1,7 @@
 package com.medic.Web.exception.handler;
 
 import com.medic.Web.dto.web.ErrorResponseDTO;
-import com.medic.Web.exception.type.NotFounException;
+import com.medic.Web.exception.type.NotFoundException;
 import com.medic.Web.exception.type.auth.InvalidTokenException;
 import com.medic.Web.exception.type.auth.PasswordAlreadySetException;
 import com.medic.Web.exception.type.auth.PasswordResetCodeException;
@@ -87,7 +87,7 @@ class HandlerExceptionTest {
     void shouldHandleNotFound() {
         var exchange = exchange("/auth/forgot-password");
 
-        StepVerifier.create(handler.handleNotFound(new NotFounException("Usuario", "mail@exemplo.com", "email"), exchange))
+        StepVerifier.create(handler.handleNotFound(new NotFoundException("Usuario", "mail@exemplo.com", "email"), exchange))
                 .assertNext(body -> assertBody(body, "Nao encontrado", "O(A) Usuario (email = mail@exemplo.com) não foi encontrado.", "/auth/forgot-password"))
                 .verifyComplete();
     }

@@ -1,6 +1,6 @@
 package com.medic.Web.controller.config.estoque;
 
-import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoFIlterDTO;
+import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoFilterDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoRequestDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
@@ -48,7 +48,7 @@ public class EstoqueSegregadoParametroController {
     }
 
     @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<EstoqueSegregadoResponseDTO> listEstoqueSegregado(@ModelAttribute EstoqueSegregadoFIlterDTO filter) {
+    public Flux<EstoqueSegregadoResponseDTO> listEstoqueSegregado(@ModelAttribute EstoqueSegregadoFilterDTO filter) {
 
         return service.listEstoqueSegregado(filter);
     }

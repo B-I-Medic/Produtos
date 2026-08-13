@@ -16,7 +16,7 @@ class JwtHandlersTest {
 
     private final ErrorResponseWriter writer = new ErrorResponseWriter();
     private final JwtEntryPoint entryPoint = new JwtEntryPoint(writer);
-    private final JwtAcessDenied accessDenied = new JwtAcessDenied(writer);
+    private final JwtAccessDenied accessDenied = new JwtAccessDenied(writer);
 
     @Test
     void shouldWriteJwtUnauthorizedBody() {

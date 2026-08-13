@@ -7,15 +7,17 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 import java.util.List;
 
 @Repository
 public class ConsultaProdutoRepository {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final ZoneId SOURCE_TIME_ZONE = ZoneId.of("America/Sao_Paulo");
 
     private final JdbcTemplate s00JdbcTemplate;
     private final JdbcTemplate ufxJdbcTemplate;
@@ -65,7 +67,7 @@ public class ConsultaProdutoRepository {
         if (criadoEm != null && !criadoEm.isBlank()) {
 
             LocalDateTime criadoEmLocal = LocalDateTime.parse(criadoEm.trim(), formatter);
-            produto.setCriadoEm(Timestamp.valueOf(criadoEmLocal));
+            produto.setCriadoEm(criadoEmLocal.atZone(SOURCE_TIME_ZONE).toInstant());
 
         } else {
             produto.setCriadoEm(null);

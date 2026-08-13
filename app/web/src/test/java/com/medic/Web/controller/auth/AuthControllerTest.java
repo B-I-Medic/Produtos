@@ -53,7 +53,7 @@ class AuthControllerTest {
     @Test
     void shouldFirstAccess() {
 
-        when(service.firstAcess(new PasswordRequestDTO("nova"), user.getId())).thenReturn(Mono.empty());
+        when(service.firstAccess(new PasswordRequestDTO("nova"), user.getId())).thenReturn(Mono.empty());
 
         client.post()
                 .uri("/auth/first-acess")

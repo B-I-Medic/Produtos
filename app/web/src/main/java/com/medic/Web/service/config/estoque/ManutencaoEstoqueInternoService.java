@@ -1,6 +1,6 @@
 package com.medic.Web.service.config.estoque;
 
-import com.medic.Web.dto.config.estoque.interno.EstoqueInternoFIlterDTO;
+import com.medic.Web.dto.config.estoque.interno.EstoqueInternoFilterDTO;
 import com.medic.Web.dto.config.estoque.interno.EstoqueInternoRequestDTO;
 import com.medic.Web.dto.config.estoque.interno.EstoqueInternoResponseDTO;
 import com.medic.Web.mapper.config.estoque.EstoqueInternoMapper;
@@ -59,7 +59,7 @@ public class ManutencaoEstoqueInternoService {
     }
 
     @Transactional(readOnly = true)
-    public Flux<EstoqueInternoResponseDTO> listEstoqueInterno(EstoqueInternoFIlterDTO filter) {
+    public Flux<EstoqueInternoResponseDTO> listEstoqueInterno(EstoqueInternoFilterDTO filter) {
 
         return repository.getAllAndFilter(filter);
     }

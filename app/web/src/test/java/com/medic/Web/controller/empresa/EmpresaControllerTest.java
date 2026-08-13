@@ -47,45 +47,85 @@ class EmpresaControllerTest {
     }
 
     @Test
-    void shouldHandleEmpresaEndpoints() {
+    void shouldListEmpresas() {
 
         var response = TestDataFactory.empresaResponseDTO();
-        var empresaMunicipioResponse = TestDataFactory.empresaMunicipioResponseDTO();
-        var dto = new EmpresaRequestDTO("Empresa", Viman.UFX, "001", true, true, true);
-        UUID id = UUID.randomUUID();
         when(empresaService.listEmpresas()).thenReturn(Flux.fromIterable(List.of(response)));
-        when(empresaService.listEmpresaMunicipioByIDEmpresa(id)).thenReturn(Flux.fromIterable(List.of(empresaMunicipioResponse)));
-        when(empresaService.save(dto, user.getId())).thenReturn(Mono.just(response));
-        when(empresaService.update(id, dto, user.getId())).thenReturn(Mono.just(response));
-        when(empresaService.delete(id)).thenReturn(Mono.empty());
 
         empresaClient.get().uri("/empresa/get").exchange().expectStatus().isOk();
+        verify(empresaService).listEmpresas();
+    }
+
+    @Test
+    void shouldListEmpresaMunicipioByEmpresa() {
+
+        var response = TestDataFactory.empresaMunicipioResponseDTO();
+        UUID id = UUID.randomUUID();
+        when(empresaService.listEmpresaMunicipioByIDEmpresa(id)).thenReturn(Flux.fromIterable(List.of(response)));
+
         empresaClient.get().uri("/empresa/" + id + "/empresa-municipio/get")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(EmpresaMunicipioResponseDTO.class)
                 .hasSize(1)
-                .contains(empresaMunicipioResponse);
-        empresaClient.post().uri("/empresa/save").contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
-        empresaClient.put().uri("/empresa/update/" + id).contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
-        empresaClient.delete().uri("/empresa/delete/" + id).exchange().expectStatus().isOk();
+                .contains(response);
 
         verify(empresaService).listEmpresaMunicipioByIDEmpresa(id);
     }
 
     @Test
-    void shouldHandleEmpresaMunicipioEndpoints() {
+    void shouldSaveEmpresa() {
+
+        var response = TestDataFactory.empresaResponseDTO();
+        var dto = new EmpresaRequestDTO("Empresa", Viman.UFX, "001", true, true, true);
+        when(empresaService.save(dto, user.getId())).thenReturn(Mono.just(response));
+
+        empresaClient.post()
+                .uri("/empresa/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(empresaService).save(dto, user.getId());
+    }
+
+    @Test
+    void shouldUpdateEmpresa() {
+
+        var response = TestDataFactory.empresaResponseDTO();
+        var dto = new EmpresaRequestDTO("Empresa", Viman.UFX, "001", true, true, true);
+        UUID id = UUID.randomUUID();
+        when(empresaService.update(id, dto, user.getId())).thenReturn(Mono.just(response));
+
+        empresaClient.put()
+                .uri("/empresa/update/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(empresaService).update(id, dto, user.getId());
+    }
+
+    @Test
+    void shouldDeleteEmpresa() {
+
+        UUID id = UUID.randomUUID();
+        when(empresaService.delete(id)).thenReturn(Mono.empty());
+
+        empresaClient.delete().uri("/empresa/delete/" + id).exchange().expectStatus().isOk();
+
+        verify(empresaService).delete(id);
+    }
+
+    @Test
+    void shouldListEmpresasMunicipio() {
 
         var response = TestDataFactory.empresaMunicipioResponseDTO();
-        UUID empresaId = UUID.randomUUID();
-        UUID cdId = UUID.randomUUID();
-        UUID municipioId = UUID.randomUUID();
-        var dto = new EmpresaMunicipioRequestDTO(empresaId, cdId, municipioId);
         var filter = new EmpresaMunicipioFilterDTO("Empresa", "Cidade", "SP", "CD");
 
         when(empresaMunicipioService.listEmpresasMunicipio(filter)).thenReturn(Flux.fromIterable(List.of(response)));
-        when(empresaMunicipioService.save(dto, user.getId())).thenReturn(Mono.just(response));
-        when(empresaMunicipioService.delete(response.id())).thenReturn(Mono.empty());
 
         empresaMunicipioClient.get().uri(uriBuilder -> uriBuilder
                         .path("/empresa/municipio/get")
@@ -99,6 +139,19 @@ class EmpresaControllerTest {
                 .expectBodyList(EmpresaMunicipioResponseDTO.class)
                 .hasSize(1)
                 .contains(response);
+        verify(empresaMunicipioService).listEmpresasMunicipio(filter);
+    }
+
+    @Test
+    void shouldSaveEmpresaMunicipio() {
+
+        var response = TestDataFactory.empresaMunicipioResponseDTO();
+        UUID empresaId = UUID.randomUUID();
+        UUID cdId = UUID.randomUUID();
+        UUID municipioId = UUID.randomUUID();
+        var dto = new EmpresaMunicipioRequestDTO(empresaId, cdId, municipioId);
+        when(empresaMunicipioService.save(dto, user.getId())).thenReturn(Mono.just(response));
+
         empresaMunicipioClient.post().uri("/empresa/municipio/save")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
@@ -106,10 +159,21 @@ class EmpresaControllerTest {
                 .expectStatus().isOk()
                 .expectBody(EmpresaMunicipioResponseDTO.class)
                 .isEqualTo(response);
-        empresaMunicipioClient.delete().uri("/empresa/municipio/delete/" + response.id()).exchange().expectStatus().isOk();
 
-        verify(empresaMunicipioService).listEmpresasMunicipio(filter);
         verify(empresaMunicipioService).save(dto, user.getId());
+    }
+
+    @Test
+    void shouldDeleteEmpresaMunicipio() {
+
+        var response = TestDataFactory.empresaMunicipioResponseDTO();
+        when(empresaMunicipioService.delete(response.id())).thenReturn(Mono.empty());
+
+        empresaMunicipioClient.delete()
+                .uri("/empresa/municipio/delete/" + response.id())
+                .exchange()
+                .expectStatus().isOk();
+
         verify(empresaMunicipioService).delete(response.id());
     }
 }

@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class EstoqueControllerTest {
@@ -53,57 +54,168 @@ class EstoqueControllerTest {
     }
 
     @Test
-    void shouldHandleEstoqueInternoEndpoints() {
+    void shouldListEstoqueInterno() {
 
         var model = TestDataFactory.estoqueInternoModel();
         var response = TestDataFactory.estoqueInternoResponseDTO();
-        var dto = new EstoqueInternoRequestDTO(model.getIdEmpresa(), model.getIdEmpresaMunicipio());
-        UUID id = UUID.randomUUID();
         when(internoService.listEstoqueInterno(any())).thenReturn(Flux.fromIterable(List.of(response)));
-        when(internoService.save(dto, user.getId())).thenReturn(Mono.empty());
-        when(internoService.update(id, dto, user.getId())).thenReturn(Mono.empty());
-        when(internoService.delete(id)).thenReturn(Mono.empty());
 
         internoClient.get().uri("/estoque/interno/get").exchange().expectStatus().isOk();
-        internoClient.post().uri("/estoque/interno/save").contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
-        internoClient.put().uri("/estoque/interno/update/" + id).contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
-        internoClient.delete().uri("/estoque/interno/delete/" + id).exchange().expectStatus().isOk();
+        verify(internoService).listEstoqueInterno(any());
     }
 
     @Test
-    void shouldHandleEstoqueSegregadoEndpoints() {
+    void shouldSaveEstoqueInterno() {
 
-        var model = TestDataFactory.estoqueSegregadoModel();
-        var response = TestDataFactory.estoqueSegregadoResponseDTO();
-        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), model.getIdEmpresaMunicipio());
+        var model = TestDataFactory.estoqueInternoModel();
+        var dto = new EstoqueInternoRequestDTO(model.getIdEmpresa(), model.getIdEmpresaMunicipio());
+        when(internoService.save(dto, user.getId())).thenReturn(Mono.empty());
+
+        internoClient.post()
+                .uri("/estoque/interno/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(internoService).save(dto, user.getId());
+    }
+
+    @Test
+    void shouldUpdateEstoqueInterno() {
+
+        var model = TestDataFactory.estoqueInternoModel();
+        var dto = new EstoqueInternoRequestDTO(model.getIdEmpresa(), model.getIdEmpresaMunicipio());
         UUID id = UUID.randomUUID();
+        when(internoService.update(id, dto, user.getId())).thenReturn(Mono.empty());
+
+        internoClient.put()
+                .uri("/estoque/interno/update/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(internoService).update(id, dto, user.getId());
+    }
+
+    @Test
+    void shouldDeleteEstoqueInterno() {
+
+        UUID id = UUID.randomUUID();
+        when(internoService.delete(id)).thenReturn(Mono.empty());
+
+        internoClient.delete().uri("/estoque/interno/delete/" + id).exchange().expectStatus().isOk();
+        verify(internoService).delete(id);
+    }
+
+    @Test
+    void shouldListEstoqueSegregado() {
+
+        var response = TestDataFactory.estoqueSegregadoResponseDTO();
         when(segregadoService.listEstoqueSegregado(any())).thenReturn(Flux.fromIterable(List.of(response)));
-        when(segregadoService.save(dto, user.getId())).thenReturn(Mono.empty());
-        when(segregadoService.update(id, dto, user.getId())).thenReturn(Mono.empty());
-        when(segregadoService.delete(id)).thenReturn(Mono.empty());
 
         segregadoClient.get().uri("/estoque/segregado/get").exchange().expectStatus().isOk();
-        segregadoClient.post().uri("/estoque/segregado/save").contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
-        segregadoClient.put().uri("/estoque/segregado/update/" + id).contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
-        segregadoClient.delete().uri("/estoque/segregado/delete/" + id).exchange().expectStatus().isOk();
+        verify(segregadoService).listEstoqueSegregado(any());
     }
 
     @Test
-    void shouldHandleValePermanenteEndpoints() {
+    void shouldSaveEstoqueSegregado() {
 
-        var model = TestDataFactory.valePermanenteModel();
-        var response = TestDataFactory.valePermanenteResponseDTO();
-        var dto = new ValePermanenteRequestDTO(model.getIdEmpresa(), model.getCodVp(), model.getIdEmpresaMunicipio());
+        var model = TestDataFactory.estoqueSegregadoModel();
+        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), model.getIdEmpresaMunicipio());
+        when(segregadoService.save(dto, user.getId())).thenReturn(Mono.empty());
+
+        segregadoClient.post()
+                .uri("/estoque/segregado/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(segregadoService).save(dto, user.getId());
+    }
+
+    @Test
+    void shouldUpdateEstoqueSegregado() {
+
+        var model = TestDataFactory.estoqueSegregadoModel();
+        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), model.getIdEmpresaMunicipio());
         UUID id = UUID.randomUUID();
+        when(segregadoService.update(id, dto, user.getId())).thenReturn(Mono.empty());
 
+        segregadoClient.put()
+                .uri("/estoque/segregado/update/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(segregadoService).update(id, dto, user.getId());
+    }
+
+    @Test
+    void shouldDeleteEstoqueSegregado() {
+
+        UUID id = UUID.randomUUID();
+        when(segregadoService.delete(id)).thenReturn(Mono.empty());
+
+        segregadoClient.delete().uri("/estoque/segregado/delete/" + id).exchange().expectStatus().isOk();
+        verify(segregadoService).delete(id);
+    }
+
+    @Test
+    void shouldListValePermanente() {
+
+        var response = TestDataFactory.valePermanenteResponseDTO();
         when(valeService.listValePermanente(any())).thenReturn(Flux.fromIterable(List.of(response)));
-        when(valeService.save(dto, user.getId())).thenReturn(Mono.empty());
-        when(valeService.update(id, dto, user.getId())).thenReturn(Mono.empty());
-        when(valeService.delete(id)).thenReturn(Mono.empty());
 
         valeClient.get().uri("/vale-permanente/get").exchange().expectStatus().isOk();
-        valeClient.post().uri("/vale-permanente/save").contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
-        valeClient.put().uri("/vale-permanente/update/" + id).contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
+        verify(valeService).listValePermanente(any());
+    }
+
+    @Test
+    void shouldSaveValePermanente() {
+
+        var model = TestDataFactory.valePermanenteModel();
+        var dto = new ValePermanenteRequestDTO(model.getIdEmpresa(), model.getCodVp(), model.getIdEmpresaMunicipio());
+        when(valeService.save(dto, user.getId())).thenReturn(Mono.empty());
+
+        valeClient.post()
+                .uri("/vale-permanente/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(valeService).save(dto, user.getId());
+    }
+
+    @Test
+    void shouldUpdateValePermanente() {
+
+        var model = TestDataFactory.valePermanenteModel();
+        var dto = new ValePermanenteRequestDTO(model.getIdEmpresa(), model.getCodVp(), model.getIdEmpresaMunicipio());
+        UUID id = UUID.randomUUID();
+        when(valeService.update(id, dto, user.getId())).thenReturn(Mono.empty());
+
+        valeClient.put()
+                .uri("/vale-permanente/update/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(valeService).update(id, dto, user.getId());
+    }
+
+    @Test
+    void shouldDeleteValePermanente() {
+
+        UUID id = UUID.randomUUID();
+        when(valeService.delete(id)).thenReturn(Mono.empty());
+
         valeClient.delete().uri("/vale-permanente/delete/" + id).exchange().expectStatus().isOk();
+        verify(valeService).delete(id);
     }
 }

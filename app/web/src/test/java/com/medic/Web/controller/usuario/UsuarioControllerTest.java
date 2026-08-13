@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class UsuarioControllerTest {
@@ -52,18 +53,64 @@ class UsuarioControllerTest {
     }
 
     @Test
-    void shouldSaveUpdateDisableAndEnable() {
+    void shouldSaveUsuario() {
 
         var response = TestDataFactory.usuarioResponseDTO();
         var dto = new UsuarioRequestDTO("teste@medic.com", "Teste", Role.ADMIN);
         when(manutencaoService.save(dto, user.getId())).thenReturn(Mono.just(response));
+
+        client.post()
+                .uri("/usuario/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(manutencaoService).save(dto, user.getId());
+    }
+
+    @Test
+    void shouldUpdateUsuario() {
+
+        var response = TestDataFactory.usuarioResponseDTO();
+        var dto = new UsuarioRequestDTO("teste@medic.com", "Teste", Role.ADMIN);
         when(manutencaoService.update(user.getId(), dto, user.getId())).thenReturn(Mono.just(response));
+
+        client.put()
+                .uri("/usuario/update/" + user.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(manutencaoService).update(user.getId(), dto, user.getId());
+    }
+
+    @Test
+    void shouldDisableUsuario() {
+
+        var response = TestDataFactory.usuarioResponseDTO();
         when(manutencaoService.disable(user.getId(), user.getId())).thenReturn(Mono.just(response));
+
+        client.put()
+                .uri("/usuario/disable/" + user.getId())
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(manutencaoService).disable(user.getId(), user.getId());
+    }
+
+    @Test
+    void shouldEnableUsuario() {
+
+        var response = TestDataFactory.usuarioResponseDTO();
         when(manutencaoService.enable(user.getId(), user.getId())).thenReturn(Mono.just(response));
 
-        client.post().uri("/usuario/save").contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
-        client.put().uri("/usuario/update/" + user.getId()).contentType(MediaType.APPLICATION_JSON).bodyValue(dto).exchange().expectStatus().isOk();
-        client.put().uri("/usuario/disable/" + user.getId()).exchange().expectStatus().isOk();
-        client.put().uri("/usuario/enable/" + user.getId()).exchange().expectStatus().isOk();
+        client.put()
+                .uri("/usuario/enable/" + user.getId())
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(manutencaoService).enable(user.getId(), user.getId());
     }
 }

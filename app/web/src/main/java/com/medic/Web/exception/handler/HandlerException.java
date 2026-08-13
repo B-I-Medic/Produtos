@@ -1,7 +1,7 @@
 package com.medic.Web.exception.handler;
 
 import com.medic.Web.dto.web.ErrorResponseDTO;
-import com.medic.Web.exception.type.NotFounException;
+import com.medic.Web.exception.type.NotFoundException;
 import com.medic.Web.exception.type.auth.InvalidTokenException;
 import com.medic.Web.exception.type.auth.PasswordAlreadySetException;
 import com.medic.Web.exception.type.auth.PasswordResetCodeException;
@@ -47,8 +47,8 @@ public class HandlerException {
         return writer.body(HttpStatus.FORBIDDEN, "Acesso negado", "Voce nao tem permissao para acessar este recurso", exchange);
     }
 
-    @ExceptionHandler(NotFounException.class)
-    public Mono<ErrorResponseDTO> handleNotFound(NotFounException ex, ServerWebExchange exchange) {
+    @ExceptionHandler(NotFoundException.class)
+    public Mono<ErrorResponseDTO> handleNotFound(NotFoundException ex, ServerWebExchange exchange) {
         return writer.body(HttpStatus.NOT_FOUND, "Nao encontrado", ex.getMessage(), exchange);
     }
 

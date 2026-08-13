@@ -1,6 +1,6 @@
 package com.medic.Web.service.config.estoque;
 
-import com.medic.Web.dto.config.estoque.vp.ValePermanenteFIlterDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteFilterDTO;
 import com.medic.Web.dto.config.estoque.vp.ValePermanenteRequestDTO;
 import com.medic.Web.dto.config.estoque.vp.ValePermanenteResponseDTO;
 import com.medic.Web.mapper.config.estoque.ValePermanenteMapper;
@@ -59,7 +59,7 @@ public class ManutencaoValePermanenteService {
     }
 
     @Transactional(readOnly = true)
-    public Flux<ValePermanenteResponseDTO> listValePermanente(ValePermanenteFIlterDTO filter) {
+    public Flux<ValePermanenteResponseDTO> listValePermanente(ValePermanenteFilterDTO filter) {
 
         return repository.getAllAndFilter(filter);
     }

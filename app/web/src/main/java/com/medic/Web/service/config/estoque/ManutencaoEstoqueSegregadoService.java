@@ -1,6 +1,6 @@
 package com.medic.Web.service.config.estoque;
 
-import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoFIlterDTO;
+import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoFilterDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoRequestDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
 import com.medic.Web.mapper.config.estoque.EstoqueSegregadoMapper;
@@ -59,7 +59,7 @@ public class ManutencaoEstoqueSegregadoService {
     }
 
     @Transactional(readOnly = true)
-    public Flux<EstoqueSegregadoResponseDTO> listEstoqueSegregado(EstoqueSegregadoFIlterDTO filter) {
+    public Flux<EstoqueSegregadoResponseDTO> listEstoqueSegregado(EstoqueSegregadoFilterDTO filter) {
 
         return repository.getAllAndFilter(filter);
     }

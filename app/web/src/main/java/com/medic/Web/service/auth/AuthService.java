@@ -4,7 +4,7 @@ import com.medic.Web.dto.auth.LoginRequestDTO;
 import com.medic.Web.dto.auth.LoginResponseDTO;
 import com.medic.Web.dto.auth.PasswordRequestDTO;
 import com.medic.Web.dto.auth.ResetPasswordRequestDTO;
-import com.medic.Web.exception.type.NotFounException;
+import com.medic.Web.exception.type.NotFoundException;
 import com.medic.Web.exception.type.auth.PasswordAlreadySetException;
 import com.medic.Web.exception.type.auth.PasswordResetCodeException;
 import com.medic.Web.mapper.auth.PasswordResetCodeMapper;
@@ -79,7 +79,7 @@ public class AuthService {
     }
 
     @Transactional
-    public Mono<Void> firstAcess(PasswordRequestDTO pss, UUID userId) {
+    public Mono<Void> firstAccess(PasswordRequestDTO pss, UUID userId) {
 
         return repository.findById(userId)
                 .filter(UsuarioModel::getAtivo)
@@ -117,7 +117,7 @@ public class AuthService {
         String code = passwordResetCodeGenerator.generate();
 
         return repository.findByEmail(mail)
-                .switchIfEmpty(Mono.error(new NotFounException("Usuario", mail, "email")))
+                .switchIfEmpty(Mono.error(new NotFoundException("Usuario", mail, "email")))
                 .filter(UsuarioModel::getAtivo)
                 .switchIfEmpty(Mono.error(new DisabledException("Usuário inativo")))
                 .flatMap(user -> {

@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,7 +34,7 @@ class ManutencaoScheduleServiceTest {
     private ManutencaoScheduleService service;
 
     @Test
-    void shouldCrudSchedule() {
+    void shouldUpdateSchedule() {
 
         var model = scheduleModel();
         var response = scheduleResponse();
@@ -44,19 +44,48 @@ class ManutencaoScheduleServiceTest {
         when(repository.findById(model.getId())).thenReturn(Mono.just(model));
         when(repository.save(any(ScheduleModel.class))).thenReturn(Mono.just(model));
         when(mapper.toDTO(model)).thenReturn(response);
-        when(repository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
-
         StepVerifier.create(service.atualizar(model.getId(), cron, userId))
                 .expectNext(response)
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldEnableSchedule() {
+
+        var model = scheduleModel();
+        var response = scheduleResponse();
+        UUID userId = UUID.randomUUID();
+        when(repository.findById(model.getId())).thenReturn(Mono.just(model));
+        when(repository.save(any(ScheduleModel.class))).thenReturn(Mono.just(model));
+        when(mapper.toDTO(model)).thenReturn(response);
 
         StepVerifier.create(service.enable(model.getId(), userId))
                 .expectNext(response)
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldDisableSchedule() {
+
+        var model = scheduleModel();
+        var response = scheduleResponse();
+        UUID userId = UUID.randomUUID();
+        when(repository.findById(model.getId())).thenReturn(Mono.just(model));
+        when(repository.save(any(ScheduleModel.class))).thenReturn(Mono.just(model));
+        when(mapper.toDTO(model)).thenReturn(response);
 
         StepVerifier.create(service.disable(model.getId(), userId))
                 .expectNext(response)
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldListSchedules() {
+
+        var model = scheduleModel();
+        var response = scheduleResponse();
+        when(repository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
+        when(mapper.toDTO(model)).thenReturn(response);
 
         StepVerifier.create(service.listSchedules())
                 .expectNext(response)
@@ -105,7 +134,7 @@ class ManutencaoScheduleServiceTest {
                 ScheduleJob.ATUALIZAR_ESTOQUE,
                 "0 0 * * * *",
                 true,
-                ZonedDateTime.now()
+                Instant.now()
         );
     }
 }

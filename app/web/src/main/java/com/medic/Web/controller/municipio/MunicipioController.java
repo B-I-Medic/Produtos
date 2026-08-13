@@ -2,7 +2,7 @@ package com.medic.Web.controller.municipio;
 
 import com.medic.Web.dto.municipio.MunicipioFilterDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
-import com.medic.Web.service.muncipio.ConsultaMunicipioService;
+import com.medic.Web.service.municipio.ConsultaMunicipioService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;

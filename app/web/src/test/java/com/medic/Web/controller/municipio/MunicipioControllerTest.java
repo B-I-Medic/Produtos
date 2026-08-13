@@ -2,7 +2,7 @@ package com.medic.Web.controller.municipio;
 
 import com.medic.Web.dto.municipio.MunicipioFilterDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
-import com.medic.Web.service.muncipio.ConsultaMunicipioService;
+import com.medic.Web.service.municipio.ConsultaMunicipioService;
 import com.medic.Web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.reactive.server.WebTestClient;

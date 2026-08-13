@@ -1,6 +1,6 @@
 package com.medic.Web.repository.config.estoque.vp;
 
-import com.medic.Web.dto.config.estoque.vp.ValePermanenteFIlterDTO;
+import com.medic.Web.dto.config.estoque.vp.ValePermanenteFilterDTO;
 import com.medic.Web.dto.config.estoque.vp.ValePermanenteResponseDTO;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
@@ -44,7 +44,7 @@ public class ValePermanenteRepositoryCustomImpl implements ValePermanenteReposit
     }
 
     @Override
-    public Flux<ValePermanenteResponseDTO> getAllAndFilter(ValePermanenteFIlterDTO filter) {
+    public Flux<ValePermanenteResponseDTO> getAllAndFilter(ValePermanenteFilterDTO filter) {
 
         var query = databaseClient.sql(FIND_ALL);
 

@@ -1,4 +1,4 @@
-package com.medic.Web.service.muncipio;
+package com.medic.Web.service.municipio;
 
 import com.medic.Web.dto.municipio.MunicipioFilterDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
