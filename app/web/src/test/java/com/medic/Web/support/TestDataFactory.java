@@ -8,6 +8,7 @@ import com.medic.Web.dto.config.estoque.interno.EstoqueInternoResponseDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
 import com.medic.Web.dto.config.estoque.vp.ValePermanenteResponseDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
+import com.medic.Web.dto.municipio.MunicipioResumoResponseDTO;
 import com.medic.Web.dto.forecast.ForecastAgrupadoResponseDTO;
 import com.medic.Web.dto.config.periodo.PeriodoResponseDTO;
 import com.medic.Web.dto.config.taxa.TaxaResponseDTO;
@@ -94,6 +95,7 @@ public final class TestDataFactory {
         var model = new CentroDistribuicaoModel();
         model.setId(UUID.randomUUID());
         model.setDescricao("CD");
+        model.setMunicipioId(UUID.randomUUID());
         model.setCriadoPor(UUID.randomUUID());
         return model;
     }
@@ -101,7 +103,11 @@ public final class TestDataFactory {
     public static CentroDistribuicaoResponseDTO centroDistribuicaoResponseDTO() {
 
         var model = centroDistribuicaoModel();
-        return new CentroDistribuicaoResponseDTO(model.getId(), model.getDescricao());
+        return new CentroDistribuicaoResponseDTO(
+                model.getId(),
+                model.getDescricao(),
+                new MunicipioResumoResponseDTO(model.getMunicipioId(), "Cidade", "SP")
+        );
     }
 
     public static EmpresaModel empresaModel() {
@@ -111,6 +117,7 @@ public final class TestDataFactory {
         model.setDescricao("Empresa");
         model.setViman(Viman.UFX);
         model.setCodigoEmpresa("001");
+        model.setMunicipioId(UUID.randomUUID());
         model.setPossuiEstoqueInterno(true);
         model.setPossuiEstoqueSegregado(true);
         model.setPossuiVp(true);
@@ -121,8 +128,10 @@ public final class TestDataFactory {
     public static EmpresaResponseDTO empresaResponseDTO() {
 
         var model = empresaModel();
-        return new EmpresaResponseDTO(model.getId(), model.getDescricao(), model.getViman(), model.getCodigoEmpresa(),
-                model.isPossuiEstoqueInterno(), model.isPossuiEstoqueSegregado(), model.isPossuiVp());
+        return new EmpresaResponseDTO(model.getId(), model.getDescricao(),
+                new MunicipioResumoResponseDTO(model.getMunicipioId(), "Cidade", "SP"),
+                model.getViman(), model.getCodigoEmpresa(), model.isPossuiEstoqueInterno(),
+                model.isPossuiEstoqueSegregado(), model.isPossuiVp());
     }
 
     public static EmpresaMunicipioModel empresaMunicipioModel() {
