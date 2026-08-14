@@ -77,7 +77,7 @@ class EmpresaControllerTest {
     void shouldSaveEmpresa() {
 
         var response = TestDataFactory.empresaResponseDTO();
-        var dto = new EmpresaRequestDTO("Empresa", Viman.UFX, "001", true, true, true);
+        var dto = new EmpresaRequestDTO("Empresa", UUID.randomUUID(), Viman.UFX, "001", true, true, true);
         when(empresaService.save(dto, user.getId())).thenReturn(Mono.just(response));
 
         empresaClient.post()
@@ -94,7 +94,7 @@ class EmpresaControllerTest {
     void shouldUpdateEmpresa() {
 
         var response = TestDataFactory.empresaResponseDTO();
-        var dto = new EmpresaRequestDTO("Empresa", Viman.UFX, "001", true, true, true);
+        var dto = new EmpresaRequestDTO("Empresa", UUID.randomUUID(), Viman.UFX, "001", true, true, true);
         UUID id = UUID.randomUUID();
         when(empresaService.update(id, dto, user.getId())).thenReturn(Mono.just(response));
 

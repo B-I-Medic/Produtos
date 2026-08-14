@@ -1,10 +1,12 @@
 package com.medic.Web.service.cd;
 
 import com.medic.Web.dto.cd.CentroDistribuicaoRequestDTO;
+import com.medic.Web.exception.type.NotFoundException;
 import com.medic.Web.mapper.cd.CentroDistribuicaoMapper;
 import com.medic.Web.model.cd.CentroDistribuicaoModel;
 import com.medic.Web.repository.cd.CdEmpresaMunipioRepository;
 import com.medic.Web.repository.cd.CentroDistribuicaoRepository;
+import com.medic.Web.repository.cd.MunicipioRepository;
 import com.medic.Web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +21,8 @@ import reactor.test.StepVerifier;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +34,8 @@ class CdServiceTest {
     private CentroDistribuicaoMapper centroDistribuicaoMapper;
     @Mock
     private CdEmpresaMunipioRepository cdEmpresaMunipioRepository;
+    @Mock
+    private MunicipioRepository municipioRepository;
 
     @InjectMocks
     private ManutencaoCDService manutencaoCDService;
@@ -41,13 +47,15 @@ class CdServiceTest {
 
         CentroDistribuicaoModel model = TestDataFactory.centroDistribuicaoModel();
         var response = TestDataFactory.centroDistribuicaoResponseDTO();
-        var dto = new CentroDistribuicaoRequestDTO("CD");
+        var municipio = TestDataFactory.municipioModel();
+        var dto = new CentroDistribuicaoRequestDTO("CD", municipio.getId());
 
         when(centroDistribuicaoMapper.toEntity(
                 ArgumentMatchers.any(),
                 ArgumentMatchers.eq(dto),
                 ArgumentMatchers.any(UUID.class))).thenReturn(model);
-        when(centroDistribuicaoMapper.toDTO(model)).thenReturn(response);
+        when(centroDistribuicaoMapper.toDTO(model, municipio)).thenReturn(response);
+        when(municipioRepository.findById(municipio.getId())).thenReturn(Mono.just(municipio));
         when(centroDistribuicaoRepository.save(model)).thenReturn(Mono.just(model));
 
         StepVerifier.create(manutencaoCDService.save(dto, UUID.randomUUID()))
@@ -60,18 +68,34 @@ class CdServiceTest {
 
         CentroDistribuicaoModel model = TestDataFactory.centroDistribuicaoModel();
         var response = TestDataFactory.centroDistribuicaoResponseDTO();
-        var dto = new CentroDistribuicaoRequestDTO("CD");
+        var municipio = TestDataFactory.municipioModel();
+        var dto = new CentroDistribuicaoRequestDTO("CD", municipio.getId());
         when(centroDistribuicaoRepository.findById(model.getId())).thenReturn(Mono.just(model));
         when(centroDistribuicaoMapper.toEntity(
                 ArgumentMatchers.any(),
                 ArgumentMatchers.eq(dto),
                 ArgumentMatchers.any(UUID.class))).thenReturn(model);
         when(centroDistribuicaoRepository.save(model)).thenReturn(Mono.just(model));
-        when(centroDistribuicaoMapper.toDTO(model)).thenReturn(response);
+        when(centroDistribuicaoMapper.toDTO(model, municipio)).thenReturn(response);
+        when(municipioRepository.findById(municipio.getId())).thenReturn(Mono.just(municipio));
 
         StepVerifier.create(manutencaoCDService.update(model.getId(), dto, UUID.randomUUID()))
                 .expectNext(response)
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldNotSaveCentroDistribuicaoWhenMunicipioDoesNotExist() {
+
+        UUID municipioId = UUID.randomUUID();
+        var dto = new CentroDistribuicaoRequestDTO("CD", municipioId);
+        when(municipioRepository.findById(municipioId)).thenReturn(Mono.empty());
+
+        StepVerifier.create(manutencaoCDService.save(dto, UUID.randomUUID()))
+                .expectError(NotFoundException.class)
+                .verify();
+
+        verify(centroDistribuicaoRepository, never()).save(ArgumentMatchers.any());
     }
 
     @Test
@@ -80,7 +104,10 @@ class CdServiceTest {
         CentroDistribuicaoModel model = TestDataFactory.centroDistribuicaoModel();
         var response = TestDataFactory.centroDistribuicaoResponseDTO();
         when(centroDistribuicaoRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
-        when(centroDistribuicaoMapper.toDTO(model)).thenReturn(response);
+        var municipio = TestDataFactory.municipioModel();
+        model.setMunicipioId(municipio.getId());
+        when(municipioRepository.findById(municipio.getId())).thenReturn(Mono.just(municipio));
+        when(centroDistribuicaoMapper.toDTO(model, municipio)).thenReturn(response);
 
         StepVerifier.create(manutencaoCDService.listCDs())
                 .expectNext(response)

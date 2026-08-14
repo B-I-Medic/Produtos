@@ -2,7 +2,9 @@ package com.medic.Web.mapper.empresa;
 
 import com.medic.Web.dto.empresa.EmpresaRequestDTO;
 import com.medic.Web.dto.empresa.EmpresaResponseDTO;
+import com.medic.Web.dto.municipio.MunicipioResumoResponseDTO;
 import com.medic.Web.model.empresa.EmpresaModel;
+import com.medic.Web.model.municipio.MunicipioModel;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -16,6 +18,7 @@ public class EmpresaMapper {
                                  UUID userId) {
 
         entity.setDescricao(dto.descricao());
+        entity.setMunicipioId(dto.municipioId());
         entity.setViman(dto.viman());
         entity.setCodigoEmpresa(dto.codigoEmpresa());
         entity.setPossuiEstoqueInterno(dto.possuiEstoqueInterno());
@@ -37,9 +40,19 @@ public class EmpresaMapper {
 
     public EmpresaResponseDTO toDTO(EmpresaModel entity) {
 
+        return toDTO(entity, null);
+    }
+
+    public EmpresaResponseDTO toDTO(EmpresaModel entity, MunicipioModel municipio) {
+
         return new EmpresaResponseDTO(
                 entity.getId(),
                 entity.getDescricao(),
+                municipio == null ? null : new MunicipioResumoResponseDTO(
+                        municipio.getId(),
+                        municipio.getDescricao(),
+                        municipio.getEstado()
+                ),
                 entity.getViman(),
                 entity.getCodigoEmpresa(),
                 entity.isPossuiEstoqueInterno(),

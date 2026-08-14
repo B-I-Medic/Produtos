@@ -54,7 +54,7 @@ class CdControllerTest {
     void shouldSaveCd() {
 
         var response = TestDataFactory.centroDistribuicaoResponseDTO();
-        var dto = new CentroDistribuicaoRequestDTO("CD");
+        var dto = new CentroDistribuicaoRequestDTO("CD", UUID.randomUUID());
         when(cdService.save(dto, user.getId())).thenReturn(Mono.just(response));
 
         cdClient.post()
@@ -71,7 +71,7 @@ class CdControllerTest {
     void shouldUpdateCd() {
 
         var response = TestDataFactory.centroDistribuicaoResponseDTO();
-        var dto = new CentroDistribuicaoRequestDTO("CD");
+        var dto = new CentroDistribuicaoRequestDTO("CD", UUID.randomUUID());
         UUID id = UUID.randomUUID();
         when(cdService.update(id, dto, user.getId())).thenReturn(Mono.just(response));
 

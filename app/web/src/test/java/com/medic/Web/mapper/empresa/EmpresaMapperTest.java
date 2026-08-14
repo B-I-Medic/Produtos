@@ -3,6 +3,7 @@ package com.medic.Web.mapper.empresa;
 import com.medic.Web.dto.empresa.EmpresaRequestDTO;
 import com.medic.Web.model.empresa.EmpresaModel;
 import com.medic.Web.model.empresa.Viman;
+import com.medic.Web.model.municipio.MunicipioModel;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -18,11 +19,13 @@ class EmpresaMapperTest {
     void shouldMapEmpresaForCreate() {
 
         UUID userId = UUID.randomUUID();
-        EmpresaRequestDTO dto = new EmpresaRequestDTO("Empresa A", Viman.UFX, "001", true, false, true);
+        UUID municipioId = UUID.randomUUID();
+        EmpresaRequestDTO dto = new EmpresaRequestDTO("Empresa A", municipioId, Viman.UFX, "001", true, false, true);
 
         EmpresaModel entity = mapper.toEntity(new EmpresaModel(), dto, userId);
 
         assertEquals("Empresa A", entity.getDescricao());
+        assertEquals(municipioId, entity.getMunicipioId());
         assertEquals(Viman.UFX, entity.getViman());
         assertEquals("001", entity.getCodigoEmpresa());
         assertTrue(entity.isPossuiEstoqueInterno());
@@ -37,7 +40,8 @@ class EmpresaMapperTest {
     void shouldMapEmpresaForUpdate() {
 
         UUID userId = UUID.randomUUID();
-        EmpresaRequestDTO dto = new EmpresaRequestDTO("Empresa B", Viman.S00, "002", false, true, false);
+        UUID municipioId = UUID.randomUUID();
+        EmpresaRequestDTO dto = new EmpresaRequestDTO("Empresa B", municipioId, Viman.S00, "002", false, true, false);
         EmpresaModel current = new EmpresaModel();
         current.setId(UUID.randomUUID());
         current.setCriadoPor(UUID.randomUUID());
@@ -48,6 +52,7 @@ class EmpresaMapperTest {
         Instant after = Instant.now();
 
         assertEquals("Empresa B", entity.getDescricao());
+        assertEquals(municipioId, entity.getMunicipioId());
         assertEquals(Viman.S00, entity.getViman());
         assertEquals("002", entity.getCodigoEmpresa());
         assertFalse(entity.isPossuiEstoqueInterno());
@@ -68,14 +73,19 @@ class EmpresaMapperTest {
         entity.setDescricao("Empresa C");
         entity.setViman(Viman.UFX);
         entity.setCodigoEmpresa("003");
+        var municipio = new MunicipioModel(UUID.randomUUID(), "Cidade", "123", "SP");
+        entity.setMunicipioId(municipio.getId());
         entity.setPossuiEstoqueInterno(true);
         entity.setPossuiEstoqueSegregado(true);
         entity.setPossuiVp(false);
 
-        var dto = mapper.toDTO(entity);
+        var dto = mapper.toDTO(entity, municipio);
 
         assertEquals(id, dto.id());
         assertEquals("Empresa C", dto.descricao());
+        assertEquals(municipio.getId(), dto.municipio().id());
+        assertEquals("Cidade", dto.municipio().descricao());
+        assertEquals("SP", dto.municipio().estado());
         assertEquals(Viman.UFX, dto.viman());
         assertEquals("003", dto.codigoEmpresa());
         assertTrue(dto.possuiEstoqueInterno());
