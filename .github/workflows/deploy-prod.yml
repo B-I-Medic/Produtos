@@ -222,9 +222,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=20 \
+          if ! deploy_output=$(ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=20 \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
-            "powershell -NoProfile -ExecutionPolicy Bypass -File '$REMOTE_SCRIPT_PATH' -WebServiceName '$WEB_SERVICE_NAME' -WebJarPath '$WEB_SERVER_JAR' -EtlServiceName '$ETL_SERVICE_NAME' -EtlJarPath '$ETL_SERVER_JAR' -WebHealthUrl '$WEB_HEALTH_URL' -EtlHealthUrl '$ETL_HEALTH_URL' -ExpectedProfile '$EXPECTED_PROFILE' -DeployRoot '$DEPLOY_ROOT' -ExpectedWebPort $EXPECTED_WEB_PORT -ExpectedEtlPort $EXPECTED_ETL_PORT"
+            "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"$REMOTE_SCRIPT_PATH\" -WebServiceName \"$WEB_SERVICE_NAME\" -WebJarPath \"$WEB_SERVER_JAR\" -EtlServiceName \"$ETL_SERVICE_NAME\" -EtlJarPath \"$ETL_SERVER_JAR\" -WebHealthUrl \"$WEB_HEALTH_URL\" -EtlHealthUrl \"$ETL_HEALTH_URL\" -ExpectedProfile \"$EXPECTED_PROFILE\" -DeployRoot \"$DEPLOY_ROOT\" -ExpectedWebPort \"$EXPECTED_WEB_PORT\" -ExpectedEtlPort \"$EXPECTED_ETL_PORT\"" 2>&1); then
+            printf '%s\n' "$deploy_output"
+            echo "A execucao remota do deploy falhou." >&2
+            exit 1
+          fi
+
+          printf '%s\n' "$deploy_output"
+          if [[ "$deploy_output" != *"DEPLOY_RESULT=SUCCESS"* ]]; then
+            echo "O deploy remoto terminou sem confirmar DEPLOY_RESULT=SUCCESS." >&2
+            exit 1
+          fi
 
       - name: Cleanup remote deploy script
         if: always()
