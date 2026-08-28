@@ -243,6 +243,46 @@ function Test-Port {
     }
 }
 
+function Assert-NssmRunning {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Name
+    )
+
+    $status = Get-NssmStatus -Name $Name
+    if ($status -notmatch 'SERVICE_RUNNING') {
+        throw "O servico '$Name' nao permaneceu em execucao. Estado atual: '$status'."
+    }
+}
+
+function Assert-PromotedArtifacts {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$FinalWebJarPath,
+
+        [Parameter(Mandatory = $true)]
+        [string]$FinalEtlJarPath,
+
+        [Parameter(Mandatory = $true)]
+        [string]$StagedWebJarPath,
+
+        [Parameter(Mandatory = $true)]
+        [string]$StagedEtlJarPath
+    )
+
+    foreach ($finalPath in @($FinalWebJarPath, $FinalEtlJarPath)) {
+        if (-not (Test-Path -LiteralPath $finalPath -PathType Leaf)) {
+            throw "O artifact final nao foi encontrado em '$finalPath'."
+        }
+    }
+
+    foreach ($stagedPath in @($StagedWebJarPath, $StagedEtlJarPath)) {
+        if (Test-Path -LiteralPath $stagedPath) {
+            throw "O artifact temporario nao foi removido de '$stagedPath'."
+        }
+    }
+}
+
 function Wait-ForHealth {
     param(
         [Parameter(Mandatory = $true)]
@@ -362,6 +402,7 @@ if ($Rollback) {
         -EtlSnapshot $rollbackEtlSnapshot
 
     Write-Host 'Rollback do release concluido com health check valido.'
+    Write-Host 'ROLLBACK_RESULT=SUCCESS'
     exit 0
 }
 
@@ -370,15 +411,17 @@ $etlStagedJarPath = "$EtlJarPath.new"
 $backupPath = $null
 $webSnapshot = $null
 $etlSnapshot = $null
+$bootstrapDeployment = $false
 
 try {
-    if (-not (Test-Path -LiteralPath $WebJarPath)) {
-        throw "O JAR atual do Web nao foi encontrado em '$WebJarPath'; rollback nao esta disponivel."
+    $webJarExists = Test-Path -LiteralPath $WebJarPath -PathType Leaf
+    $etlJarExists = Test-Path -LiteralPath $EtlJarPath -PathType Leaf
+
+    if ($webJarExists -xor $etlJarExists) {
+        throw "Estado inconsistente: os JARs atuais de Web e ETL devem existir juntos ou ambos devem estar ausentes. Web='$webJarExists' ETL='$etlJarExists'."
     }
 
-    if (-not (Test-Path -LiteralPath $EtlJarPath)) {
-        throw "O JAR atual do ETL nao foi encontrado em '$EtlJarPath'; rollback nao esta disponivel."
-    }
+    $bootstrapDeployment = -not $webJarExists
 
     if (-not (Test-Path -LiteralPath $webStagedJarPath)) {
         throw "Artifact do Web nao encontrado em '$webStagedJarPath'."
@@ -390,8 +433,13 @@ try {
 
     $webSnapshot = Get-ServiceSnapshot -Name $WebServiceName -JarPath $WebJarPath
     $etlSnapshot = Get-ServiceSnapshot -Name $EtlServiceName -JarPath $EtlJarPath
-    $backupPath = New-ReleaseBackup -WebSnapshot $webSnapshot -EtlSnapshot $etlSnapshot
-    Write-Host "Backup anterior criado em '$backupPath'."
+
+    if ($bootstrapDeployment) {
+        Write-Host 'Primeiro deploy detectado: nenhum JAR anterior existe; o deploy seguira sem backup.'
+    } else {
+        $backupPath = New-ReleaseBackup -WebSnapshot $webSnapshot -EtlSnapshot $etlSnapshot
+        Write-Host "Backup anterior criado em '$backupPath'."
+    }
 
     Stop-ServiceIfRunning -Name $WebServiceName
     Stop-ServiceIfRunning -Name $EtlServiceName
@@ -401,6 +449,12 @@ try {
     Copy-Item -LiteralPath $etlStagedJarPath -Destination $EtlJarPath -Force
     Remove-Item -LiteralPath $etlStagedJarPath -Force
 
+    Assert-PromotedArtifacts `
+        -FinalWebJarPath $WebJarPath `
+        -FinalEtlJarPath $EtlJarPath `
+        -StagedWebJarPath $webStagedJarPath `
+        -StagedEtlJarPath $etlStagedJarPath
+
     Start-ServiceAndCaptureLogs -Snapshot $etlSnapshot | Out-Null
     Start-ServiceAndCaptureLogs -Snapshot $webSnapshot | Out-Null
     Test-Port -Port $ExpectedEtlPort -Label 'ETL'
@@ -408,7 +462,21 @@ try {
     Wait-ForHealth -Label 'ETL' -Url $EtlHealthUrl
     Wait-ForHealth -Label 'Web' -Url $WebHealthUrl
 
+    Start-Sleep -Seconds 5
+    Assert-NssmRunning -Name $EtlServiceName
+    Assert-NssmRunning -Name $WebServiceName
+    Test-Port -Port $ExpectedEtlPort -Label 'ETL apos estabilizacao'
+    Test-Port -Port $ExpectedWebPort -Label 'Web apos estabilizacao'
+    Wait-ForHealth -Label 'ETL apos estabilizacao' -Url $EtlHealthUrl
+    Wait-ForHealth -Label 'Web apos estabilizacao' -Url $WebHealthUrl
+    Assert-PromotedArtifacts `
+        -FinalWebJarPath $WebJarPath `
+        -FinalEtlJarPath $EtlJarPath `
+        -StagedWebJarPath $webStagedJarPath `
+        -StagedEtlJarPath $etlStagedJarPath
+
     Write-Host 'Deploy concluido com os dois health checks validos.'
+    Write-Host 'DEPLOY_RESULT=SUCCESS'
 } catch {
     $deploymentError = $_.Exception
     Write-Host "Falha no deploy: $($deploymentError.Message)"
@@ -422,6 +490,23 @@ try {
             Write-Host 'Rollback automatico do JAR concluido.'
         } catch {
             Write-Host "Falha no rollback automatico: $($_.Exception.Message)"
+        }
+    } elseif ($bootstrapDeployment) {
+        try {
+            Stop-ServiceIfRunning -Name $WebServiceName
+            Stop-ServiceIfRunning -Name $EtlServiceName
+
+            if (Test-Path -LiteralPath $WebJarPath) {
+                Remove-Item -LiteralPath $WebJarPath -Force
+            }
+
+            if (Test-Path -LiteralPath $EtlJarPath) {
+                Remove-Item -LiteralPath $EtlJarPath -Force
+            }
+
+            Write-Host 'Primeiro deploy falhou; os JARs finais criados nesta tentativa foram removidos.'
+        } catch {
+            Write-Host "Falha ao restaurar o estado anterior ao primeiro deploy: $($_.Exception.Message)"
         }
     }
 
