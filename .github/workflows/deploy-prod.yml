@@ -160,16 +160,8 @@ jobs:
             fi
           done
 
-      - name: Validate and run Flyway on production database
+      - name: Validate migration history and run Flyway on production database
         run: |
-          docker run --rm \
-            -v "${{ github.workspace }}/database/migrations:/flyway/sql:ro" \
-            flyway/flyway:11.12.0 \
-            -url="${{ secrets.FLYWAY_URL }}" \
-            -user="${{ secrets.FLYWAY_USER }}" \
-            -password="${{ secrets.FLYWAY_PASSWORD }}" \
-            validate
-
           docker run --rm \
             -v "${{ github.workspace }}/database/migrations:/flyway/sql:ro" \
             flyway/flyway:11.12.0 \
@@ -184,7 +176,24 @@ jobs:
             -url="${{ secrets.FLYWAY_URL }}" \
             -user="${{ secrets.FLYWAY_USER }}" \
             -password="${{ secrets.FLYWAY_PASSWORD }}" \
+            -ignoreMigrationPatterns="*:pending" \
+            validate
+
+          docker run --rm \
+            -v "${{ github.workspace }}/database/migrations:/flyway/sql:ro" \
+            flyway/flyway:11.12.0 \
+            -url="${{ secrets.FLYWAY_URL }}" \
+            -user="${{ secrets.FLYWAY_USER }}" \
+            -password="${{ secrets.FLYWAY_PASSWORD }}" \
             migrate
+
+          docker run --rm \
+            -v "${{ github.workspace }}/database/migrations:/flyway/sql:ro" \
+            flyway/flyway:11.12.0 \
+            -url="${{ secrets.FLYWAY_URL }}" \
+            -user="${{ secrets.FLYWAY_USER }}" \
+            -password="${{ secrets.FLYWAY_PASSWORD }}" \
+            validate
 
       - name: Configure SSH
         shell: bash
