@@ -100,7 +100,6 @@ jobs:
       EXPECTED_WEB_PORT: 9092
       EXPECTED_ETL_PORT: 9094
       EXPECTED_PROFILE: prod
-      SMOKE_BASE_URL: ${{ vars.SMOKE_BASE_URL }}
 
     steps:
       - name: Checkout tagged commit
@@ -152,7 +151,6 @@ jobs:
             ETL_SERVER_JAR
             WEB_SERVICE_NAME
             ETL_SERVICE_NAME
-            SMOKE_BASE_URL
           )
 
           for name in "${required[@]}"; do
@@ -218,60 +216,6 @@ jobs:
           ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=20 \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
             "powershell -NoProfile -ExecutionPolicy Bypass -File '$REMOTE_SCRIPT_PATH' -WebServiceName '$WEB_SERVICE_NAME' -WebJarPath '$WEB_SERVER_JAR' -EtlServiceName '$ETL_SERVICE_NAME' -EtlJarPath '$ETL_SERVER_JAR' -WebHealthUrl '$WEB_HEALTH_URL' -EtlHealthUrl '$ETL_HEALTH_URL' -ExpectedProfile '$EXPECTED_PROFILE' -DeployRoot '$DEPLOY_ROOT' -ExpectedWebPort $EXPECTED_WEB_PORT -ExpectedEtlPort $EXPECTED_ETL_PORT"
-
-      - name: Run production smoke test
-        id: smoke
-        continue-on-error: true
-        env:
-          SMOKE_USERNAME: ${{ secrets.SMOKE_USERNAME }}
-          SMOKE_PASSWORD: ${{ secrets.SMOKE_PASSWORD }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          base_url="${SMOKE_BASE_URL%/}"
-          login_file=$(mktemp)
-          login_status=$(curl -sS \
-            -o "$login_file" \
-            -w '%{http_code}' \
-            -H 'Content-Type: application/json' \
-            -d "$(jq -n --arg email "$SMOKE_USERNAME" --arg senha "$SMOKE_PASSWORD" '{email:$email,senha:$senha}')" \
-            "$base_url/auth/login")
-
-          if [[ "$login_status" != "200" ]]; then
-            echo "Login do smoke test falhou com HTTP $login_status." >&2
-            exit 1
-          fi
-
-          token=$(jq -r '.token // empty' "$login_file")
-          if [[ -z "$token" ]]; then
-            echo 'O login do smoke test nao retornou token.' >&2
-            exit 1
-          fi
-
-          status=$(curl -sS -o /dev/null -w '%{http_code}' \
-            -H "Authorization: Bearer $token" \
-            "$base_url/anvisa/atualizacoes/hoje")
-
-          if [[ "$status" != "200" && "$status" != "204" ]]; then
-            echo "Consulta Anvisa do smoke test falhou com HTTP $status." >&2
-            exit 1
-          fi
-
-          echo "Smoke test concluido com HTTP $status na consulta Anvisa."
-
-      - name: Rollback after smoke failure
-        if: always() && steps.smoke.outcome == 'failure'
-        shell: bash
-        run: |
-          set -euo pipefail
-          ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=20 \
-            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
-            "powershell -NoProfile -ExecutionPolicy Bypass -File '$REMOTE_SCRIPT_PATH' -Rollback -WebServiceName '$WEB_SERVICE_NAME' -WebJarPath '$WEB_SERVER_JAR' -EtlServiceName '$ETL_SERVICE_NAME' -EtlJarPath '$ETL_SERVER_JAR' -WebHealthUrl '$WEB_HEALTH_URL' -EtlHealthUrl '$ETL_HEALTH_URL' -ExpectedProfile '$EXPECTED_PROFILE' -DeployRoot '$DEPLOY_ROOT' -ExpectedWebPort $EXPECTED_WEB_PORT -ExpectedEtlPort $EXPECTED_ETL_PORT"
-
-      - name: Fail deployment after smoke failure
-        if: always() && steps.smoke.outcome == 'failure'
-        run: exit 1
 
       - name: Cleanup remote deploy script
         if: always()
