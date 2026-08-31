@@ -18,6 +18,9 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$EtlHealthUrl,
 
+    [ValidateSet('http', 'process')]
+    [string]$EtlHealthMode = 'http',
+
     [Parameter(Mandatory = $true)]
     [string]$ExpectedProfile,
 
@@ -224,6 +227,52 @@ function Show-LogTail {
     }
 }
 
+function Get-LogOffset {
+    param(
+        [string]$Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or
+        $Path -eq 'NUL' -or
+        -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return [long]0
+    }
+
+    return [long](Get-Item -LiteralPath $Path).Length
+}
+
+function Read-LogSinceOffset {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path,
+
+        [Parameter(Mandatory = $true)]
+        [long]$Offset
+    )
+
+    $stream = $null
+    $reader = $null
+
+    try {
+        $stream = [System.IO.File]::Open(
+            $Path,
+            [System.IO.FileMode]::Open,
+            [System.IO.FileAccess]::Read,
+            [System.IO.FileShare]::ReadWrite
+        )
+        $effectiveOffset = if ($stream.Length -lt $Offset) { [long]0 } else { $Offset }
+        $null = $stream.Seek($effectiveOffset, [System.IO.SeekOrigin]::Begin)
+        $reader = [System.IO.StreamReader]::new($stream)
+        return $reader.ReadToEnd()
+    } finally {
+        if ($null -ne $reader) {
+            $reader.Dispose()
+        } elseif ($null -ne $stream) {
+            $stream.Dispose()
+        }
+    }
+}
+
 function Test-Port {
     param(
         [Parameter(Mandatory = $true)]
@@ -313,6 +362,68 @@ function Wait-ForHealth {
     throw "$Label nao ficou saudavel em '$Url'."
 }
 
+function Wait-ForProcessStartup {
+    param(
+        [Parameter(Mandatory = $true)]
+        [hashtable]$Snapshot,
+
+        [Parameter(Mandatory = $true)]
+        [long]$LogOffset,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Label
+    )
+
+    $logPath = $Snapshot.Stdout
+    if ([string]::IsNullOrWhiteSpace($logPath) -or $logPath -eq 'NUL') {
+        throw "O modo de validacao por processo exige AppStdout configurado para o servico '$($Snapshot.Name)'."
+    }
+
+    for ($attempt = 1; $attempt -le $HealthAttempts; $attempt++) {
+        Assert-NssmRunning -Name $Snapshot.Name
+        Write-Host "Inicializacao $Label tentativa $attempt/$HealthAttempts no log $logPath"
+
+        if (Test-Path -LiteralPath $logPath -PathType Leaf) {
+            try {
+                $newLogContent = Read-LogSinceOffset -Path $logPath -Offset $LogOffset
+                if ($newLogContent -match 'Started\s+ETLApplication\s+in\s+') {
+                    Write-Host "$Label confirmou a inicializacao da aplicacao."
+                    return
+                }
+            } catch {
+                Write-Host "Nao foi possivel ler o log de inicializacao do ${Label}: $($_.Exception.Message)"
+            }
+        }
+
+        if ($attempt -lt $HealthAttempts) {
+            Start-Sleep -Seconds $HealthDelaySeconds
+        }
+    }
+
+    throw "$Label permaneceu em execucao, mas nao confirmou 'Started ETLApplication' no log '$logPath'."
+}
+
+function Wait-ForEtlReadiness {
+    param(
+        [Parameter(Mandatory = $true)]
+        [hashtable]$Snapshot,
+
+        [Parameter(Mandatory = $true)]
+        [long]$LogOffset,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Label
+    )
+
+    if ($EtlHealthMode -eq 'process') {
+        Wait-ForProcessStartup -Snapshot $Snapshot -LogOffset $LogOffset -Label $Label
+        return
+    }
+
+    Wait-ForHealth -Label $Label -Url $EtlHealthUrl
+    Test-Port -Port $ExpectedEtlPort -Label $Label
+}
+
 function New-ReleaseBackup {
     param(
         [Parameter(Mandatory = $true)]
@@ -379,12 +490,12 @@ function Restore-Backup {
     Copy-Item -LiteralPath (Join-Path $BackupPath 'Web.jar') -Destination $WebJarPath -Force
     Copy-Item -LiteralPath (Join-Path $BackupPath 'Etl.jar') -Destination $EtlJarPath -Force
 
+    $etlLogOffset = Get-LogOffset -Path $EtlSnapshot.Stdout
     Start-ServiceAndCaptureLogs -Snapshot $EtlSnapshot | Out-Null
     Start-ServiceAndCaptureLogs -Snapshot $WebSnapshot | Out-Null
-    Test-Port -Port $ExpectedEtlPort -Label 'ETL restaurado'
-    Test-Port -Port $ExpectedWebPort -Label 'Web restaurado'
-    Wait-ForHealth -Label 'ETL restaurado' -Url $EtlHealthUrl
+    Wait-ForEtlReadiness -Snapshot $EtlSnapshot -LogOffset $etlLogOffset -Label 'ETL restaurado'
     Wait-ForHealth -Label 'Web restaurado' -Url $WebHealthUrl
+    Test-Port -Port $ExpectedWebPort -Label 'Web restaurado'
 }
 
 if (-not (Get-Command nssm -ErrorAction SilentlyContinue)) {
@@ -401,7 +512,7 @@ if ($Rollback) {
         -WebSnapshot $rollbackWebSnapshot `
         -EtlSnapshot $rollbackEtlSnapshot
 
-    Write-Host 'Rollback do release concluido com health check valido.'
+    Write-Host 'Rollback do release concluido com validacao dos servicos.'
     Write-Host 'ROLLBACK_RESULT=SUCCESS'
     exit 0
 }
@@ -455,27 +566,26 @@ try {
         -StagedWebJarPath $webStagedJarPath `
         -StagedEtlJarPath $etlStagedJarPath
 
+    $etlLogOffset = Get-LogOffset -Path $etlSnapshot.Stdout
     Start-ServiceAndCaptureLogs -Snapshot $etlSnapshot | Out-Null
     Start-ServiceAndCaptureLogs -Snapshot $webSnapshot | Out-Null
-    Test-Port -Port $ExpectedEtlPort -Label 'ETL'
-    Test-Port -Port $ExpectedWebPort -Label 'Web'
-    Wait-ForHealth -Label 'ETL' -Url $EtlHealthUrl
+    Wait-ForEtlReadiness -Snapshot $etlSnapshot -LogOffset $etlLogOffset -Label 'ETL'
     Wait-ForHealth -Label 'Web' -Url $WebHealthUrl
+    Test-Port -Port $ExpectedWebPort -Label 'Web'
 
     Start-Sleep -Seconds 5
     Assert-NssmRunning -Name $EtlServiceName
     Assert-NssmRunning -Name $WebServiceName
-    Test-Port -Port $ExpectedEtlPort -Label 'ETL apos estabilizacao'
-    Test-Port -Port $ExpectedWebPort -Label 'Web apos estabilizacao'
-    Wait-ForHealth -Label 'ETL apos estabilizacao' -Url $EtlHealthUrl
+    Wait-ForEtlReadiness -Snapshot $etlSnapshot -LogOffset $etlLogOffset -Label 'ETL apos estabilizacao'
     Wait-ForHealth -Label 'Web apos estabilizacao' -Url $WebHealthUrl
+    Test-Port -Port $ExpectedWebPort -Label 'Web apos estabilizacao'
     Assert-PromotedArtifacts `
         -FinalWebJarPath $WebJarPath `
         -FinalEtlJarPath $EtlJarPath `
         -StagedWebJarPath $webStagedJarPath `
         -StagedEtlJarPath $etlStagedJarPath
 
-    Write-Host 'Deploy concluido com os dois health checks validos.'
+    Write-Host 'Deploy concluido com Web saudavel e ETL inicializado.'
     Write-Host 'DEPLOY_RESULT=SUCCESS'
 } catch {
     $deploymentError = $_.Exception
