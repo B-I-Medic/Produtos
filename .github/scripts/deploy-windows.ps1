@@ -177,6 +177,46 @@ function Wait-NssmStatus {
     throw "O servico '$Name' nao atingiu o estado esperado '$ExpectedPattern'. Estado atual: '$(Get-NssmStatus -Name $Name)'."
 }
 
+function Invoke-NssmControl {
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('start', 'stop')]
+        [string]$Action,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+
+        [int]$TimeoutSeconds = 30
+    )
+
+    $nssmPath = (Get-Command nssm -ErrorAction Stop).Source
+    $process = Start-Process `
+        -FilePath $nssmPath `
+        -ArgumentList @($Action, $Name) `
+        -NoNewWindow `
+        -PassThru
+    $completed = $process.WaitForExit($TimeoutSeconds * 1000)
+
+    if (-not $completed) {
+        try {
+            $process.Kill()
+            $process.WaitForExit(5000) | Out-Null
+        } catch {
+            Write-Host "Nao foi possivel encerrar o comando NSSM '$Action' apos o timeout: $($_.Exception.Message)"
+        }
+
+        return @{
+            ExitCode = $null
+            TimedOut = $true
+        }
+    }
+
+    return @{
+        ExitCode = $process.ExitCode
+        TimedOut = $false
+    }
+}
+
 function Stop-ServiceIfRunning {
     param(
         [Parameter(Mandatory = $true)]
@@ -184,13 +224,21 @@ function Stop-ServiceIfRunning {
     )
 
     $status = Get-NssmStatus -Name $Name
-    if ($status -match 'SERVICE_RUNNING|START_PENDING') {
-        & nssm stop $Name | Out-Host
-        if ($LASTEXITCODE -ne 0) {
-            throw "Nao foi possivel parar o servico '$Name'."
+    if ($status -match 'SERVICE_STOP_PENDING') {
+        Wait-NssmStatus -Name $Name -ExpectedPattern 'SERVICE_STOPPED' -Attempts 120
+        return
+    }
+
+    if ($status -match 'SERVICE_RUNNING|SERVICE_START_PENDING') {
+        $stopResult = Invoke-NssmControl -Action 'stop' -Name $Name
+        $stopStatus = Get-NssmStatus -Name $Name
+
+        if (($stopResult.TimedOut -or $stopResult.ExitCode -ne 0) -and
+            $stopStatus -notmatch 'SERVICE_STOPPED|SERVICE_STOP_PENDING') {
+            throw "Nao foi possivel parar o servico '$Name'. Codigo NSSM: '$($stopResult.ExitCode)'. Timeout: '$($stopResult.TimedOut)'. Estado atual: '$stopStatus'."
         }
 
-        Wait-NssmStatus -Name $Name -ExpectedPattern 'SERVICE_STOPPED'
+        Wait-NssmStatus -Name $Name -ExpectedPattern 'SERVICE_STOPPED' -Attempts 120
     }
 }
 
@@ -200,12 +248,18 @@ function Start-ServiceAndCaptureLogs {
         [hashtable]$Snapshot
     )
 
-    & nssm start $($Snapshot.Name) | Out-Host
-    if ($LASTEXITCODE -ne 0) {
-        throw "Nao foi possivel iniciar o servico '$($Snapshot.Name)'."
+    $startResult = Invoke-NssmControl -Action 'start' -Name $Snapshot.Name
+    $startStatus = Get-NssmStatus -Name $Snapshot.Name
+
+    if (($startResult.TimedOut -or $startResult.ExitCode -ne 0) -and
+        $startStatus -notmatch 'SERVICE_RUNNING|SERVICE_START_PENDING') {
+        throw "Nao foi possivel iniciar o servico '$($Snapshot.Name)'. Codigo NSSM: '$($startResult.ExitCode)'. Timeout: '$($startResult.TimedOut)'. Estado atual: '$startStatus'."
     }
 
-    Wait-NssmStatus -Name $Snapshot.Name -ExpectedPattern 'SERVICE_RUNNING'
+    Wait-NssmStatus `
+        -Name $Snapshot.Name `
+        -ExpectedPattern 'SERVICE_RUNNING' `
+        -Attempts 120
     return $Snapshot
 }
 
