@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Repository
@@ -75,7 +76,7 @@ public class InsercaoProdutoProdutoRepository {
                 if (criadoEm == null) {
                     ps.setNull(10, Types.TIMESTAMP_WITH_TIMEZONE);
                 } else {
-                    ps.setObject(10, criadoEm, Types.TIMESTAMP_WITH_TIMEZONE);
+                    ps.setObject(10, criadoEm.atOffset(ZoneOffset.UTC), Types.TIMESTAMP_WITH_TIMEZONE);
                 }
             }
 
