@@ -242,6 +242,25 @@ function Stop-ServiceIfRunning {
     }
 }
 
+function Remove-ModuleLogoutLogs {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Root
+    )
+
+    $logoutLogPaths = @(
+        (Join-Path $Root 'etl\logs\logout.log'),
+        (Join-Path $Root 'web\logs\logout.log')
+    )
+
+    foreach ($logoutLogPath in $logoutLogPaths) {
+        if (Test-Path -LiteralPath $logoutLogPath -PathType Leaf) {
+            Write-Host "Removendo arquivo de log '$logoutLogPath'."
+            Remove-Item -LiteralPath $logoutLogPath -Force
+        }
+    }
+}
+
 function Start-ServiceAndCaptureLogs {
     param(
         [Parameter(Mandatory = $true)]
@@ -608,6 +627,7 @@ try {
 
     Stop-ServiceIfRunning -Name $WebServiceName
     Stop-ServiceIfRunning -Name $EtlServiceName
+    Remove-ModuleLogoutLogs -Root $DeployRoot
 
     Copy-Item -LiteralPath $webStagedJarPath -Destination $WebJarPath -Force
     Remove-Item -LiteralPath $webStagedJarPath -Force
