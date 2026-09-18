@@ -32,3 +32,8 @@ springdoc:
   api-docs:
     enabled: false
     path: /api-docs
+
+anvisa:
+  etl:
+    base-url: ${ANVISA_ETL_BASE_URL}
+    api-key: ${ANVISA_ETL_API_KEY}

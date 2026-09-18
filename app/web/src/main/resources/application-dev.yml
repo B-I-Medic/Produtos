@@ -20,3 +20,8 @@ spring:
 springdoc:
   swagger-ui:
     doc-expansion: none
+
+anvisa:
+  etl:
+    base-url: ${ANVISA_ETL_BASE_URL:http://localhost:9093}
+    api-key: ${ANVISA_ETL_API_KEY:}

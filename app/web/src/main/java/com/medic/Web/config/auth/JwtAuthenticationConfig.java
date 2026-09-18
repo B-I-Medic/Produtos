@@ -37,6 +37,11 @@ public class JwtAuthenticationConfig implements WebFilter {
     @Override
     public @NonNull Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
 
+        String path = exchange.getRequest().getPath().value();
+        if (path.equals("/auth/refresh") || path.equals("/auth/logout")) {
+            return chain.filter(exchange);
+        }
+
         String header = exchange.getRequest().getHeaders().getFirst("Authorization");
 
         if (header == null || !header.startsWith("Bearer ")) {

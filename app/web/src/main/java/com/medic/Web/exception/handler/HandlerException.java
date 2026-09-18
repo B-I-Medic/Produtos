@@ -2,7 +2,9 @@ package com.medic.Web.exception.handler;
 
 import com.medic.Web.dto.web.ErrorResponseDTO;
 import com.medic.Web.exception.type.NotFoundException;
+import com.medic.Web.exception.type.AnvisaEtlUnavailableException;
 import com.medic.Web.exception.type.auth.InvalidTokenException;
+import com.medic.Web.exception.type.auth.InvalidRefreshTokenException;
 import com.medic.Web.exception.type.auth.PasswordAlreadySetException;
 import com.medic.Web.exception.type.auth.PasswordResetCodeException;
 import jakarta.validation.ConstraintViolationException;
@@ -37,8 +39,8 @@ public class HandlerException {
         return writer.body(HttpStatus.UNAUTHORIZED, "Autenticacao", resolveAuthenticationMessage(ex), exchange);
     }
 
-    @ExceptionHandler(InvalidTokenException.class)
-    public Mono<ErrorResponseDTO> handleInvalidToken(InvalidTokenException ex, ServerWebExchange exchange) {
+    @ExceptionHandler({InvalidTokenException.class, InvalidRefreshTokenException.class})
+    public Mono<ErrorResponseDTO> handleInvalidToken(AuthenticationException ex, ServerWebExchange exchange) {
         return writer.body(HttpStatus.UNAUTHORIZED, "Autenticacao", ex.getMessage(), exchange);
     }
 
@@ -50,6 +52,12 @@ public class HandlerException {
     @ExceptionHandler(NotFoundException.class)
     public Mono<ErrorResponseDTO> handleNotFound(NotFoundException ex, ServerWebExchange exchange) {
         return writer.body(HttpStatus.NOT_FOUND, "Nao encontrado", ex.getMessage(), exchange);
+    }
+
+    @ExceptionHandler(AnvisaEtlUnavailableException.class)
+    public Mono<ErrorResponseDTO> handleAnvisaEtlUnavailable(AnvisaEtlUnavailableException ex,
+                                                             ServerWebExchange exchange) {
+        return writer.body(HttpStatus.SERVICE_UNAVAILABLE, "Anvisa indisponivel", ex.getMessage(), exchange);
     }
 
     @ExceptionHandler({

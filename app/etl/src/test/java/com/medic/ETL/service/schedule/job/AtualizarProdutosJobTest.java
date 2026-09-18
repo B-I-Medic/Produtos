@@ -5,28 +5,33 @@ import com.medic.ETL.model.processamento.ProcessamentoDisparo;
 import com.medic.ETL.model.processamento.ProcessamentoEntidade;
 import com.medic.ETL.model.processamento.ProcessamentoStatus;
 import com.medic.ETL.model.schedule.ScheduleJob;
-import com.medic.ETL.repository.processamento.ProcessamentoCustomRepository;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
 import com.medic.ETL.service.produto.ProcessarProdutoService;
 import com.medic.ETL.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class AtualizarProdutosJobTest {
 
-    private final ProcessamentoCustomRepository processamentoRepository = mock(ProcessamentoCustomRepository.class);
     private final ControlarProcessamentoService processamentoService = mock(ControlarProcessamentoService.class);
     private final ProcessarProdutoService processarProdutoService = mock(ProcessarProdutoService.class);
     private final AtualizarProdutosJob job = new AtualizarProdutosJob(
-            processamentoRepository,
             processamentoService,
             processarProdutoService
     );
@@ -37,45 +42,104 @@ class AtualizarProdutosJobTest {
     }
 
     @Test
-    void shouldAbortWhenLockIsAlreadyInUse() {
-        when(processamentoRepository.lockEmUso(872342L)).thenReturn(true);
+    void shouldAbortWhenAnotherExecutionIsInProgress() throws Exception {
+        Processamento processamento = TestDataFactory.processamento();
+        CountDownLatch processingStarted = new CountDownLatch(1);
+        CountDownLatch releaseProcessing = new CountDownLatch(1);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        job.run();
+        when(processamentoService.iniciarProcessamento(ProcessamentoEntidade.PRODUTOS, ProcessamentoDisparo.AUTOMATICO))
+                .thenReturn(processamento);
+        doAnswer(invocation -> {
+            processingStarted.countDown();
+            if (!releaseProcessing.await(5, TimeUnit.SECONDS)) {
+                throw new IllegalStateException("Tempo limite aguardando a liberacao do processamento");
+            }
+            return null;
+        }).when(processarProdutoService).atualizarProdutos(processamento);
 
-        verify(processamentoService).abortarProcessamento(ProcessamentoEntidade.PRODUTOS, ProcessamentoDisparo.AUTOMATICO);
-        verify(processarProdutoService, never()).atualizarProdutos(org.mockito.ArgumentMatchers.any());
-        verify(processamentoRepository, never()).liberarLock(872342L);
+        try {
+            Future<?> firstExecution = executor.submit(job::run);
+
+            assertTrue(
+                    processingStarted.await(5, TimeUnit.SECONDS),
+                    "A primeira execucao nao iniciou a carga"
+            );
+
+            job.run();
+
+            verify(processamentoService).abortarProcessamento(
+                    ProcessamentoEntidade.PRODUTOS,
+                    ProcessamentoDisparo.AUTOMATICO
+            );
+            verify(processamentoService, times(1)).iniciarProcessamento(
+                    ProcessamentoEntidade.PRODUTOS,
+                    ProcessamentoDisparo.AUTOMATICO
+            );
+            verify(processarProdutoService, times(1)).atualizarProdutos(processamento);
+
+            releaseProcessing.countDown();
+            firstExecution.get(5, TimeUnit.SECONDS);
+        } finally {
+            releaseProcessing.countDown();
+            executor.shutdownNow();
+        }
     }
 
     @Test
-    void shouldProcessAndReleaseLock() {
-        Processamento processamento = TestDataFactory.processamento();
-        when(processamentoRepository.lockEmUso(872342L)).thenReturn(false);
+    void shouldCompleteProcessingAndReleaseLock() {
+        Processamento firstProcessing = TestDataFactory.processamento();
+        Processamento secondProcessing = TestDataFactory.processamento();
         when(processamentoService.iniciarProcessamento(ProcessamentoEntidade.PRODUTOS, ProcessamentoDisparo.AUTOMATICO))
-                .thenReturn(processamento);
+                .thenReturn(firstProcessing, secondProcessing);
 
         job.run();
+        job.run();
 
-        var inOrder = inOrder(processamentoService, processarProdutoService, processamentoRepository);
-        inOrder.verify(processamentoService).iniciarProcessamento(ProcessamentoEntidade.PRODUTOS, ProcessamentoDisparo.AUTOMATICO);
-        inOrder.verify(processarProdutoService).atualizarProdutos(processamento);
-        inOrder.verify(processamentoService).encerrarProcessamento(processamento, ProcessamentoStatus.CONCLUIDO);
-        inOrder.verify(processamentoRepository).liberarLock(872342L);
+        verify(processamentoService, times(2)).iniciarProcessamento(
+                ProcessamentoEntidade.PRODUTOS,
+                ProcessamentoDisparo.AUTOMATICO
+        );
+        verify(processarProdutoService).atualizarProdutos(firstProcessing);
+        verify(processarProdutoService).atualizarProdutos(secondProcessing);
+        verify(processamentoService).encerrarProcessamento(firstProcessing, ProcessamentoStatus.CONCLUIDO);
+        verify(processamentoService).encerrarProcessamento(secondProcessing, ProcessamentoStatus.CONCLUIDO);
     }
 
     @Test
     void shouldMarkAsFailedAndReleaseLockWhenProcessingFails() {
-        Processamento processamento = TestDataFactory.processamento();
+        Processamento firstProcessing = TestDataFactory.processamento();
+        Processamento secondProcessing = TestDataFactory.processamento();
         RuntimeException failure = new RuntimeException("falha");
-        when(processamentoRepository.lockEmUso(872342L)).thenReturn(false);
         when(processamentoService.iniciarProcessamento(ProcessamentoEntidade.PRODUTOS, ProcessamentoDisparo.AUTOMATICO))
-                .thenReturn(processamento);
-        doThrow(failure).when(processarProdutoService).atualizarProdutos(processamento);
+                .thenReturn(firstProcessing, secondProcessing);
+        doThrow(failure)
+                .doNothing()
+                .when(processarProdutoService)
+                .atualizarProdutos(any());
 
         RuntimeException thrown = assertThrows(RuntimeException.class, job::run);
+        job.run();
 
         assertEquals(failure, thrown);
-        verify(processamentoService).encerrarProcessamento(processamento, ProcessamentoStatus.FALHOU);
-        verify(processamentoRepository).liberarLock(872342L);
+        verify(processamentoService).encerrarProcessamento(firstProcessing, ProcessamentoStatus.FALHOU);
+        verify(processamentoService).encerrarProcessamento(secondProcessing, ProcessamentoStatus.CONCLUIDO);
+    }
+
+    @Test
+    void shouldReleaseLockWhenStartingProcessingFails() {
+        Processamento processamento = TestDataFactory.processamento();
+        RuntimeException failure = new RuntimeException("falha ao iniciar");
+        when(processamentoService.iniciarProcessamento(ProcessamentoEntidade.PRODUTOS, ProcessamentoDisparo.AUTOMATICO))
+                .thenThrow(failure)
+                .thenReturn(processamento);
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, job::run);
+        job.run();
+
+        assertEquals(failure, thrown);
+        verify(processamentoService).encerrarProcessamento(null, ProcessamentoStatus.FALHOU);
+        verify(processarProdutoService).atualizarProdutos(processamento);
+        verify(processamentoService).encerrarProcessamento(processamento, ProcessamentoStatus.CONCLUIDO);
     }
 }

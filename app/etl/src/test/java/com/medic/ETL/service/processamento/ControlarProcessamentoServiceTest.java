@@ -16,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,5 +68,13 @@ class ControlarProcessamentoServiceTest {
         assertEquals(ProcessamentoStatus.CONCLUIDO, processamento.getStatus());
         assertNotNull(processamento.getConcluidoEm());
         verify(repository).save(processamento);
+    }
+
+    @Test
+    void shouldIgnoreClosingNullProcessing() {
+
+        service.encerrarProcessamento(null, ProcessamentoStatus.FALHOU);
+
+        verify(repository, never()).save(any(Processamento.class));
     }
 }

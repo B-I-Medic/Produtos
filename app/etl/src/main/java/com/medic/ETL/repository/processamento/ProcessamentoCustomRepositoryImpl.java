@@ -13,30 +13,29 @@ public class ProcessamentoCustomRepositoryImpl implements ProcessamentoCustomRep
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public boolean lockEmUso(long lockKey) {
-
-        Boolean lockAdquirido = jdbcTemplate.queryForObject(
-                "select pg_try_advisory_lock(?)",
-                Boolean.class,
-                lockKey
-        );
-
-        return !Boolean.TRUE.equals(lockAdquirido);
-    }
-
-    public void liberarLock(long lockKey) {
-
-        jdbcTemplate.queryForObject("select pg_advisory_unlock(?)", Boolean.class, lockKey);
-    }
-
     public void excluirProcessamentosAntigos() {
 
         jdbcTemplate.execute("""
-                delete from processamento where concluido_em < (
+                delete from processamento p
+                where p.concluido_em < (
                     (CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')::date
                     - INTERVAL '1 day'
                     + TIME '07:00:00'
                     ) AT TIME ZONE 'America/Sao_Paulo'
+                    and not exists (
+                        select 1
+                        from anvisa_carga ac
+                        where ac.processamento_id = p.id
+                          and ac.ativa = true
+                    )
+                    and p.id not in (
+                        select latest.id
+                        from (
+                            select distinct on (entidade) id
+                            from processamento
+                            order by entidade, concluido_em desc nulls last, iniciado_em desc
+                        ) latest
+                    )
                 """);
     }
 }
