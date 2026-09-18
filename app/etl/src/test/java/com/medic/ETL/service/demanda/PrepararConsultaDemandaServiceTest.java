@@ -33,7 +33,8 @@ class PrepararConsultaDemandaServiceTest {
                 .thenReturn(List.of(
                         TestDataFactory.empresa("07"),
                         TestDataFactory.empresa("08"),
-                        TestDataFactory.empresa("11")
+                        TestDataFactory.empresa("11"),
+                        TestDataFactory.empresa("12")
                 ));
 
         String sql = service.montarConsulta(TestDataFactory.processamento());

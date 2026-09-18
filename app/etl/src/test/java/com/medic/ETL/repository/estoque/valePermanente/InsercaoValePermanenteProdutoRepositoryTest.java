@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.PreparedStatement;
+import java.sql.Types;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,5 +41,20 @@ class InsercaoValePermanenteProdutoRepositoryTest {
         verify(ps).setObject(4, estoque.getIdEmpresaMunicipio());
         verify(ps).setString(5, "P1");
         verify(ps).setInt(6, 25);
+    }
+
+    @Test
+    void shouldAllowNullPermanentStockQuantity() throws Exception {
+
+        var estoque = TestDataFactory.valePermanente(null);
+        ArgumentCaptor<BatchPreparedStatementSetter> setterCaptor = ArgumentCaptor.forClass(BatchPreparedStatementSetter.class);
+        repository.inserirEmLote(List.of(estoque));
+        verify(jdbcTemplate, org.mockito.Mockito.atLeastOnce()).batchUpdate(
+                org.mockito.ArgumentMatchers.anyString(), setterCaptor.capture());
+
+        PreparedStatement ps = mock(PreparedStatement.class);
+        setterCaptor.getValue().setValues(ps, 0);
+
+        verify(ps).setNull(6, Types.INTEGER);
     }
 }
