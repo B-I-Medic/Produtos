@@ -36,6 +36,20 @@ class EstoqueMapperTest {
     }
 
     @Test
+    void shouldMapEstoqueInternoForUpdate() {
+
+        UUID userId = UUID.randomUUID();
+        EstoqueInternoParametroModel entity = new EstoqueInternoParametroModel();
+        entity.setId(UUID.randomUUID());
+
+        internoMapper.toEntity(entity,
+                new EstoqueInternoRequestDTO(UUID.randomUUID(), UUID.randomUUID()), userId);
+
+        assertEquals(userId, entity.getAtualizadoPor());
+        assertNotNull(entity.getAtualizadoEm());
+    }
+
+    @Test
     void shouldMapEstoqueSegregadoForUpdateAndDto() {
 
         UUID userId = UUID.randomUUID();
@@ -62,6 +76,18 @@ class EstoqueMapperTest {
     }
 
     @Test
+    void shouldMapEstoqueSegregadoForCreate() {
+
+        UUID userId = UUID.randomUUID();
+        EstoqueSegregadoParametroModel entity = segregadoMapper.toEntity(
+                new EstoqueSegregadoParametroModel(),
+                new EstoqueSegregadoRequestDTO(UUID.randomUUID(), 10, UUID.randomUUID()),
+                userId);
+
+        assertEquals(userId, entity.getCriadoPor());
+    }
+
+    @Test
     void shouldMapValePermanenteForCreateAndDto() {
 
         UUID userId = UUID.randomUUID();
@@ -75,5 +101,19 @@ class EstoqueMapperTest {
         assertEquals(20, entity.getCodVp());
         assertEquals(empresaMunicipioId, entity.getIdEmpresaMunicipio());
         assertEquals(userId, entity.getCriadoPor());
+    }
+
+    @Test
+    void shouldMapValePermanenteForUpdate() {
+
+        UUID userId = UUID.randomUUID();
+        ValePermanenteParametroModel entity = new ValePermanenteParametroModel();
+        entity.setId(UUID.randomUUID());
+
+        valeMapper.toEntity(entity,
+                new ValePermanenteRequestDTO(UUID.randomUUID(), 20, UUID.randomUUID()), userId);
+
+        assertEquals(userId, entity.getAtualizadoPor());
+        assertNotNull(entity.getAtualizadoEm());
     }
 }

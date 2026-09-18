@@ -1,8 +1,10 @@
 package com.medic.Web.exception.handler;
 
 import com.medic.Web.dto.web.ErrorResponseDTO;
+import com.medic.Web.exception.type.AnvisaEtlUnavailableException;
 import com.medic.Web.exception.type.NotFoundException;
 import com.medic.Web.exception.type.auth.InvalidTokenException;
+import com.medic.Web.exception.type.auth.InvalidRefreshTokenException;
 import com.medic.Web.exception.type.auth.PasswordAlreadySetException;
 import com.medic.Web.exception.type.auth.PasswordResetCodeException;
 import jakarta.validation.ConstraintViolation;
@@ -15,6 +17,7 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import reactor.test.StepVerifier;
 
@@ -57,6 +60,21 @@ class HandlerExceptionTest {
     }
 
     @Test
+    void shouldHandleOtherAuthenticationMessages() {
+        var exchange = exchange("/auth/login");
+
+        StepVerifier.create(handler.handleAuthentication(new org.springframework.security.authentication.BadCredentialsException("Token invalido"), exchange))
+                .assertNext(body -> assertBody(body, "Autenticacao", "Token invalido", "/auth/login"))
+                .verifyComplete();
+        StepVerifier.create(handler.handleAuthentication(new org.springframework.security.authentication.BadCredentialsException("Credenciais invalidas"), exchange))
+                .assertNext(body -> assertBody(body, "Autenticacao", "Credenciais invalidas", "/auth/login"))
+                .verifyComplete();
+        StepVerifier.create(handler.handleAuthentication(new org.springframework.security.authentication.BadCredentialsException("mensagem customizada"), exchange))
+                .assertNext(body -> assertBody(body, "Autenticacao", "mensagem customizada", "/auth/login"))
+                .verifyComplete();
+    }
+
+    @Test
     void shouldHandleAuthenticationInvalidToken() {
         var exchange = exchange("/swagger-ui/index.html");
 
@@ -80,6 +98,19 @@ class HandlerExceptionTest {
 
         StepVerifier.create(handler.handleAccessDenied(exchange))
                 .assertNext(body -> assertBody(body, "Acesso negado", "Voce nao tem permissao para acessar este recurso", "/usuario/save"))
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldHandleRefreshTokenAndAnvisaUnavailableErrors() {
+        var exchange = exchange("/anvisa");
+
+        StepVerifier.create(handler.handleInvalidToken(new InvalidRefreshTokenException(), exchange))
+                .assertNext(body -> assertBody(body, "Autenticacao", "Refresh token invalido ou expirado", "/anvisa"))
+                .verifyComplete();
+
+        StepVerifier.create(handler.handleAnvisaEtlUnavailable(new AnvisaEtlUnavailableException(), exchange))
+                .assertNext(body -> assertBody(body, "Anvisa indisponivel", "O processamento da Anvisa esta indisponivel no momento.", "/anvisa"))
                 .verifyComplete();
     }
 
@@ -150,6 +181,35 @@ class HandlerExceptionTest {
         StepVerifier.create(handler.handleValidation(new ConstraintViolationException(Set.of(violation)), exchange))
                 .assertNext(body -> assertBody(body, "Corpo da requisicao invalido", "body.email: deve ser valido", "/empresa/save"))
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldHandleValidationMessagesWithoutAPathAndFallbackExceptions() {
+        var exchange = exchange("/empresa/save");
+        ConstraintViolation<?> violation = mock(ConstraintViolation.class);
+        when(violation.getPropertyPath()).thenReturn(null);
+        when(violation.getMessage()).thenReturn("deve ser valido");
+
+        StepVerifier.create(handler.handleValidation(new ConstraintViolationException(Set.of(violation)), exchange))
+                .assertNext(body -> assertBody(body, "Corpo da requisicao invalido", "deve ser valido", "/empresa/save"))
+                .verifyComplete();
+
+        StepVerifier.create(handler.handleValidation(new IllegalStateException("fallback"), exchange))
+                .assertNext(body -> assertBody(body, "Corpo da requisicao invalido", "fallback", "/empresa/save"))
+                .verifyComplete();
+
+        BindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "payload");
+        bindingResult.addError(new ObjectError("payload", (String) null));
+        try {
+            WebExchangeBindException bindingException = new WebExchangeBindException(
+                    new MethodParameter(Dummy.class.getDeclaredMethod("handler", String.class), 0),
+                    bindingResult);
+            StepVerifier.create(handler.handleValidation(bindingException, exchange))
+                    .assertNext(body -> assertBody(body, "Corpo da requisicao invalido", "invalido", "/empresa/save"))
+                    .verifyComplete();
+        } catch (NoSuchMethodException exception) {
+            throw new AssertionError(exception);
+        }
     }
 
     @Test

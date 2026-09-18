@@ -3,6 +3,7 @@ package com.medic.Web.controller.auth;
 import com.medic.Web.dto.auth.LoginRequestDTO;
 import com.medic.Web.dto.auth.LoginResponseDTO;
 import com.medic.Web.dto.auth.PasswordRequestDTO;
+import com.medic.Web.dto.auth.RefreshTokenRequestDTO;
 import com.medic.Web.dto.auth.ResetPasswordRequestDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
 import com.medic.Web.service.auth.AuthService;
@@ -37,7 +38,7 @@ class AuthControllerTest {
     @Test
     void shouldLogin() {
 
-        LoginResponseDTO response = new LoginResponseDTO("Teste", "teste@medic.com", TestDataFactory.usuarioModel().getRole(), false, "token", Instant.now());
+        LoginResponseDTO response = new LoginResponseDTO("Teste", "teste@medic.com", TestDataFactory.usuarioModel().getRole(), false, "token", Instant.now(), "refresh", Instant.now());
         when(service.login(new LoginRequestDTO("teste@medic.com", "123"))).thenReturn(Mono.just(response));
 
         client.post()
@@ -59,6 +60,38 @@ class AuthControllerTest {
                 .uri("/auth/first-acess")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new PasswordRequestDTO("nova"))
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+    @Test
+    void shouldRefreshToken() {
+
+        LoginResponseDTO response = new LoginResponseDTO(
+                "Teste", "teste@medic.com", user.getRole(), false,
+                "access", Instant.now(), "refresh", Instant.now()
+        );
+        when(service.refresh("refresh")).thenReturn(Mono.just(response));
+
+        client.post()
+                .uri("/auth/refresh")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new RefreshTokenRequestDTO("refresh"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.refresh_token").isEqualTo("refresh");
+    }
+
+    @Test
+    void shouldLogout() {
+
+        when(service.logout("refresh")).thenReturn(Mono.empty());
+
+        client.post()
+                .uri("/auth/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new RefreshTokenRequestDTO("refresh"))
                 .exchange()
                 .expectStatus().isOk();
     }

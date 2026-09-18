@@ -4,5 +4,6 @@ public enum ProcessamentoEntidade {
 
     ESTOQUE,
     PRODUTOS,
-    DEMANDA
+    DEMANDA,
+    ANVISA
 }

@@ -42,4 +42,19 @@ class InsercaoEstoqueInternoProdutoRepositoryTest {
         verify(ps).setString(5, "P1");
         verify(ps).setNull(6, Types.INTEGER);
     }
+
+    @Test
+    void shouldSetTheInternalStockQuantityWhenPresent() throws Exception {
+
+        var estoque = TestDataFactory.estoqueInterno(12);
+        ArgumentCaptor<BatchPreparedStatementSetter> setterCaptor = ArgumentCaptor.forClass(BatchPreparedStatementSetter.class);
+        repository.inserirEmLote(List.of(estoque));
+        verify(jdbcTemplate, org.mockito.Mockito.atLeastOnce()).batchUpdate(
+                org.mockito.ArgumentMatchers.anyString(), setterCaptor.capture());
+
+        PreparedStatement ps = mock(PreparedStatement.class);
+        setterCaptor.getValue().setValues(ps, 0);
+
+        verify(ps).setInt(6, 12);
+    }
 }

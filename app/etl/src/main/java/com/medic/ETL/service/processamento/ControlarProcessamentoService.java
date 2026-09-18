@@ -45,6 +45,8 @@ public class ControlarProcessamentoService {
 
     public void encerrarProcessamento(Processamento processamento, ProcessamentoStatus status) {
 
+        if (processamento == null) return;
+
         processamento.setStatus(status);
         processamento.setConcluidoEm(Instant.now());
 

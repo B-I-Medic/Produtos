@@ -1,6 +1,7 @@
 package com.medic.Web.dto.auth;
 
 import com.medic.Web.model.usuario.Role;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 
@@ -11,6 +12,8 @@ public record LoginResponseDTO(
         Role role,
         boolean primeiroAcesso,
         String token,
-        Instant expires_in
+        Instant expires_in,
+        @JsonProperty("refresh_token") String refreshToken,
+        @JsonProperty("refresh_expires_in") Instant refreshExpiresIn
 ) {
 }
