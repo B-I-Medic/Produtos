@@ -7,6 +7,7 @@ import com.medic.ETL.model.processamento.ProcessamentoStatus;
 import com.medic.ETL.model.schedule.ScheduleJob;
 import com.medic.ETL.service.demanda.ProcessarDemandaService;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
+import com.medic.ETL.service.schedule.RegistrarExecucaoScheduleService;
 import com.medic.ETL.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 
@@ -31,9 +32,11 @@ class AtualizarDemandaJobTest {
 
     private final ProcessarDemandaService processarDemandaService = mock(ProcessarDemandaService.class);
     private final ControlarProcessamentoService processamentoService = mock(ControlarProcessamentoService.class);
+    private final RegistrarExecucaoScheduleService registrarExecucaoScheduleService = mock(RegistrarExecucaoScheduleService.class);
     private final AtualizarDemandaJob job = new AtualizarDemandaJob(
             processarDemandaService,
-            processamentoService
+            processamentoService,
+            registrarExecucaoScheduleService
     );
 
     @Test
@@ -76,6 +79,7 @@ class AtualizarDemandaJobTest {
                     ProcessamentoEntidade.DEMANDA,
                     ProcessamentoDisparo.AUTOMATICO
             );
+            verify(registrarExecucaoScheduleService, times(1)).registrarInicio(ScheduleJob.ATUALIZAR_DEMANDA);
             verify(processarDemandaService, times(1)).atualizarDemanda(processamento);
 
             releaseProcessing.countDown();
@@ -100,6 +104,7 @@ class AtualizarDemandaJobTest {
                 ProcessamentoEntidade.DEMANDA,
                 ProcessamentoDisparo.AUTOMATICO
         );
+        verify(registrarExecucaoScheduleService, times(2)).registrarInicio(ScheduleJob.ATUALIZAR_DEMANDA);
         verify(processarDemandaService).atualizarDemanda(firstProcessing);
         verify(processarDemandaService).atualizarDemanda(secondProcessing);
         verify(processamentoService).encerrarProcessamento(firstProcessing, ProcessamentoStatus.CONCLUIDO);
@@ -122,6 +127,7 @@ class AtualizarDemandaJobTest {
         job.run();
 
         assertEquals(failure, thrown);
+        verify(registrarExecucaoScheduleService, times(2)).registrarInicio(ScheduleJob.ATUALIZAR_DEMANDA);
         verify(processamentoService).encerrarProcessamento(firstProcessing, ProcessamentoStatus.FALHOU);
         verify(processamentoService).encerrarProcessamento(secondProcessing, ProcessamentoStatus.CONCLUIDO);
     }
@@ -138,6 +144,7 @@ class AtualizarDemandaJobTest {
         job.run();
 
         assertEquals(failure, thrown);
+        verify(registrarExecucaoScheduleService, times(2)).registrarInicio(ScheduleJob.ATUALIZAR_DEMANDA);
         verify(processamentoService).encerrarProcessamento(null, ProcessamentoStatus.FALHOU);
         verify(processarDemandaService).atualizarDemanda(processamento);
         verify(processamentoService).encerrarProcessamento(processamento, ProcessamentoStatus.CONCLUIDO);

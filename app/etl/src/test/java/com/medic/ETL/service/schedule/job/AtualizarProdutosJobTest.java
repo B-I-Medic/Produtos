@@ -7,6 +7,7 @@ import com.medic.ETL.model.processamento.ProcessamentoStatus;
 import com.medic.ETL.model.schedule.ScheduleJob;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
 import com.medic.ETL.service.produto.ProcessarProdutoService;
+import com.medic.ETL.service.schedule.RegistrarExecucaoScheduleService;
 import com.medic.ETL.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 
@@ -31,9 +32,11 @@ class AtualizarProdutosJobTest {
 
     private final ControlarProcessamentoService processamentoService = mock(ControlarProcessamentoService.class);
     private final ProcessarProdutoService processarProdutoService = mock(ProcessarProdutoService.class);
+    private final RegistrarExecucaoScheduleService registrarExecucaoScheduleService = mock(RegistrarExecucaoScheduleService.class);
     private final AtualizarProdutosJob job = new AtualizarProdutosJob(
             processamentoService,
-            processarProdutoService
+            processarProdutoService,
+            registrarExecucaoScheduleService
     );
 
     @Test
@@ -76,6 +79,7 @@ class AtualizarProdutosJobTest {
                     ProcessamentoEntidade.PRODUTOS,
                     ProcessamentoDisparo.AUTOMATICO
             );
+            verify(registrarExecucaoScheduleService, times(1)).registrarInicio(ScheduleJob.ATUALIZAR_PRODUTOS);
             verify(processarProdutoService, times(1)).atualizarProdutos(processamento);
 
             releaseProcessing.countDown();
@@ -100,6 +104,7 @@ class AtualizarProdutosJobTest {
                 ProcessamentoEntidade.PRODUTOS,
                 ProcessamentoDisparo.AUTOMATICO
         );
+        verify(registrarExecucaoScheduleService, times(2)).registrarInicio(ScheduleJob.ATUALIZAR_PRODUTOS);
         verify(processarProdutoService).atualizarProdutos(firstProcessing);
         verify(processarProdutoService).atualizarProdutos(secondProcessing);
         verify(processamentoService).encerrarProcessamento(firstProcessing, ProcessamentoStatus.CONCLUIDO);
@@ -122,6 +127,7 @@ class AtualizarProdutosJobTest {
         job.run();
 
         assertEquals(failure, thrown);
+        verify(registrarExecucaoScheduleService, times(2)).registrarInicio(ScheduleJob.ATUALIZAR_PRODUTOS);
         verify(processamentoService).encerrarProcessamento(firstProcessing, ProcessamentoStatus.FALHOU);
         verify(processamentoService).encerrarProcessamento(secondProcessing, ProcessamentoStatus.CONCLUIDO);
     }
@@ -138,6 +144,7 @@ class AtualizarProdutosJobTest {
         job.run();
 
         assertEquals(failure, thrown);
+        verify(registrarExecucaoScheduleService, times(2)).registrarInicio(ScheduleJob.ATUALIZAR_PRODUTOS);
         verify(processamentoService).encerrarProcessamento(null, ProcessamentoStatus.FALHOU);
         verify(processarProdutoService).atualizarProdutos(processamento);
         verify(processamentoService).encerrarProcessamento(processamento, ProcessamentoStatus.CONCLUIDO);

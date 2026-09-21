@@ -9,6 +9,7 @@ import com.medic.ETL.model.estoque.interno.EstoqueInterno;
 import com.medic.ETL.model.estoque.segregado.EstoqueSegregado;
 import com.medic.ETL.model.estoque.valePermanente.ValePermanente;
 import com.medic.ETL.model.periodo.PeriodoModel;
+import com.medic.ETL.model.periodo.PeriodoTipo;
 import com.medic.ETL.model.processamento.Processamento;
 import com.medic.ETL.model.produto.Produto;
 
@@ -40,6 +41,14 @@ public final class TestDataFactory {
         periodo.setDescricao(descricao);
         periodo.setDataInicialViman(inicio);
         periodo.setDataFinalViman(fim);
+        return periodo;
+    }
+
+    public static PeriodoModel periodoRelativo(String descricao, PeriodoTipo tipo, int quantidade) {
+        PeriodoModel periodo = new PeriodoModel();
+        periodo.setDescricao(descricao);
+        periodo.setTipoPeriodo(tipo);
+        periodo.setQuantidade(quantidade);
         return periodo;
     }
 

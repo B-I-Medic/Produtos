@@ -85,7 +85,8 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/vale-permanente/get",
                                         "/periodo/get",
                                         "/taxa/get",
-                                        "/schedule/get"
+                                        "/schedule/get",
+                                        "/processamento/get"
                                 ).access(hasRole("USER", roleHierarchy))
                                 .pathMatchers(HttpMethod.POST, "/anvisa/atualizacoes")
                                 .access(hasRole("USER", roleHierarchy))

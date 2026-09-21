@@ -1,7 +1,6 @@
 package com.medic.ETL.config.schedule;
 
 import com.medic.ETL.service.schedule.ConsultaConfigScheduleService;
-import com.medic.ETL.repository.schedule.ScheduleRepository;
 import com.medic.ETL.service.schedule.job.Job;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -26,14 +25,11 @@ public class DynamicSchedulingConfig implements SchedulingConfigurer {
     private static final ZoneId ZONE_ID = ZoneId.of("America/Sao_Paulo");
 
     private final ConsultaConfigScheduleService consultaConfigScheduleService;
-    private final ScheduleRepository scheduleRepository;
     private final List<Job> jobs;
 
     public DynamicSchedulingConfig(ConsultaConfigScheduleService consultaConfigScheduleService,
-                                   ScheduleRepository scheduleRepository,
                                    List<Job> jobs) {
         this.consultaConfigScheduleService = consultaConfigScheduleService;
-        this.scheduleRepository = scheduleRepository;
         this.jobs = jobs;
     }
 
@@ -55,14 +51,13 @@ public class DynamicSchedulingConfig implements SchedulingConfigurer {
 
     private Instant calcularProximaExecucao(Job job, TriggerContext triggerContext) {
 
-        Instant ultimaExecucao = triggerContext.getClock().instant();
-        scheduleRepository.atualizarUltimaExecucao(job.getJob(), ultimaExecucao);
+        Instant agora = triggerContext.getClock().instant();
 
         return consultaConfigScheduleService
                 .getCron(job.getJob())
                 .map(cron -> new CronTrigger(cron, ZONE_ID)
                         .nextExecution(triggerContext)
                 )
-                .orElseGet(() -> ultimaExecucao.plus(RECHECK_INTERVAL));
+                .orElseGet(() -> agora.plus(RECHECK_INTERVAL));
     }
 }

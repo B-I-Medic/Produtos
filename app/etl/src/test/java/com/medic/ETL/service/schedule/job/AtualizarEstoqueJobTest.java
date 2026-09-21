@@ -10,6 +10,7 @@ import com.medic.ETL.service.estoque.interno.ProcessarEstoqueInternoService;
 import com.medic.ETL.service.estoque.segregado.ProcessarEstoqueSegregadoService;
 import com.medic.ETL.service.estoque.valePermanente.ProcessarValePermanenteService;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
+import com.medic.ETL.service.schedule.RegistrarExecucaoScheduleService;
 import com.medic.ETL.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 
@@ -37,12 +38,14 @@ class AtualizarEstoqueJobTest {
     private final ProcessarEstoqueSegregadoService processarEstoqueSegregadoService = mock(ProcessarEstoqueSegregadoService.class);
     private final ProcessarValePermanenteService processarValePermanenteService = mock(ProcessarValePermanenteService.class);
     private final ControlarProcessamentoService processamentoService = mock(ControlarProcessamentoService.class);
+    private final RegistrarExecucaoScheduleService registrarExecucaoScheduleService = mock(RegistrarExecucaoScheduleService.class);
     private final AtualizarEstoqueJob job = new AtualizarEstoqueJob(
             atualizarViewMaterializadaRepository,
             processarEstoqueInternoService,
             processarEstoqueSegregadoService,
             processarValePermanenteService,
-            processamentoService
+            processamentoService,
+            registrarExecucaoScheduleService
     );
 
     @Test
@@ -85,6 +88,7 @@ class AtualizarEstoqueJobTest {
                     ProcessamentoEntidade.ESTOQUE,
                     ProcessamentoDisparo.AUTOMATICO
             );
+            verify(registrarExecucaoScheduleService, times(1)).registrarInicio(ScheduleJob.ATUALIZAR_ESTOQUE);
             verify(processarEstoqueInternoService, times(1)).processarEstoqueInterno(processamento);
 
             releaseProcessing.countDown();
@@ -109,6 +113,7 @@ class AtualizarEstoqueJobTest {
                 ProcessamentoEntidade.ESTOQUE,
                 ProcessamentoDisparo.AUTOMATICO
         );
+        verify(registrarExecucaoScheduleService, times(2)).registrarInicio(ScheduleJob.ATUALIZAR_ESTOQUE);
         verify(processarEstoqueInternoService).processarEstoqueInterno(firstProcessing);
         verify(processarEstoqueInternoService).processarEstoqueInterno(secondProcessing);
         verify(processarEstoqueSegregadoService).processarEstoqueSegregado(firstProcessing);
@@ -136,6 +141,7 @@ class AtualizarEstoqueJobTest {
         job.run();
 
         assertEquals(failure, thrown);
+        verify(registrarExecucaoScheduleService, times(2)).registrarInicio(ScheduleJob.ATUALIZAR_ESTOQUE);
         verify(processamentoService).encerrarProcessamento(firstProcessing, ProcessamentoStatus.FALHOU);
         verify(processamentoService).encerrarProcessamento(secondProcessing, ProcessamentoStatus.CONCLUIDO);
         verify(atualizarViewMaterializadaRepository).atualizar();
@@ -153,6 +159,7 @@ class AtualizarEstoqueJobTest {
         job.run();
 
         assertEquals(failure, thrown);
+        verify(registrarExecucaoScheduleService, times(2)).registrarInicio(ScheduleJob.ATUALIZAR_ESTOQUE);
         verify(processamentoService).encerrarProcessamento(null, ProcessamentoStatus.FALHOU);
         verify(processarEstoqueInternoService).processarEstoqueInterno(processamento);
         verify(processarEstoqueSegregadoService).processarEstoqueSegregado(processamento);

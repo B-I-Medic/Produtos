@@ -10,6 +10,7 @@ import com.medic.ETL.service.estoque.interno.ProcessarEstoqueInternoService;
 import com.medic.ETL.service.estoque.segregado.ProcessarEstoqueSegregadoService;
 import com.medic.ETL.service.estoque.valePermanente.ProcessarValePermanenteService;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
+import com.medic.ETL.service.schedule.RegistrarExecucaoScheduleService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,18 +29,21 @@ public class AtualizarEstoqueJob implements Job {
     private final ProcessarEstoqueInternoService processarEstoqueInternoService;
     private final ProcessarEstoqueSegregadoService processarEstoqueSegregadoService;
     private final ProcessarValePermanenteService processarValePermanenteService;
+    private final RegistrarExecucaoScheduleService registrarExecucaoScheduleService;
 
 
     public AtualizarEstoqueJob(AtualizarViewMaterializadaRepository atualizarViewMaterializadaRepository,
                                ProcessarEstoqueInternoService processarEstoqueInternoService,
                                ProcessarEstoqueSegregadoService processarEstoqueSegregadoService,
                                ProcessarValePermanenteService processarValePermanenteService,
-                               ControlarProcessamentoService processamentoService) {
+                               ControlarProcessamentoService processamentoService,
+                               RegistrarExecucaoScheduleService registrarExecucaoScheduleService) {
         this.atualizarViewMaterializadaRepository = atualizarViewMaterializadaRepository;
         this.processarEstoqueInternoService = processarEstoqueInternoService;
         this.processarEstoqueSegregadoService = processarEstoqueSegregadoService;
         this.processarValePermanenteService = processarValePermanenteService;
         this.processamentoService = processamentoService;
+        this.registrarExecucaoScheduleService = registrarExecucaoScheduleService;
     }
 
     @Override
@@ -63,6 +67,8 @@ public class AtualizarEstoqueJob implements Job {
         Processamento processamento = null;
 
         try {
+
+            registrarExecucaoScheduleService.registrarInicio(getJob());
 
             processamento = processamentoService.iniciarProcessamento(
                     ProcessamentoEntidade.ESTOQUE,

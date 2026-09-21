@@ -24,16 +24,23 @@ public class PeriodoModel implements Serializable {
     @Column(unique = true, nullable = false, updatable = false, insertable = false)
     private String descricao;
 
-    @Column(nullable = false, updatable = false, insertable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_periodo", updatable = false, insertable = false)
+    private PeriodoTipo tipoPeriodo;
+
+    @Column(name = "quantidade", updatable = false, insertable = false)
+    private Integer quantidade;
+
+    @Column(nullable = true, updatable = false, insertable = false)
     private LocalDate dataInicial;
 
-    @Column(nullable = false, updatable = false, insertable = false)
+    @Column(nullable = true, updatable = false, insertable = false)
     private LocalDate dataFinal;
 
-    @Column(nullable = false, updatable = false, insertable = false)
+    @Column(nullable = true, updatable = false, insertable = false)
     private String dataInicialViman;
 
-    @Column(nullable = false, updatable = false, insertable = false)
+    @Column(nullable = true, updatable = false, insertable = false)
     private String dataFinalViman;
 
     @ManyToOne(fetch = FetchType.LAZY)

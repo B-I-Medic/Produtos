@@ -7,6 +7,7 @@ import com.medic.ETL.model.processamento.ProcessamentoStatus;
 import com.medic.ETL.model.schedule.ScheduleJob;
 import com.medic.ETL.service.demanda.ProcessarDemandaService;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
+import com.medic.ETL.service.schedule.RegistrarExecucaoScheduleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +21,14 @@ public class AtualizarDemandaJob implements Job {
 
     private final ProcessarDemandaService processarDemandaService;
     private final ControlarProcessamentoService processamentoService;
+    private final RegistrarExecucaoScheduleService registrarExecucaoScheduleService;
 
     public AtualizarDemandaJob(ProcessarDemandaService processarDemandaService,
-                               ControlarProcessamentoService processamentoService) {
+                               ControlarProcessamentoService processamentoService,
+                               RegistrarExecucaoScheduleService registrarExecucaoScheduleService) {
         this.processarDemandaService = processarDemandaService;
         this.processamentoService = processamentoService;
+        this.registrarExecucaoScheduleService = registrarExecucaoScheduleService;
     }
 
     @Override
@@ -48,6 +52,8 @@ public class AtualizarDemandaJob implements Job {
         Processamento processamento = null;
 
         try {
+
+            registrarExecucaoScheduleService.registrarInicio(getJob());
 
             processamento = processamentoService.iniciarProcessamento(
                     ProcessamentoEntidade.DEMANDA,
