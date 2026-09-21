@@ -5,6 +5,7 @@ import com.medic.Web.controller.config.taxa.TaxaController;
 import com.medic.Web.dto.config.periodo.PeriodoRequestDTO;
 import com.medic.Web.dto.config.taxa.TaxaRequestDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
+import com.medic.Web.model.config.periodo.PeriodoTipo;
 import com.medic.Web.service.config.periodo.ManutencaoPeriodoService;
 import com.medic.Web.service.config.taxa.ManutencaoTaxaService;
 import com.medic.Web.support.FixedAuthenticationPrincipalResolver;
@@ -17,11 +18,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ParametroControllerTest {
@@ -57,7 +59,7 @@ class ParametroControllerTest {
     void shouldDefinirPeriodo() {
 
         var response = TestDataFactory.periodoResponseDTO();
-        var dto = new PeriodoRequestDTO(LocalDate.now(), LocalDate.now().plusDays(1));
+        var dto = new PeriodoRequestDTO(PeriodoTipo.DIAS, 7);
         UUID id = UUID.randomUUID();
         when(periodoService.definirPeriodo(id, dto, user.getId())).thenReturn(Mono.just(response));
 
@@ -67,6 +69,24 @@ class ParametroControllerTest {
                 .bodyValue(dto)
                 .exchange()
                 .expectStatus().isOk();
+    }
+
+    @Test
+    void shouldRejectLegacyFixedDatePayload() {
+
+        UUID id = UUID.randomUUID();
+
+        periodoClient.put()
+                .uri("/periodo/definir/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(Map.of(
+                        "dataInicial", "2026-01-01",
+                        "dataFinal", "2026-01-31"
+                ))
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        verifyNoInteractions(periodoService);
     }
 
     @Test

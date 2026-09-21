@@ -36,6 +36,8 @@ class AuthServiceTest {
     @Mock
     private JwtService jwtService;
     @Mock
+    private RefreshTokenService refreshTokenService;
+    @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private UsuarioRepository repository;
@@ -59,12 +61,38 @@ class AuthServiceTest {
         UsuarioModel user = TestDataFactory.usuarioModel();
         when(authenticationManager.authenticate(any()))
                 .thenReturn(Mono.just(new TestingAuthenticationToken(user, null)));
+        when(refreshTokenService.issue(user))
+                .thenReturn(Mono.just(new RefreshTokenService.IssuedRefreshToken(
+                        java.util.UUID.randomUUID(), "refresh", Instant.now().plusSeconds(3600))));
         when(jwtService.generateToken(user)).thenReturn("token");
         when(jwtService.getExpires_in("token")).thenReturn(Instant.now().plusSeconds(3600));
 
         StepVerifier.create(service.login(new LoginRequestDTO(user.getEmail(), "123")))
-                .expectNextMatches(response -> response.email().equals(user.getEmail()) && response.token().equals("token"))
+                .expectNextMatches(response -> response.email().equals(user.getEmail())
+                        && response.token().equals("token")
+                        && response.refreshToken().equals("refresh"))
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldRefreshAndLogoutThroughTheRefreshTokenService() {
+
+        UsuarioModel user = TestDataFactory.usuarioModel();
+        Instant expiresAt = Instant.now().plusSeconds(3600);
+        when(refreshTokenService.rotate("refresh-old"))
+                .thenReturn(Mono.just(new RefreshTokenService.RotatedRefreshToken(user, "refresh-new", expiresAt)));
+        when(jwtService.generateToken(user)).thenReturn("new-jwt");
+        when(jwtService.getExpires_in("new-jwt")).thenReturn(expiresAt);
+
+        StepVerifier.create(service.refresh("refresh-old"))
+                .assertNext(response -> {
+                    org.junit.jupiter.api.Assertions.assertEquals("refresh-new", response.refreshToken());
+                    org.junit.jupiter.api.Assertions.assertEquals("new-jwt", response.token());
+                })
+                .verifyComplete();
+
+        when(refreshTokenService.revoke("refresh-new")).thenReturn(Mono.empty());
+        StepVerifier.create(service.logout("refresh-new")).verifyComplete();
     }
 
     @Test
@@ -109,8 +137,59 @@ class AuthServiceTest {
         when(repository.findByEmail(user.getEmail())).thenReturn(Mono.just(user));
         when(passwordEncoder.encode("nova")).thenReturn("hash");
         when(repository.save(user)).thenReturn(Mono.just(user));
+        when(refreshTokenService.revokeAllForUser(user.getId())).thenReturn(Mono.empty());
 
         StepVerifier.create(service.resetPassword(new ResetPasswordRequestDTO(user.getEmail(), "123456", "nova")))
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldRejectFirstAccessForInactiveOrAlreadyInitializedUsers() {
+
+        UsuarioModel inactive = TestDataFactory.usuarioModel();
+        inactive.setAtivo(false);
+        when(repository.findById(inactive.getId())).thenReturn(Mono.just(inactive));
+
+        StepVerifier.create(service.firstAccess(new PasswordRequestDTO("nova"), inactive.getId()))
+                .expectError(org.springframework.security.authentication.DisabledException.class)
+                .verify();
+
+        UsuarioModel initialized = TestDataFactory.usuarioModel();
+        initialized.setPrimeiroAcesso(false);
+        when(repository.findById(initialized.getId())).thenReturn(Mono.just(initialized));
+
+        StepVerifier.create(service.firstAccess(new PasswordRequestDTO("nova"), initialized.getId()))
+                .expectError(com.medic.Web.exception.type.auth.PasswordAlreadySetException.class)
+                .verify();
+    }
+
+    @Test
+    void shouldRejectForgotPasswordForMissingOrInactiveUsers() {
+
+        when(repository.findByEmail("missing@example.com")).thenReturn(Mono.empty());
+        StepVerifier.create(service.forgotPassword("missing@example.com"))
+                .expectError(com.medic.Web.exception.type.NotFoundException.class)
+                .verify();
+
+        UsuarioModel inactive = TestDataFactory.usuarioModel();
+        inactive.setAtivo(false);
+        when(repository.findByEmail(inactive.getEmail())).thenReturn(Mono.just(inactive));
+        StepVerifier.create(service.forgotPassword(inactive.getEmail()))
+                .expectError(org.springframework.security.authentication.DisabledException.class)
+                .verify();
+    }
+
+    @Test
+    void shouldRejectAnInvalidResetCode() {
+
+        PasswordResetCodeModel code = TestDataFactory.passwordResetCodeModel();
+        when(passwordResetCodeRepository.findFirstByEmailAndUsadoFalseAndExpiraEmAfterOrderByExpiraEmDesc(anyString(), any()))
+                .thenReturn(Mono.just(code));
+        when(passwordResetCodeGenerator.valide("wrong", code.getCodigo())).thenReturn(false);
+
+        StepVerifier.create(service.resetPassword(new ResetPasswordRequestDTO(
+                        "user@example.com", "wrong", "nova")))
+                .expectError(com.medic.Web.exception.type.auth.PasswordResetCodeException.class)
+                .verify();
     }
 }

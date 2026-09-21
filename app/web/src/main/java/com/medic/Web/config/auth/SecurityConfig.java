@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authorization.AllAuthoritiesReactiveAuthorizationManager;
 import org.springframework.security.authorization.ReactiveAuthorizationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -65,6 +66,8 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/v3/api-docs",
                                         "/actuator/health/readiness",
                                         "/auth/login",
+                                        "/auth/refresh",
+                                        "/auth/logout",
                                         "/auth/forgot-password",
                                         "/auth/reset-password"
                                 ).permitAll()
@@ -82,7 +85,15 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/vale-permanente/get",
                                         "/periodo/get",
                                         "/taxa/get",
-                                        "/schedule/get"
+                                        "/schedule/get",
+                                        "/processamento/get"
+                                ).access(hasRole("USER", roleHierarchy))
+                                .pathMatchers(HttpMethod.POST, "/anvisa/atualizacoes")
+                                .access(hasRole("USER", roleHierarchy))
+                                .pathMatchers(HttpMethod.GET,
+                                        "/anvisa/atualizacoes/hoje",
+                                        "/anvisa/atualizacoes/*/status",
+                                        "/anvisa/configuracao"
                                 ).access(hasRole("USER", roleHierarchy))
                                 .pathMatchers("/centro-distribuicao/save",
                                         "/centro-distribuicao/update/*",
@@ -114,6 +125,8 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/schedule/enable",
                                         "/schedule/disable"
                                 ).access(hasRole("ADMIN", roleHierarchy))
+                                .pathMatchers(HttpMethod.PUT, "/anvisa/configuracao")
+                                .access(hasRole("ADMIN", roleHierarchy))
                                 .anyExchange().authenticated()
                 )
                 .addFilterAt(jwtConfig, SecurityWebFiltersOrder.AUTHENTICATION)

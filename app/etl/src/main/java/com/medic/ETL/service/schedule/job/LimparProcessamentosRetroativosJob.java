@@ -2,6 +2,7 @@ package com.medic.ETL.service.schedule.job;
 
 import com.medic.ETL.model.schedule.ScheduleJob;
 import com.medic.ETL.repository.processamento.ProcessamentoCustomRepositoryImpl;
+import com.medic.ETL.service.schedule.RegistrarExecucaoScheduleService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,9 +12,12 @@ import org.springframework.stereotype.Component;
 public class LimparProcessamentosRetroativosJob implements Job {
 
     private final ProcessamentoCustomRepositoryImpl processamentoRepository;
+    private final RegistrarExecucaoScheduleService registrarExecucaoScheduleService;
 
-    public LimparProcessamentosRetroativosJob(ProcessamentoCustomRepositoryImpl processamentoRepository) {
+    public LimparProcessamentosRetroativosJob(ProcessamentoCustomRepositoryImpl processamentoRepository,
+                                              RegistrarExecucaoScheduleService registrarExecucaoScheduleService) {
         this.processamentoRepository = processamentoRepository;
+        this.registrarExecucaoScheduleService = registrarExecucaoScheduleService;
     }
 
     @Override
@@ -26,6 +30,7 @@ public class LimparProcessamentosRetroativosJob implements Job {
     @Override
     public void run() {
 
+        registrarExecucaoScheduleService.registrarInicio(getJob());
         log.info("Iniciando limpeza de processamentos retroativos");
         processamentoRepository.excluirProcessamentosAntigos();
     }

@@ -4,6 +4,7 @@ import com.medic.ETL.config.property.ProdutoDataSourceProperties;
 import com.medic.ETL.config.property.ETLProperties;
 import com.medic.ETL.config.property.S00DataSourceProperties;
 import com.medic.ETL.config.property.UFXDataSourceProperties;
+import com.medic.ETL.config.property.AnvisaProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,7 +14,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 		UFXDataSourceProperties.class,
 		S00DataSourceProperties.class,
 		ProdutoDataSourceProperties.class,
-		ETLProperties.class
+		ETLProperties.class,
+		AnvisaProperties.class
 })
 public class ETLApplication {
 

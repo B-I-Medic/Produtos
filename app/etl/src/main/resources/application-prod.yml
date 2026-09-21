@@ -4,6 +4,9 @@ spring:
   jpa:
     open-in-view: false
 
+server:
+  port: ${ETL_SERVER_PORT:9094}
+
 app:
   datasource:
     origem:
@@ -25,3 +28,14 @@ app:
 
 etl:
   thread-pool-size: 4
+
+anvisa:
+  internal-api-key: ${ANVISA_ETL_API_KEY}
+  worker:
+    poll-interval-ms: ${ANVISA_WORKER_POLL_INTERVAL_MS:1000}
+    initial-delay-ms: ${ANVISA_WORKER_INITIAL_DELAY_MS:1000}
+    lease-seconds: ${ANVISA_WORKER_LEASE_SECONDS:1800}
+  tls:
+    trust-store: ${ANVISA_TRUSTSTORE_PATH}
+    trust-store-password: ${ANVISA_TRUSTSTORE_PASSWORD}
+    trust-store-type: ${ANVISA_TRUSTSTORE_TYPE:PKCS12}

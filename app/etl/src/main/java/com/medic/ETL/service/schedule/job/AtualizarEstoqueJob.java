@@ -6,29 +6,30 @@ import com.medic.ETL.model.processamento.ProcessamentoEntidade;
 import com.medic.ETL.model.processamento.ProcessamentoStatus;
 import com.medic.ETL.model.schedule.ScheduleJob;
 import com.medic.ETL.repository.estoque.AtualizarViewMaterializadaRepository;
-import com.medic.ETL.repository.processamento.ProcessamentoRepository;
 import com.medic.ETL.service.estoque.interno.ProcessarEstoqueInternoService;
 import com.medic.ETL.service.estoque.segregado.ProcessarEstoqueSegregadoService;
 import com.medic.ETL.service.estoque.valePermanente.ProcessarValePermanenteService;
 import com.medic.ETL.service.processamento.ControlarProcessamentoService;
+import com.medic.ETL.service.schedule.RegistrarExecucaoScheduleService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Component
 public class AtualizarEstoqueJob implements Job {
 
-    private static final long ESTOQUE_LOCK_KEY = 872341L;
+    private final ReentrantLock lock = new ReentrantLock();
 
-
-    private final ProcessamentoRepository processamentoRepository;
     private final AtualizarViewMaterializadaRepository atualizarViewMaterializadaRepository;
 
     private final ControlarProcessamentoService processamentoService;
     private final ProcessarEstoqueInternoService processarEstoqueInternoService;
     private final ProcessarEstoqueSegregadoService processarEstoqueSegregadoService;
     private final ProcessarValePermanenteService processarValePermanenteService;
+    private final RegistrarExecucaoScheduleService registrarExecucaoScheduleService;
 
 
     public AtualizarEstoqueJob(AtualizarViewMaterializadaRepository atualizarViewMaterializadaRepository,
@@ -36,13 +37,13 @@ public class AtualizarEstoqueJob implements Job {
                                ProcessarEstoqueSegregadoService processarEstoqueSegregadoService,
                                ProcessarValePermanenteService processarValePermanenteService,
                                ControlarProcessamentoService processamentoService,
-                               ProcessamentoRepository processamentoRepository) {
+                               RegistrarExecucaoScheduleService registrarExecucaoScheduleService) {
         this.atualizarViewMaterializadaRepository = atualizarViewMaterializadaRepository;
         this.processarEstoqueInternoService = processarEstoqueInternoService;
         this.processarEstoqueSegregadoService = processarEstoqueSegregadoService;
         this.processarValePermanenteService = processarValePermanenteService;
         this.processamentoService = processamentoService;
-        this.processamentoRepository = processamentoRepository;
+        this.registrarExecucaoScheduleService = registrarExecucaoScheduleService;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class AtualizarEstoqueJob implements Job {
     @Override
     public void run() {
 
-        if (processamentoRepository.lockEmUso(ESTOQUE_LOCK_KEY)) {
+        if (!lock.tryLock()) {
 
             processamentoService.abortarProcessamento(ProcessamentoEntidade.ESTOQUE, ProcessamentoDisparo.AUTOMATICO);
             log.info("Processamento de estoque ja esta em execucao. Nova execucao abortada");
@@ -63,9 +64,16 @@ public class AtualizarEstoqueJob implements Job {
             return;
         }
 
-        Processamento processamento = processamentoService.iniciarProcessamento(ProcessamentoEntidade.ESTOQUE, ProcessamentoDisparo.AUTOMATICO);
+        Processamento processamento = null;
 
         try {
+
+            registrarExecucaoScheduleService.registrarInicio(getJob());
+
+            processamento = processamentoService.iniciarProcessamento(
+                    ProcessamentoEntidade.ESTOQUE,
+                    ProcessamentoDisparo.AUTOMATICO
+            );
 
             processarEstoqueInternoService.processarEstoqueInterno(processamento);
             processarEstoqueSegregadoService.processarEstoqueSegregado(processamento);
@@ -83,7 +91,7 @@ public class AtualizarEstoqueJob implements Job {
 
         } finally {
 
-            processamentoRepository.liberarLock(ESTOQUE_LOCK_KEY);
+            lock.unlock();
         }
     }
 

@@ -3,11 +3,15 @@ package com.medic.ETL.service.demanda;
 import com.medic.ETL.dto.parametro.DemandaParametroDTO;
 import com.medic.ETL.dto.parametro.PeriodoDTO;
 import com.medic.ETL.model.empresa.EmpresaModel;
+import com.medic.ETL.model.periodo.PeriodoModel;
 import com.medic.ETL.model.processamento.Processamento;
 import com.medic.ETL.repository.empresa.EmpresaRepository;
 import com.medic.ETL.repository.periodo.PeriodoRepository;
+import com.medic.ETL.service.periodo.PeriodoIntervalo;
+import com.medic.ETL.service.periodo.PeriodoIntervaloResolver;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -15,11 +19,14 @@ public class PrepararConsultaDemandaService {
 
     private final PeriodoRepository periodoRepository;
     private final EmpresaRepository empresaRepository;
+    private final PeriodoIntervaloResolver intervaloResolver;
 
     public PrepararConsultaDemandaService(PeriodoRepository periodoRepository,
-                                          EmpresaRepository empresaRepository) {
+                                          EmpresaRepository empresaRepository,
+                                          PeriodoIntervaloResolver intervaloResolver) {
         this.periodoRepository = periodoRepository;
         this.empresaRepository = empresaRepository;
+        this.intervaloResolver = intervaloResolver;
     }
 
     protected String montarConsulta(Processamento processamento) {
@@ -30,16 +37,35 @@ public class PrepararConsultaDemandaService {
                 .forEach(periodo -> {
 
                     switch (periodo.getDescricao()) {
-                        case "ORCAMENTO" -> periodos.setOrcamento(new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman()));
-                        case "ORCAMENTO_APROVADO" -> periodos.setAprovado(new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman()));
-                        case "AGENDAMENTO" -> periodos.setAgendamento(new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman()));
-                        case "CIRURGIA" -> periodos.setCirurgia(new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman()));
+                        case "ORCAMENTO" -> periodos.setOrcamento(obterPeriodo(periodo));
+                        case "ORCAMENTO_APROVADO" -> periodos.setAprovado(obterPeriodo(periodo));
+                        case "AGENDAMENTO" -> periodos.setAgendamento(obterPeriodo(periodo));
+                        case "CIRURGIA" -> periodos.setCirurgia(obterPeriodo(periodo));
                     }
                 });
 
         String processamentoId = escapeSql(processamento.getId().toString());
 
         return montarConsultaUfx(periodos, processamentoId);
+    }
+
+    private PeriodoDTO obterPeriodo(PeriodoModel periodo) {
+
+        if (periodo.getTipoPeriodo() == null && periodo.getQuantidade() == null) {
+            return new PeriodoDTO(periodo.getDataInicialViman(), periodo.getDataFinalViman());
+        }
+
+        if (periodo.getTipoPeriodo() == null || periodo.getQuantidade() == null) {
+            throw new IllegalStateException("A configuração do período " + periodo.getDescricao() + " está incompleta");
+        }
+
+        intervaloResolver.validar(periodo.getDescricao(), periodo.getTipoPeriodo(), periodo.getQuantidade());
+        PeriodoIntervalo intervalo = intervaloResolver.calcular(periodo.getTipoPeriodo(), periodo.getQuantidade());
+
+        return new PeriodoDTO(
+                intervalo.dataInicial().format(DateTimeFormatter.BASIC_ISO_DATE),
+                intervalo.dataFinal().format(DateTimeFormatter.BASIC_ISO_DATE)
+        );
     }
 
     private String montarConsultaUfx(DemandaParametroDTO parametros,

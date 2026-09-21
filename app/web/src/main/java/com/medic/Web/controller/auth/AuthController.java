@@ -3,6 +3,7 @@ package com.medic.Web.controller.auth;
 import com.medic.Web.dto.auth.LoginRequestDTO;
 import com.medic.Web.dto.auth.LoginResponseDTO;
 import com.medic.Web.dto.auth.PasswordRequestDTO;
+import com.medic.Web.dto.auth.RefreshTokenRequestDTO;
 import com.medic.Web.dto.auth.ResetPasswordRequestDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
 import com.medic.Web.service.auth.AuthService;
@@ -28,6 +29,22 @@ public class AuthController {
 
         return dto
                 .flatMap(service::login);
+    }
+
+    @PostMapping("/refresh")
+    public Mono<LoginResponseDTO> refresh(@RequestBody @Valid Mono<RefreshTokenRequestDTO> dto) {
+
+        return dto
+                .map(RefreshTokenRequestDTO::refreshToken)
+                .flatMap(service::refresh);
+    }
+
+    @PostMapping("/logout")
+    public Mono<Void> logout(@RequestBody @Valid Mono<RefreshTokenRequestDTO> dto) {
+
+        return dto
+                .map(RefreshTokenRequestDTO::refreshToken)
+                .flatMap(service::logout);
     }
 
     @PostMapping("/forgot-password")

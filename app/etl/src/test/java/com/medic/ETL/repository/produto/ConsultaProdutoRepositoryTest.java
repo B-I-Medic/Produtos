@@ -36,4 +36,23 @@ class ConsultaProdutoRepositoryTest {
 
         assertEquals(Instant.parse("2026-08-10T13:00:00Z"), produto.getCriadoEm());
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void shouldMapAnvisaAndNullCreationDateFromS00() throws Exception {
+
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString("Anvisa")).thenReturn("123456");
+        when(resultSet.getString("CriadoEm")).thenReturn("  ");
+        when(s00JdbcTemplate.query(eq("consulta-s00"), any(RowMapper.class)))
+                .thenAnswer(invocation -> {
+                    RowMapper<?> mapper = invocation.getArgument(1);
+                    return List.of(mapper.mapRow(resultSet, 0));
+                });
+
+        var produto = repository.consultarS00("consulta-s00").getFirst();
+
+        assertEquals(123456L, produto.getAnvisa());
+        org.junit.jupiter.api.Assertions.assertNull(produto.getCriadoEm());
+    }
 }

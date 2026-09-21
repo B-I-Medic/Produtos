@@ -2,6 +2,7 @@ package com.medic.ETL.service.schedule.job;
 
 import com.medic.ETL.model.schedule.ScheduleJob;
 import com.medic.ETL.repository.processamento.ProcessamentoCustomRepositoryImpl;
+import com.medic.ETL.service.schedule.RegistrarExecucaoScheduleService;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,7 +12,11 @@ import static org.mockito.Mockito.verify;
 class LimparProcessamentosRetroativosJobTest {
 
     private final ProcessamentoCustomRepositoryImpl processamentoRepository = mock(ProcessamentoCustomRepositoryImpl.class);
-    private final LimparProcessamentosRetroativosJob job = new LimparProcessamentosRetroativosJob(processamentoRepository);
+    private final RegistrarExecucaoScheduleService registrarExecucaoScheduleService = mock(RegistrarExecucaoScheduleService.class);
+    private final LimparProcessamentosRetroativosJob job = new LimparProcessamentosRetroativosJob(
+            processamentoRepository,
+            registrarExecucaoScheduleService
+    );
 
     @Test
     void shouldExposeScheduleJob() {
@@ -22,6 +27,7 @@ class LimparProcessamentosRetroativosJobTest {
     void shouldDeleteOldProcessingRows() {
         job.run();
 
+        verify(registrarExecucaoScheduleService).registrarInicio(ScheduleJob.EXCLUIR_PROCESSAMENTOS_ANTIGOS);
         verify(processamentoRepository).excluirProcessamentosAntigos();
     }
 }

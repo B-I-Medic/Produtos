@@ -1,0 +1,13 @@
+@baseUrl = https://produtos.surgilog.com.br/v1/api
+@email = bi2@medic.com.br
+@senha = 123
+
+### Login - producao
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "{{email}}",
+  "senha": "{{senha}}"
+}

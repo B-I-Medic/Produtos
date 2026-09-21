@@ -45,10 +45,12 @@ class DataSourceConfigTest {
         var s00DataSource = assertInstanceOf(DriverManagerDataSource.class, config.s00DataSource(s00Properties));
         JdbcTemplate ufxTemplate = config.ufxJbcTemplate(ufxDataSource);
         JdbcTemplate s00Template = config.s00JbcTemplate(s00DataSource);
+        JdbcTemplate pgTemplate = config.produtoJbcTemplate(ufxDataSource);
 
         assertEquals("jdbc:dbmaker:ufx", ufxDataSource.getUrl());
         assertEquals("jdbc:dbmaker:s00", s00DataSource.getUrl());
         assertSame(ufxDataSource, ufxTemplate.getDataSource());
         assertSame(s00DataSource, s00Template.getDataSource());
+        assertSame(ufxDataSource, pgTemplate.getDataSource());
     }
 }

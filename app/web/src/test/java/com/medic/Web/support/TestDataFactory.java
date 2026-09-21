@@ -72,7 +72,14 @@ public final class TestDataFactory {
     public static PeriodoResponseDTO periodoResponseDTO() {
 
         var model = periodoModel();
-        return new PeriodoResponseDTO(model.getId(), model.getDescricao(), model.getDataInicial(), model.getDataFinal());
+        return new PeriodoResponseDTO(
+                model.getId(),
+                model.getDescricao(),
+                model.getTipoPeriodo(),
+                model.getQuantidade(),
+                model.getDataInicial(),
+                model.getDataFinal()
+        );
     }
 
     public static TaxaModel taxaModel() {

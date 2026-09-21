@@ -35,6 +35,7 @@ public class AuthService {
 
     private final ReactiveAuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
     private final PasswordEncoder passwordEncoder;
 
     private final UsuarioRepository repository;
@@ -48,6 +49,7 @@ public class AuthService {
 
     public AuthService(ReactiveAuthenticationManager authenticationManager,
                        JwtService jwtService,
+                       RefreshTokenService refreshTokenService,
                        PasswordEncoder passwordEncoder,
                        UsuarioRepository repository,
                        MailService mailService,
@@ -57,6 +59,7 @@ public class AuthService {
                        PasswordResetCodeMapper passwordResetCodeMapper) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
         this.passwordEncoder = passwordEncoder;
         this.repository = repository;
         this.mailService = mailService;
@@ -75,7 +78,19 @@ public class AuthService {
 
         return authenticationManager.authenticate(auth)
                 .map(a -> (UsuarioModel) Objects.requireNonNull(a.getPrincipal()))
-                .map(this::toDTO);
+                .flatMap(user -> refreshTokenService.issue(user)
+                        .flatMap(refresh -> toDTO(user, refresh.token(), refresh.expiresAt())));
+    }
+
+    public Mono<LoginResponseDTO> refresh(String rawRefreshToken) {
+
+        return refreshTokenService.rotate(rawRefreshToken)
+                .flatMap(rotation -> toDTO(rotation.usuario(), rotation.token(), rotation.expiresAt()));
+    }
+
+    public Mono<Void> logout(String rawRefreshToken) {
+
+        return refreshTokenService.revoke(rawRefreshToken);
     }
 
     @Transactional
@@ -96,20 +111,22 @@ public class AuthService {
                 .then();
     }
 
-    private LoginResponseDTO toDTO(UsuarioModel user) {
+    private Mono<LoginResponseDTO> toDTO(UsuarioModel user, String refreshToken, Instant refreshExpiresAt) {
 
         String token = jwtService.generateToken(
                 user
         );
 
-        return new LoginResponseDTO(
+        return Mono.just(new LoginResponseDTO(
                 user.getNome(),
                 user.getEmail(),
                 user.getRole(),
                 user.getPrimeiroAcesso(),
                 token,
-                jwtService.getExpires_in(token)
-        );
+                jwtService.getExpires_in(token),
+                refreshToken,
+                refreshExpiresAt
+        ));
     }
 
     public Mono<Void> forgotPassword(String mail) {
@@ -155,7 +172,8 @@ public class AuthService {
                 .flatMap(code -> repository.findByEmail(resetPasswordRequestDTO.email()))
                 .flatMap(user -> {
                     user.setSenha(passwordEncoder.encode(resetPasswordRequestDTO.senha()));
-                    return repository.save(user);
+                    return repository.save(user)
+                            .then(refreshTokenService.revokeAllForUser(user.getId()));
                 })
                 .then();
     }

@@ -92,4 +92,16 @@ class EmpresaMapperTest {
         assertTrue(dto.possuiEstoqueSegregado());
         assertFalse(dto.possuiVp());
     }
+
+    @Test
+    void shouldMapEmpresaWithoutMunicipio() {
+
+        EmpresaModel entity = new EmpresaModel();
+        entity.setId(UUID.randomUUID());
+        entity.setDescricao("Empresa sem municipio");
+        entity.setViman(Viman.S00);
+        entity.setCodigoEmpresa("004");
+
+        assertNull(mapper.toDTO(entity).municipio());
+    }
 }
