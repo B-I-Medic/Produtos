@@ -1,6 +1,7 @@
 package com.medic.ETL.repository.empresa;
 
 import com.medic.ETL.dto.empresa.EmpresaEstoqueInternoDTO;
+import com.medic.ETL.dto.empresa.EmpresaValePermanenteDTO;
 import com.medic.ETL.model.empresa.EmpresaModel;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,5 +27,19 @@ public interface EmpresaRepository extends JpaRepository<EmpresaModel, UUID> {
             order by e.codigoEmpresa, m.codIBGE
             """)
     List<EmpresaEstoqueInternoDTO> findAllEstoqueInternoByViman(@Param("viman") String viman);
+
+    @Query("""
+            select new com.medic.ETL.dto.empresa.EmpresaValePermanenteDTO(
+                e.viman,
+                e.codigoEmpresa,
+                m.codIBGE
+            )
+            from EmpresaModel e
+            join e.municipio m
+            where e.viman = :viman
+              and e.possuiVp = true
+            order by e.codigoEmpresa, m.codIBGE
+            """)
+    List<EmpresaValePermanenteDTO> findAllValePermanenteByViman(@Param("viman") String viman);
 
 }

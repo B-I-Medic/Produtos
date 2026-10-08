@@ -11,6 +11,7 @@ public class ValePermanente {
     private String viman;
     private String codEmpresa;
     private UUID idEmpresaMunicipio;
+    private String codIBGE;
     private String codProduto;
     private Integer qntDisponivel;
 }

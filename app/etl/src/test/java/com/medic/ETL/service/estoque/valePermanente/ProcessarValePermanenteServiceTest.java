@@ -35,13 +35,34 @@ class ProcessarValePermanenteServiceTest {
         var processamento = TestDataFactory.processamento();
         var ufx = TestDataFactory.valePermanente(10);
         var s00 = TestDataFactory.valePermanente(20);
+        ufx.setCodIBGE("3550308");
+        s00.setCodIBGE("3304557");
         when(prepararConsultaService.montarConsultas(processamento)).thenReturn(new ValePermanenteConsultaDTO("sql-ufx", "sql-s00"));
         when(consultaUfxRepository.consultar("sql-ufx")).thenReturn(List.of(ufx));
         when(consultaS00Repository.consultar("sql-s00")).thenReturn(List.of(s00));
 
         service.processarValePermanente(processamento);
 
+        verify(prepararConsultaService).montarConsultas(processamento);
+        verify(consultaUfxRepository).consultar("sql-ufx");
+        verify(consultaS00Repository).consultar("sql-s00");
         verify(insercaoRepository).inserirEmLote(List.of(ufx, s00));
+    }
+
+    @Test
+    void shouldPersistResultsFromTheNonBlankQueryWhenTheOtherQueryIsBlank() {
+        var processamento = TestDataFactory.processamento();
+        var s00 = TestDataFactory.valePermanente(20);
+        s00.setCodIBGE("3304557");
+        when(prepararConsultaService.montarConsultas(processamento))
+                .thenReturn(new ValePermanenteConsultaDTO(" ", "sql-s00"));
+        when(consultaS00Repository.consultar("sql-s00")).thenReturn(List.of(s00));
+
+        service.processarValePermanente(processamento);
+
+        verify(consultaUfxRepository, never()).consultar(org.mockito.ArgumentMatchers.anyString());
+        verify(consultaS00Repository).consultar("sql-s00");
+        verify(insercaoRepository).inserirEmLote(List.of(s00));
     }
 
     @Test
