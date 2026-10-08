@@ -44,7 +44,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP01 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO01 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -85,7 +89,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU07 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP07 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO07 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -126,7 +134,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU08 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP08 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO08 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -167,7 +179,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU10 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP10 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO10 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
             """;
 
     private static final String CONSULTA_S00 = """
@@ -208,7 +224,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP01 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO01 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -249,7 +269,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP02 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO02 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -290,7 +314,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP03 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO03 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -331,7 +359,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP04 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO04 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -372,7 +404,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP06 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO06 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -413,7 +449,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP07 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO07 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -454,7 +494,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP08 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO08 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -495,7 +539,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP09 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO09 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -536,7 +584,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP10 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO10 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -577,7 +629,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP11 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO11 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
 
             UNION ALL
 
@@ -618,7 +674,11 @@ public class PrepararConsultaProdutoService {
               ON MA.MACODI = PR.PRCDMA
             LEFT JOIN SYSADM.VETEFU01 AS FU
               ON FU.FUCODI = PR.PRFUNC
-            
+            JOIN SYSADM.VETETP12 AS TP
+              ON PR.PRTPPR = TP.TPCODI
+            JOIN SYSADM.VETETO12 AS T
+              ON T.TOCODI = TP.TPCDTO
+            WHERE T.TODESC IN ('DESCARTAVEL', 'ESTERIL', 'IMPLANTE')
             """;
 
     public ProdutoConsultaDTO montarConsultas() {
