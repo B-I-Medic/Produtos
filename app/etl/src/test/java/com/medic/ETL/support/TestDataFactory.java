@@ -1,8 +1,6 @@
 package com.medic.ETL.support;
 
-import com.medic.ETL.dto.parametro.EstoqueInternoParametroDTO;
 import com.medic.ETL.dto.parametro.EstoqueSegregadoParametroDTO;
-import com.medic.ETL.dto.parametro.ValePermanenteParametroDTO;
 import com.medic.ETL.model.demanda.Demanda;
 import com.medic.ETL.model.empresa.EmpresaModel;
 import com.medic.ETL.model.estoque.interno.EstoqueInterno;
@@ -114,14 +112,6 @@ public final class TestDataFactory {
         return estoque;
     }
 
-    public static EstoqueInternoParametroDTO estoqueInternoParametro(UUID empresaMunicipio, String viman, String codEmpresa) {
-        EstoqueInternoParametroDTO parametro = new EstoqueInternoParametroDTO();
-        parametro.setIdEmpresaMunicipio(empresaMunicipio);
-        parametro.setViman(viman);
-        parametro.setCodEmpresa(codEmpresa);
-        return parametro;
-    }
-
     public static EstoqueSegregadoParametroDTO estoqueSegregadoParametro(UUID empresaMunicipio, String viman, String codEmpresa, String codSegregado) {
         EstoqueSegregadoParametroDTO parametro = new EstoqueSegregadoParametroDTO();
         parametro.setIdEmpresaMunicipio(empresaMunicipio);
@@ -131,12 +121,4 @@ public final class TestDataFactory {
         return parametro;
     }
 
-    public static ValePermanenteParametroDTO valePermanenteParametro(UUID empresaMunicipio, String viman, String codEmpresa, String codVp) {
-        ValePermanenteParametroDTO parametro = new ValePermanenteParametroDTO();
-        parametro.setIdEmpresaMunicipio(empresaMunicipio);
-        parametro.setViman(viman);
-        parametro.setCodEmpresa(codEmpresa);
-        parametro.setCodVp(codVp);
-        return parametro;
-    }
 }

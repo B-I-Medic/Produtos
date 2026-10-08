@@ -10,9 +10,7 @@ import com.medic.ETL.repository.estoque.interno.ConsultaEstoqueInternoUFXReposit
 import com.medic.ETL.repository.estoque.segregado.ConsultaConsultaSegregadoUFXRepository;
 import com.medic.ETL.repository.estoque.valePermanente.ConsultaS00Repository;
 import com.medic.ETL.repository.estoque.valePermanente.ConsultaUFXRepository;
-import com.medic.ETL.repository.parametro.EstoqueInternoParametroRepository;
 import com.medic.ETL.repository.parametro.EstoqueSegregadoParametroRepository;
-import com.medic.ETL.repository.parametro.ValePermanenteParametroRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -94,23 +92,16 @@ class LegacyJdbcRepositoryCoverageTest {
                 .getFirst();
 
         assertEquals(processamento, s00Vale.getProcessamento());
-        assertEquals(empresaMunicipio, ufxVale.getIdEmpresaMunicipio());
+        assertEquals("3550308", ufxVale.getCodIBGE());
         assertEquals("UFX", segregado.getViman());
         assertEquals("001", ufxInterno.getCodEmpresa());
         assertEquals(5, s00Interno.getQntDisponivel());
     }
 
     @Test
-    void shouldMapAllParameterRepositories() throws Exception {
+    void shouldMapSegregatedParameterRepository() throws Exception {
 
         UUID empresaMunicipio = UUID.randomUUID();
-
-        JdbcTemplate internoTemplate = mock(JdbcTemplate.class);
-        ResultSet internoResultSet = mock(ResultSet.class);
-        when(internoResultSet.getObject("id_empresa_municipio", UUID.class)).thenReturn(empresaMunicipio);
-        when(internoResultSet.getString("viman")).thenReturn("S00");
-        when(internoResultSet.getString("codEmpresa")).thenReturn("001");
-        stubQuery(internoTemplate, internoResultSet);
 
         JdbcTemplate segregadoTemplate = mock(JdbcTemplate.class);
         ResultSet segregadoResultSet = mock(ResultSet.class);
@@ -119,25 +110,10 @@ class LegacyJdbcRepositoryCoverageTest {
         when(segregadoResultSet.getString("viman")).thenReturn("UFX");
         when(segregadoResultSet.getString("codEmpresa")).thenReturn("002");
         stubQuery(segregadoTemplate, segregadoResultSet);
-
-        JdbcTemplate valeTemplate = mock(JdbcTemplate.class);
-        ResultSet valeResultSet = mock(ResultSet.class);
-        when(valeResultSet.getObject("id_empresa_municipio", UUID.class)).thenReturn(empresaMunicipio);
-        when(valeResultSet.getString("codVp")).thenReturn("20");
-        when(valeResultSet.getString("viman")).thenReturn("S00");
-        when(valeResultSet.getString("codEmpresa")).thenReturn("003");
-        stubQuery(valeTemplate, valeResultSet);
-
-        var interno = new EstoqueInternoParametroRepository(internoTemplate)
-                .obterEstoqueInternoParametros().getFirst();
         var segregado = new EstoqueSegregadoParametroRepository(segregadoTemplate)
                 .obterEstoqueSegregadoParametros().getFirst();
-        var vale = new ValePermanenteParametroRepository(valeTemplate)
-                .obterValePermanenteParametros().getFirst();
 
-        assertEquals(empresaMunicipio, interno.getIdEmpresaMunicipio());
         assertEquals("10", segregado.getCodSegregado());
-        assertEquals("20", vale.getCodVp());
     }
 
     private ResultSet stockResultSet(UUID processamento, UUID empresaMunicipio) throws Exception {
@@ -146,6 +122,7 @@ class LegacyJdbcRepositoryCoverageTest {
         when(resultSet.getString("Processamento")).thenReturn(processamento.toString());
         when(resultSet.getString("Viman")).thenReturn("UFX");
         when(resultSet.getString("CodEmpresa")).thenReturn("001");
+        when(resultSet.getString("CodIBGE")).thenReturn("3550308");
         when(resultSet.getString("IdEmpresaMunicipio")).thenReturn(empresaMunicipio.toString());
         when(resultSet.getString("CodProduto")).thenReturn("P1");
         when(resultSet.getInt("QntDisponivel")).thenReturn(5);
