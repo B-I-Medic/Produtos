@@ -1,11 +1,11 @@
 package com.medic.ETL.service.estoque.interno;
 
-import com.medic.ETL.repository.parametro.EstoqueInternoParametroRepository;
+import com.medic.ETL.dto.empresa.EmpresaEstoqueInternoDTO;
+import com.medic.ETL.repository.empresa.EmpresaRepository;
 import com.medic.ETL.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,26 +14,29 @@ import static org.mockito.Mockito.when;
 
 class PrepararConsultaEstoqueInternoServiceTest {
 
-    private final EstoqueInternoParametroRepository repository = mock(EstoqueInternoParametroRepository.class);
+    private final EmpresaRepository repository = mock(EmpresaRepository.class);
     private final PrepararConsultaEstoqueInternoService service = new PrepararConsultaEstoqueInternoService(repository);
 
     @Test
-    void shouldGroupGenericUfxCodesAndUseSpecialTables() {
-        UUID empresaMunicipio = UUID.fromString("00000000-0000-0000-0000-000000000201");
-        when(repository.obterEstoqueInternoParametros()).thenReturn(List.of(
-                TestDataFactory.estoqueInternoParametro(empresaMunicipio, "UFX", "01"),
-                TestDataFactory.estoqueInternoParametro(empresaMunicipio, "UFX", "03"),
-                TestDataFactory.estoqueInternoParametro(empresaMunicipio, "UFX", "07"),
-                TestDataFactory.estoqueInternoParametro(empresaMunicipio, "UFX", "08"),
-                TestDataFactory.estoqueInternoParametro(empresaMunicipio, "S00", "02")
+    void shouldBuildQueriesUsingJoinedMunicipalityData() {
+        when(repository.findAllEstoqueInternoByViman("UFX")).thenReturn(List.of(
+                new EmpresaEstoqueInternoDTO("UFX", "01", "3550308"),
+                new EmpresaEstoqueInternoDTO("UFX", "03", "3550308"),
+                new EmpresaEstoqueInternoDTO("UFX", "07", "3550308"),
+                new EmpresaEstoqueInternoDTO("UFX", "08", "3550308")
+        ));
+        when(repository.findAllEstoqueInternoByViman("S00")).thenReturn(List.of(
+                new EmpresaEstoqueInternoDTO("S00", "02", "3304557")
         ));
 
         var consultas = service.montarConsultas(TestDataFactory.processamento());
 
-        assertTrue(consultas.consultaUfx().contains("PU.PUCDUS IN (1, 3)"));
+        assertTrue(consultas.consultaUfx().contains("PU.PUCDUS IN (01)"));
         assertTrue(consultas.consultaUfx().contains("FROM SYSADM.VETEPR07"));
         assertTrue(consultas.consultaUfx().contains("FROM SYSADM.VETEPR08"));
-        assertTrue(consultas.consultaS00().contains("PU.PUCDUS IN (2)"));
+        assertTrue(consultas.consultaUfx().contains("'3550308' AS CodIBGE"));
+        assertTrue(consultas.consultaS00().contains("PU.PUCDUS IN (02)"));
+        assertTrue(consultas.consultaS00().contains("'3304557' AS CodIBGE"));
         assertFalse(consultas.consultaS00().contains("VETEPR07"));
     }
 }

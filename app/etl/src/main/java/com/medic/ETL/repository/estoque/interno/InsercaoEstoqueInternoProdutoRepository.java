@@ -27,7 +27,7 @@ public class InsercaoEstoqueInternoProdutoRepository {
                     processamento,
                     viman,
                     cod_empresa,
-                    id_empresa_municipio,
+                    cod_ibge,
                     cod_produto,
                     qnt_disponivel
                 ) values (?, ?, ?, ?, ?, ?)
@@ -43,7 +43,7 @@ public class InsercaoEstoqueInternoProdutoRepository {
                 ps.setObject(1, item.getProcessamento());
                 ps.setString(2, item.getViman());
                 ps.setString(3, item.getCodEmpresa());
-                ps.setObject(4, item.getIdEmpresaMunicipio());
+                ps.setObject(4, item.getCodIBGE());
                 ps.setString(5, item.getCodProduto());
 
                 if (item.getQntDisponivel() == null) {

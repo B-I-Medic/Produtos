@@ -1,5 +1,6 @@
 package com.medic.ETL.model.empresa;
 
+import com.medic.ETL.model.municipio.MunicipioModel;
 import com.medic.ETL.model.usuario.UsuarioModel;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -38,6 +39,10 @@ public class EmpresaModel implements Serializable {
 
     @Column(nullable = false, updatable = false, insertable = false)
     private boolean possuiVp;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "municipio_id", nullable = false, updatable = false, insertable = false)
+    private MunicipioModel municipio;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "criado_por", nullable = false, updatable = false, insertable = false)

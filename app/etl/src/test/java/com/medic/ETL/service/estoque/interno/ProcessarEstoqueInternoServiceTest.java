@@ -42,7 +42,25 @@ class ProcessarEstoqueInternoServiceTest {
 
         service.processarEstoqueInterno(processamento);
 
+        verify(prepararConsultaEstoqueInternoService).montarConsultas(processamento);
+        verify(consultaUfxRepository).consultar("sql-ufx");
+        verify(consultaS00Repository).consultar("sql-s00");
         verify(insercaoRepository).inserirEmLote(List.of(ufx, s00));
+    }
+
+    @Test
+    void shouldPersistResultsFromTheNonBlankQueryWhenTheOtherQueryIsBlank() {
+        var processamento = TestDataFactory.processamento();
+        var s00 = TestDataFactory.estoqueInterno(20);
+        when(prepararConsultaEstoqueInternoService.montarConsultas(processamento))
+                .thenReturn(new EstoqueInternoConsultaDTO(" ", "sql-s00"));
+        when(consultaS00Repository.consultar("sql-s00")).thenReturn(List.of(s00));
+
+        service.processarEstoqueInterno(processamento);
+
+        verify(consultaUfxRepository, never()).consultar(org.mockito.ArgumentMatchers.anyString());
+        verify(consultaS00Repository).consultar("sql-s00");
+        verify(insercaoRepository).inserirEmLote(List.of(s00));
     }
 
     @Test

@@ -26,7 +26,7 @@ public class ConsultaEstoqueInternoUFXRepository {
             dto.setProcessamento(UUID.fromString(rs.getString("Processamento")));
             dto.setViman(rs.getString("Viman"));
             dto.setCodEmpresa(rs.getString("CodEmpresa"));
-            dto.setIdEmpresaMunicipio(UUID.fromString(rs.getString("IdEmpresaMunicipio")));
+            dto.setCodIBGE(rs.getString("CodIBGE"));
             dto.setCodProduto(rs.getString("CodProduto"));
             dto.setQntDisponivel(rs.getInt("QntDisponivel"));
 
