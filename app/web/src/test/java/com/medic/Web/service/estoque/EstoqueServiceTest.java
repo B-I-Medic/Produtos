@@ -39,7 +39,6 @@ class EstoqueServiceTest {
     void shouldSaveEstoqueSegregado() {
 
         var model = TestDataFactory.estoqueSegregadoModel();
-        var response = TestDataFactory.estoqueSegregadoResponseDTO();
         var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), model.getIdEmpresaMunicipio());
 
         when(validador.validarEstoqueSegregado(dto.idEmpresa(), dto.id_empresa_municipio())).thenReturn(Mono.just(TestDataFactory.empresaMunicipioModel()));
