@@ -1,16 +1,12 @@
 package com.medic.Web.repository;
 
 import com.medic.Web.dto.cd.CdEmpresaMunicipioFilterDTO;
-import com.medic.Web.dto.config.estoque.interno.EstoqueInternoFilterDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoFilterDTO;
-import com.medic.Web.dto.config.estoque.vp.ValePermanenteFilterDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioFilterDTO;
 import com.medic.Web.dto.municipio.MunicipioFilterDTO;
 import com.medic.Web.repository.cd.CdEmpresaMunipioRepositoryCustomImpl;
 import com.medic.Web.repository.cd.MunicipioRepositoryCustomImpl;
-import com.medic.Web.repository.config.estoque.interno.EstoqueInternoRepositoryCustomImpl;
 import com.medic.Web.repository.config.estoque.segregado.EstoqueSegregadoRepositoryCustomImpl;
-import com.medic.Web.repository.config.estoque.vp.ValePermanenteRepositoryCustomImpl;
 import com.medic.Web.repository.empresa.EmpresaMunipioRepositoryCustomImpl;
 import com.medic.Web.repository.empresa.EmpresaRepositoryCustomImpl;
 import io.r2dbc.spi.Row;
@@ -74,19 +70,6 @@ class CustomRepositoryCoverageTest {
     }
 
     @Test
-    void shouldMapInternalStockRowsWithTextFilters() {
-
-        prepareQuery();
-        stubRowValues();
-        stubMappedRows();
-
-        StepVerifier.create(new EstoqueInternoRepositoryCustomImpl(databaseClient)
-                        .getAllAndFilter(new EstoqueInternoFilterDTO("CD", " Empresa ", "", "SP")))
-                .expectNextCount(1)
-                .verifyComplete();
-    }
-
-    @Test
     void shouldMapSegregatedStockRowsWithAndWithoutIntegerFilter() {
 
         prepareQuery();
@@ -101,26 +84,6 @@ class CustomRepositoryCoverageTest {
         stubRowValues();
         stubMappedRows();
         StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient)
-                        .getAllAndFilter(null))
-                .expectNextCount(1)
-                .verifyComplete();
-    }
-
-    @Test
-    void shouldMapPermanentStockRowsWithAndWithoutIntegerFilter() {
-
-        prepareQuery();
-        stubRowValues();
-        stubMappedRows();
-        StepVerifier.create(new ValePermanenteRepositoryCustomImpl(databaseClient)
-                        .getAllAndFilter(new ValePermanenteFilterDTO("CD", "Empresa", "Cidade", "SP", 10)))
-                .expectNextCount(1)
-                .verifyComplete();
-
-        prepareQuery();
-        stubRowValues();
-        stubMappedRows();
-        StepVerifier.create(new ValePermanenteRepositoryCustomImpl(databaseClient)
                         .getAllAndFilter(null))
                 .expectNextCount(1)
                 .verifyComplete();

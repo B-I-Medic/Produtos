@@ -4,9 +4,7 @@ import com.medic.Web.dto.cd.CdEmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.cd.CentroDistribuicaoResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaResponseDTO;
-import com.medic.Web.dto.config.estoque.interno.EstoqueInternoResponseDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
-import com.medic.Web.dto.config.estoque.vp.ValePermanenteResponseDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
 import com.medic.Web.dto.municipio.MunicipioResumoResponseDTO;
 import com.medic.Web.dto.forecast.ForecastAgrupadoResponseDTO;
@@ -20,9 +18,7 @@ import com.medic.Web.model.municipio.MunicipioModel;
 import com.medic.Web.model.empresa.EmpresaModel;
 import com.medic.Web.model.empresa.EmpresaMunicipioModel;
 import com.medic.Web.model.empresa.Viman;
-import com.medic.Web.model.config.estoque.EstoqueInternoParametroModel;
 import com.medic.Web.model.config.estoque.EstoqueSegregadoParametroModel;
-import com.medic.Web.model.config.estoque.ValePermanenteParametroModel;
 import com.medic.Web.model.config.periodo.PeriodoEnum;
 import com.medic.Web.model.config.periodo.PeriodoModel;
 import com.medic.Web.model.config.taxa.TaxaEnum;
@@ -192,28 +188,6 @@ public final class TestDataFactory {
         return new CdEmpresaMunicipioResponseDTO(model.getId(), "Empresa", "Cidade", "SP");
     }
 
-    public static EstoqueInternoParametroModel estoqueInternoModel() {
-
-        var model = new EstoqueInternoParametroModel();
-        model.setId(UUID.randomUUID());
-        model.setIdEmpresa(UUID.randomUUID());
-        model.setIdEmpresaMunicipio(UUID.randomUUID());
-        model.setCriadoPor(UUID.randomUUID());
-        return model;
-    }
-
-    public static EstoqueInternoResponseDTO estoqueInternoResponseDTO() {
-
-        var model = estoqueInternoModel();
-        return new EstoqueInternoResponseDTO(
-                model.getId(),
-                "CD",
-                "Empresa",
-                "Cidade",
-                "SP"
-        );
-    }
-
     public static EstoqueSegregadoParametroModel estoqueSegregadoModel() {
 
         var model = new EstoqueSegregadoParametroModel();
@@ -233,30 +207,6 @@ public final class TestDataFactory {
                 "CD",
                 "Empresa",
                 model.getCodSegregado(),
-                "Cidade",
-                "SP"
-        );
-    }
-
-    public static ValePermanenteParametroModel valePermanenteModel() {
-
-        var model = new ValePermanenteParametroModel();
-        model.setId(UUID.randomUUID());
-        model.setIdEmpresa(UUID.randomUUID());
-        model.setCodVp(20);
-        model.setIdEmpresaMunicipio(UUID.randomUUID());
-        model.setCriadoPor(UUID.randomUUID());
-        return model;
-    }
-
-    public static ValePermanenteResponseDTO valePermanenteResponseDTO() {
-
-        var model = valePermanenteModel();
-        return new ValePermanenteResponseDTO(
-                model.getId(),
-                "CD",
-                "Empresa",
-                model.getCodVp(),
                 "Cidade",
                 "SP"
         );

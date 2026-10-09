@@ -21,16 +21,6 @@ public class ValidadorEmpresaEstoqueService {
         this.empresaRepository = empresaRepository;
     }
 
-    public Mono<EmpresaMunicipioModel> validarEstoqueInterno(UUID idEmpresa,
-                                                             UUID idEmpresaMunicipio) {
-
-        return empresaMunicipioRepository.findById(idEmpresaMunicipio)
-                .filter(empresaMunicipio -> empresaMunicipio.getIdEmpresa().equals(idEmpresa))
-                .flatMap(empresaMunicipio -> empresaRepository.findById(empresaMunicipio.getIdEmpresa())
-                        .filter(EmpresaModel::isPossuiEstoqueInterno)
-                        .thenReturn(empresaMunicipio));
-    }
-
     public Mono<EmpresaMunicipioModel> validarEstoqueSegregado(UUID idEmpresa,
                                                                UUID idEmpresaMunicipio) {
 
@@ -38,16 +28,6 @@ public class ValidadorEmpresaEstoqueService {
                 .filter(empresaMunicipio -> empresaMunicipio.getIdEmpresa().equals(idEmpresa))
                 .flatMap(empresaMunicipio -> empresaRepository.findById(empresaMunicipio.getIdEmpresa())
                         .filter(EmpresaModel::isPossuiEstoqueSegregado)
-                        .thenReturn(empresaMunicipio));
-    }
-
-    public Mono<EmpresaMunicipioModel> validarValePermanente(UUID idEmpresa,
-                                                             UUID idEmpresaMunicipio) {
-
-        return empresaMunicipioRepository.findById(idEmpresaMunicipio)
-                .filter(empresaMunicipio -> empresaMunicipio.getIdEmpresa().equals(idEmpresa))
-                .flatMap(empresaMunicipio -> empresaRepository.findById(empresaMunicipio.getIdEmpresa())
-                        .filter(EmpresaModel::isPossuiVp)
                         .thenReturn(empresaMunicipio));
     }
 }
