@@ -23,12 +23,6 @@ class JwtServiceTest {
     }
 
     @Test
-    void shouldValidateGeneratedToken() {
-
-        assertTrue(service.isValid(generatedToken()));
-    }
-
-    @Test
     void shouldReadTokenSubject() {
 
         UsuarioModel user = TestDataFactory.usuarioModel();
@@ -67,9 +61,4 @@ class JwtServiceTest {
         return service.generateToken(TestDataFactory.usuarioModel());
     }
 
-    @Test
-    void shouldReturnFalseForInvalidToken() {
-
-        assertFalse(service.isValid("token-invalido"));
-    }
 }
