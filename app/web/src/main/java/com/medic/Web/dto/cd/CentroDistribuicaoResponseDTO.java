@@ -1,13 +1,15 @@
 package com.medic.Web.dto.cd;
 
-import com.medic.Web.dto.municipio.MunicipioResumoResponseDTO;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.medic.Web.dto.municipio.MunicipioResponseDTO;
 
 import java.util.UUID;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record CentroDistribuicaoResponseDTO(
 
         UUID id,
         String descricao,
-        MunicipioResumoResponseDTO municipio
+        MunicipioResponseDTO municipio
 ) {
 }

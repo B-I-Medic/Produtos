@@ -4,7 +4,6 @@ import com.medic.Web.dto.cd.CentroDistribuicaoRequestDTO;
 import com.medic.Web.exception.type.NotFoundException;
 import com.medic.Web.mapper.cd.CentroDistribuicaoMapper;
 import com.medic.Web.model.cd.CentroDistribuicaoModel;
-import com.medic.Web.repository.cd.CdEmpresaMunipioRepository;
 import com.medic.Web.repository.cd.CentroDistribuicaoRepository;
 import com.medic.Web.repository.cd.MunicipioRepository;
 import com.medic.Web.support.TestDataFactory;
@@ -33,15 +32,10 @@ class CdServiceTest {
     @Mock
     private CentroDistribuicaoMapper centroDistribuicaoMapper;
     @Mock
-    private CdEmpresaMunipioRepository cdEmpresaMunipioRepository;
-    @Mock
     private MunicipioRepository municipioRepository;
 
     @InjectMocks
     private ManutencaoCDService manutencaoCDService;
-    @InjectMocks
-    private ManutencaoCdEmpresaMunicipioService manutencaoCdEmpresaMunicipioService;
-
     @Test
     void shouldSaveCentroDistribuicao() {
 
@@ -124,17 +118,4 @@ class CdServiceTest {
                 .verifyComplete();
     }
 
-    @Test
-    void shouldListCdEmpresaMunicipio() {
-
-        var consultaResponse = TestDataFactory.cdEmpresaMunipioConsultaResponseDTO();
-        UUID cdId = UUID.randomUUID();
-
-        when(cdEmpresaMunipioRepository.findByFiltro(cdId, null))
-                .thenReturn(Flux.just(consultaResponse));
-
-        StepVerifier.create(manutencaoCdEmpresaMunicipioService.listCdEmpresaMunicipio(cdId, null))
-                .expectNext(consultaResponse)
-                .verifyComplete();
-    }
 }

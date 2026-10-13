@@ -5,7 +5,5 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
 import java.util.UUID;
 
-public interface CdEmpresaMunipioRepository extends
-        ReactiveCrudRepository<CdEmpresaMunicipioModel, UUID>,
-        CdEmpresaMunipioRepositoryCustom {
+public interface CdEmpresaMunipioRepository extends ReactiveCrudRepository<CdEmpresaMunicipioModel, UUID> {
 }

@@ -16,7 +16,8 @@ public class MunicipioRepositoryCustomImpl implements MunicipioRepositoryCustom 
                 SELECT m.id AS id,
                        m.descricao AS descricao,
                        m.cod_ibge AS cod_ibge,
-                       m.estado AS estado
+                       m.estado AS estado,
+                       m.id_centro_distribuicao AS centro_distribuicao
                   FROM municipio m
                  WHERE (:descricao IS NULL OR m.descricao ILIKE :descricao)
                    AND (:estado IS NULL OR m.estado ILIKE :estado)
@@ -39,7 +40,8 @@ public class MunicipioRepositoryCustomImpl implements MunicipioRepositoryCustom 
                         row.get("id", UUID.class),
                         row.get("descricao", String.class),
                         row.get("cod_ibge", String.class),
-                        row.get("estado", String.class)
+                        row.get("estado", String.class),
+                        row.get("centro_distribuicao", UUID.class)
                 ))
                 .all();
     }

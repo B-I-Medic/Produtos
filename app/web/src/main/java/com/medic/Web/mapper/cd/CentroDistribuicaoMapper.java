@@ -2,7 +2,7 @@ package com.medic.Web.mapper.cd;
 
 import com.medic.Web.dto.cd.CentroDistribuicaoRequestDTO;
 import com.medic.Web.dto.cd.CentroDistribuicaoResponseDTO;
-import com.medic.Web.dto.municipio.MunicipioResumoResponseDTO;
+import com.medic.Web.dto.municipio.MunicipioResponseDTO;
 import com.medic.Web.model.cd.CentroDistribuicaoModel;
 import com.medic.Web.model.municipio.MunicipioModel;
 import org.springframework.stereotype.Component;
@@ -45,9 +45,10 @@ public class CentroDistribuicaoMapper {
         return new CentroDistribuicaoResponseDTO(
                 entity.getId(),
                 entity.getDescricao(),
-                municipio == null ? null : new MunicipioResumoResponseDTO(
+                municipio == null ? null : new MunicipioResponseDTO(
                         municipio.getId(),
                         municipio.getDescricao(),
+                        municipio.getCodIbge(),
                         municipio.getEstado()
                 )
         );
