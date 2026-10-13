@@ -95,7 +95,7 @@ public final class TestDataFactory {
         estoque.setProcessamento(processamento().getId());
         estoque.setViman("UFX");
         estoque.setCodEmpresa("01");
-        estoque.setIdEmpresaMunicipio(UUID.fromString("00000000-0000-0000-0000-000000000102"));
+        estoque.setCodIBGE("3550308");
         estoque.setCodProduto("P1");
         estoque.setQntDisponivel(quantidade);
         return estoque;
@@ -112,11 +112,10 @@ public final class TestDataFactory {
         return estoque;
     }
 
-    public static EstoqueSegregadoParametroDTO estoqueSegregadoParametro(UUID empresaMunicipio, String viman, String codEmpresa, String codSegregado) {
+    public static EstoqueSegregadoParametroDTO estoqueSegregadoParametro(String codEmpresa, String codIBGE, String codSegregado) {
         EstoqueSegregadoParametroDTO parametro = new EstoqueSegregadoParametroDTO();
-        parametro.setIdEmpresaMunicipio(empresaMunicipio);
-        parametro.setViman(viman);
         parametro.setCodEmpresa(codEmpresa);
+        parametro.setCodIBGE(codIBGE);
         parametro.setCodSegregado(codSegregado);
         return parametro;
     }

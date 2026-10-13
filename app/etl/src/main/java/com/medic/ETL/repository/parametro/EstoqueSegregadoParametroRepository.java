@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
 
 @Repository
 public class EstoqueSegregadoParametroRepository {
@@ -21,16 +20,17 @@ public class EstoqueSegregadoParametroRepository {
 
         String sql = """
                 select
-                    es.id_empresa_municipio as id_empresa_municipio,
-                    es.cod_segregado as "codSegregado",
-                    e.viman as "viman",
-                    e.codigo_empresa as "codEmpresa"
+                    e.codigo_empresa as codEmpresa,
+                    es.cod_ibge as CodIBGE,
+                    es.cod_segregado as codSegregado
                 from estoque_segregado_parametros es
                 join empresa e
                     on e.id = es.id_empresa
+                where e.possui_estoque_segregado is true
+                    and e.viman = 'UFX'
                 order by
-                    es.id_empresa_municipio,
                     e.codigo_empresa,
+                    es.cod_ibge,
                     es.cod_segregado
                 """;
 
@@ -38,10 +38,9 @@ public class EstoqueSegregadoParametroRepository {
 
             EstoqueSegregadoParametroDTO dto = new EstoqueSegregadoParametroDTO();
 
-            dto.setIdEmpresaMunicipio(rs.getObject("id_empresa_municipio", UUID.class));
-            dto.setCodSegregado(rs.getString("codSegregado"));
-            dto.setViman(rs.getString("viman"));
             dto.setCodEmpresa(rs.getString("codEmpresa"));
+            dto.setCodIBGE(rs.getString("CodIBGE"));
+            dto.setCodSegregado(rs.getString("codSegregado"));
 
             return dto;
         });

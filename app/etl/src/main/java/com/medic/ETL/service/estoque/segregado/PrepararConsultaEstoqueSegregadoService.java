@@ -12,7 +12,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class PrepararConsultaEstoqueSegregadoService {
@@ -26,36 +25,35 @@ public class PrepararConsultaEstoqueSegregadoService {
     public EstoqueSegregadoConsultaDTO montarConsultas(Processamento processamento) {
 
         var parametros = estoqueSegregadoParametroRepository.obterEstoqueSegregadoParametros();
+
         String processamentoId = escapeSql(processamento.getId().toString());
+
         String consultaUfx = montarConsultaUfx(parametros, processamentoId);
 
         return new EstoqueSegregadoConsultaDTO(consultaUfx);
     }
 
-    private String montarConsultaUfx(List<EstoqueSegregadoParametroDTO> parametros,
+    private String montarConsultaUfx(List<EstoqueSegregadoParametroDTO> empresas,
                                      String processamentoId) {
 
         Map<ChaveConsultaSegregado, Set<String>> codigosSegregadosPorGrupo = new LinkedHashMap<>();
 
-        for (EstoqueSegregadoParametroDTO parametro : parametros) {
-
-            if (!"UFX".equalsIgnoreCase(parametro.getViman())) {
-                continue;
-            }
+        for (EstoqueSegregadoParametroDTO empresa : empresas) {
 
             ChaveConsultaSegregado chave = new ChaveConsultaSegregado(
-                    parametro.getIdEmpresaMunicipio(),
-                    parametro.getCodEmpresa()
+                    empresa.getCodEmpresa(),
+                    empresa.getCodIBGE()
             );
 
             codigosSegregadosPorGrupo
                     .computeIfAbsent(chave, key -> new LinkedHashSet<>())
-                    .add(parametro.getCodSegregado());
+                    .add(empresa.getCodSegregado());
         }
 
         List<String> consultas = new ArrayList<>();
 
         for (Map.Entry<ChaveConsultaSegregado, Set<String>> entry : codigosSegregadosPorGrupo.entrySet()) {
+
             ChaveConsultaSegregado chave = entry.getKey();
 
             consultas.add("""
@@ -63,7 +61,7 @@ public class PrepararConsultaEstoqueSegregadoService {
                         '%s' as Processamento,
                         'UFX' as Viman,
                         '%s' as CodEmpresa,
-                        '%s' AS IdEmpresaMunicipio,
+                        '%s' AS CodIBGE,
                         TRIM(ESCDPR) AS CodProduto,
                         sum(ESQTDE) AS QntDisponivel
                     FROM SYSADM.VETEES%s
@@ -72,7 +70,7 @@ public class PrepararConsultaEstoqueSegregadoService {
                     """.formatted(
                     processamentoId,
                     escapeSql(chave.codEmpresa()),
-                    escapeSql(chave.empresaMunicipio().toString()),
+                    escapeSql(chave.codIBGE()),
                     escapeSql(chave.codEmpresa()),
                     quotedValues(entry.getValue())
             ));
@@ -99,6 +97,6 @@ public class PrepararConsultaEstoqueSegregadoService {
         return value.replace("'", "''");
     }
 
-    private record ChaveConsultaSegregado(UUID empresaMunicipio, String codEmpresa) {
+    private record ChaveConsultaSegregado(String codEmpresa, String codIBGE) {
     }
 }

@@ -29,6 +29,7 @@ public class ProcessarEstoqueSegregadoService {
     public void processarEstoqueSegregado(Processamento processamento) {
 
         EstoqueSegregadoConsultaDTO consultas = prepararConsultaEstoqueSegregadoService.montarConsultas(processamento);
+
         List<EstoqueSegregado> itens = executarConsultaUfx(consultas.consultaUfx());
 
         if (itens.isEmpty()) {

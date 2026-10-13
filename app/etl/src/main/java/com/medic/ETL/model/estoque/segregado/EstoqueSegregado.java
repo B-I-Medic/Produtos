@@ -10,7 +10,7 @@ public class EstoqueSegregado {
     private UUID processamento;
     private String viman;
     private String codEmpresa;
-    private UUID idEmpresaMunicipio;
+    private String CodIBGE;
     private String codProduto;
     private Integer qntDisponivel;
 }

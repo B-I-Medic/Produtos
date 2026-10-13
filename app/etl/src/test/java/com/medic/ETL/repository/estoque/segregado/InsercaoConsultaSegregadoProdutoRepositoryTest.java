@@ -30,6 +30,7 @@ class InsercaoConsultaSegregadoProdutoRepositoryTest {
 
         verify(jdbcTemplate).batchUpdate(sqlCaptor.capture(), setterCaptor.capture());
         assertTrue(sqlCaptor.getValue().contains("insert into estoque_segregado"));
+        assertTrue(sqlCaptor.getValue().contains("cod_ibge"));
         assertEquals(1, setterCaptor.getValue().getBatchSize());
 
         PreparedStatement ps = mock(PreparedStatement.class);
@@ -38,7 +39,7 @@ class InsercaoConsultaSegregadoProdutoRepositoryTest {
         verify(ps).setObject(1, estoque.getProcessamento());
         verify(ps).setString(2, "UFX");
         verify(ps).setString(3, "01");
-        verify(ps).setObject(4, estoque.getIdEmpresaMunicipio());
+        verify(ps).setObject(4, estoque.getCodIBGE());
         verify(ps).setString(5, "P1");
         verify(ps).setInt(6, 15);
     }

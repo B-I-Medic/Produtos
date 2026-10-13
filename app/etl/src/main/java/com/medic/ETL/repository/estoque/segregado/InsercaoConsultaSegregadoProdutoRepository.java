@@ -1,6 +1,7 @@
 package com.medic.ETL.repository.estoque.segregado;
 
 import com.medic.ETL.model.estoque.segregado.EstoqueSegregado;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,7 +28,7 @@ public class InsercaoConsultaSegregadoProdutoRepository {
                     processamento,
                     viman,
                     cod_empresa,
-                    id_empresa_municipio,
+                    cod_ibge,
                     cod_produto,
                     qnt_disponivel
                 ) values (?, ?, ?, ?, ?, ?)
@@ -36,14 +37,14 @@ public class InsercaoConsultaSegregadoProdutoRepository {
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
 
             @Override
-            public void setValues(PreparedStatement ps, int index) throws SQLException {
+            public void setValues(@NonNull PreparedStatement ps, int index) throws SQLException {
 
                 EstoqueSegregado item = itens.get(index);
 
                 ps.setObject(1, item.getProcessamento());
                 ps.setString(2, item.getViman());
                 ps.setString(3, item.getCodEmpresa());
-                ps.setObject(4, item.getIdEmpresaMunicipio());
+                ps.setObject(4, item.getCodIBGE());
                 ps.setString(5, item.getCodProduto());
 
                 if (item.getQntDisponivel() == null) {

@@ -93,7 +93,7 @@ class LegacyJdbcRepositoryCoverageTest {
 
         assertEquals(processamento, s00Vale.getProcessamento());
         assertEquals("3550308", ufxVale.getCodIBGE());
-        assertEquals("UFX", segregado.getViman());
+        assertEquals("3550308", segregado.getCodIBGE());
         assertEquals("001", ufxInterno.getCodEmpresa());
         assertEquals(5, s00Interno.getQntDisponivel());
     }
@@ -101,18 +101,17 @@ class LegacyJdbcRepositoryCoverageTest {
     @Test
     void shouldMapSegregatedParameterRepository() throws Exception {
 
-        UUID empresaMunicipio = UUID.randomUUID();
-
         JdbcTemplate segregadoTemplate = mock(JdbcTemplate.class);
         ResultSet segregadoResultSet = mock(ResultSet.class);
-        when(segregadoResultSet.getObject("id_empresa_municipio", UUID.class)).thenReturn(empresaMunicipio);
-        when(segregadoResultSet.getString("codSegregado")).thenReturn("10");
-        when(segregadoResultSet.getString("viman")).thenReturn("UFX");
         when(segregadoResultSet.getString("codEmpresa")).thenReturn("002");
+        when(segregadoResultSet.getString("CodIBGE")).thenReturn("3550308");
+        when(segregadoResultSet.getString("codSegregado")).thenReturn("10");
         stubQuery(segregadoTemplate, segregadoResultSet);
         var segregado = new EstoqueSegregadoParametroRepository(segregadoTemplate)
                 .obterEstoqueSegregadoParametros().getFirst();
 
+        assertEquals("002", segregado.getCodEmpresa());
+        assertEquals("3550308", segregado.getCodIBGE());
         assertEquals("10", segregado.getCodSegregado());
     }
 
