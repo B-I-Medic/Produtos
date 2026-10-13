@@ -1,5 +1,6 @@
 package com.medic.Web.mapper.municipio;
 
+import com.medic.Web.dto.cd.CentroDistribuicaoResponseDTO;
 import com.medic.Web.dto.municipio.MunicipioRequestDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
 import com.medic.Web.model.municipio.MunicipioModel;
@@ -24,6 +25,18 @@ public class MunicipioMapper {
                 entity.getDescricao(),
                 entity.getCodIbge(),
                 entity.getEstado()
+        );
+    }
+
+    public MunicipioResponseDTO toDTO(MunicipioModel entity,
+                                      CentroDistribuicaoResponseDTO centroDistribuicao) {
+
+        return new MunicipioResponseDTO(
+                entity.getId(),
+                entity.getDescricao(),
+                entity.getCodIbge(),
+                entity.getEstado(),
+                centroDistribuicao
         );
     }
 }
