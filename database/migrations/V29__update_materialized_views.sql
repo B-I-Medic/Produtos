@@ -1,0 +1,4 @@
+GRANT MAINTAIN ON TABLE public.mv_estoque TO "app-etl";
+
+ALTER DEFAULT PRIVILEGES FOR ROLE flyway IN SCHEMA public
+GRANT MAINTAIN ON TABLES TO "app-etl";
