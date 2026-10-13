@@ -2,7 +2,7 @@ package com.medic.Web.mapper.empresa;
 
 import com.medic.Web.dto.empresa.EmpresaRequestDTO;
 import com.medic.Web.dto.empresa.EmpresaResponseDTO;
-import com.medic.Web.dto.municipio.MunicipioResumoResponseDTO;
+import com.medic.Web.dto.municipio.MunicipioResponseDTO;
 import com.medic.Web.model.empresa.EmpresaModel;
 import com.medic.Web.model.municipio.MunicipioModel;
 import org.springframework.stereotype.Component;
@@ -48,9 +48,10 @@ public class EmpresaMapper {
         return new EmpresaResponseDTO(
                 entity.getId(),
                 entity.getDescricao(),
-                municipio == null ? null : new MunicipioResumoResponseDTO(
+                municipio == null ? null : new MunicipioResponseDTO(
                         municipio.getId(),
                         municipio.getDescricao(),
+                        municipio.getCodIbge(),
                         municipio.getEstado()
                 ),
                 entity.getViman(),
