@@ -9,15 +9,15 @@ import java.util.UUID;
 @Service
 public class ValidadorEmpresaEstoqueService {
 
-    private final EmpresaRepository empresaMunicipioRepository;
+    private final EmpresaRepository empresaRepository;
 
-    public ValidadorEmpresaEstoqueService(EmpresaRepository empresaMunicipioRepository) {
-        this.empresaMunicipioRepository = empresaMunicipioRepository;
+    public ValidadorEmpresaEstoqueService(EmpresaRepository empresaRepository) {
+        this.empresaRepository = empresaRepository;
     }
 
     public Mono<Void> validarEmpresa(UUID idEmpresa) {
 
-        return empresaMunicipioRepository.findByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(idEmpresa)
+        return empresaRepository.findByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(idEmpresa)
                 .filter(Boolean.TRUE::equals)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("Empresa não possui estoque segregado ou não existe")))
                 .then();

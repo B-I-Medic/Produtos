@@ -1,6 +1,5 @@
 package com.medic.Web.service.empresa;
 
-import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaRequestDTO;
 import com.medic.Web.dto.empresa.EmpresaResponseDTO;
 import com.medic.Web.exception.type.NotFoundException;
@@ -68,12 +67,6 @@ public class ManutencaoEmpresaService {
                         .flatMap(municipioRepository::findById)
                         .map(municipio -> mapper.toDTO(empresa, municipio))
                         .switchIfEmpty(Mono.fromSupplier(() -> mapper.toDTO(empresa))));
-    }
-
-    @Transactional(readOnly = true)
-    public Flux<EmpresaMunicipioResponseDTO> listEmpresaMunicipioByIDEmpresa(UUID idEmpresa) {
-
-        return repository.listEmpresaMunicipioByIdEmpresa(idEmpresa);
     }
 
     private <T> Mono<T> municipioNotFound(UUID municipioId) {

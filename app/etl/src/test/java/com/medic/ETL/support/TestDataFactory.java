@@ -84,7 +84,7 @@ public final class TestDataFactory {
         estoque.setProcessamento(processamento().getId());
         estoque.setViman("UFX");
         estoque.setCodEmpresa("01");
-        estoque.setIdEmpresaMunicipio(UUID.fromString("00000000-0000-0000-0000-000000000101"));
+        estoque.setCodIBGE("3550308");
         estoque.setCodProduto("P1");
         estoque.setQntDisponivel(quantidade);
         return estoque;
@@ -106,7 +106,7 @@ public final class TestDataFactory {
         estoque.setProcessamento(processamento().getId());
         estoque.setViman("S00");
         estoque.setCodEmpresa("02");
-        estoque.setIdEmpresaMunicipio(UUID.fromString("00000000-0000-0000-0000-000000000103"));
+        estoque.setCodIBGE("3304557");
         estoque.setCodProduto("P1");
         estoque.setQntDisponivel(quantidade);
         return estoque;

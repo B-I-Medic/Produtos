@@ -58,34 +58,33 @@ class LegacyJdbcRepositoryCoverageTest {
     void shouldMapStockRowsFromAllSources() throws Exception {
 
         UUID processamento = UUID.randomUUID();
-        UUID empresaMunicipio = UUID.randomUUID();
 
         JdbcTemplate s00 = mock(JdbcTemplate.class);
-        ResultSet s00ResultSet = stockResultSet(processamento, empresaMunicipio);
+        ResultSet s00ResultSet = stockResultSet(processamento);
         stubQuery(s00, s00ResultSet);
         ValePermanente s00Vale = new ConsultaS00Repository(s00).consultar("select").getFirst();
 
         JdbcTemplate ufxValeTemplate = mock(JdbcTemplate.class);
-        ResultSet ufxValeResultSet = stockResultSet(processamento, empresaMunicipio);
+        ResultSet ufxValeResultSet = stockResultSet(processamento);
         stubQuery(ufxValeTemplate, ufxValeResultSet);
         ValePermanente ufxVale = new ConsultaUFXRepository(ufxValeTemplate).consultar("select").getFirst();
 
         JdbcTemplate segregadoTemplate = mock(JdbcTemplate.class);
-        ResultSet segregadoResultSet = stockResultSet(processamento, empresaMunicipio);
+        ResultSet segregadoResultSet = stockResultSet(processamento);
         stubQuery(segregadoTemplate, segregadoResultSet);
         EstoqueSegregado segregado = new ConsultaConsultaSegregadoUFXRepository(segregadoTemplate)
                 .consultar("select")
                 .getFirst();
 
         JdbcTemplate ufxInternoTemplate = mock(JdbcTemplate.class);
-        ResultSet ufxInternoResultSet = stockResultSet(processamento, empresaMunicipio);
+        ResultSet ufxInternoResultSet = stockResultSet(processamento);
         stubQuery(ufxInternoTemplate, ufxInternoResultSet);
         EstoqueInterno ufxInterno = new ConsultaEstoqueInternoUFXRepository(ufxInternoTemplate)
                 .consultar("select")
                 .getFirst();
 
         JdbcTemplate s00InternoTemplate = mock(JdbcTemplate.class);
-        ResultSet s00InternoResultSet = stockResultSet(processamento, empresaMunicipio);
+        ResultSet s00InternoResultSet = stockResultSet(processamento);
         stubQuery(s00InternoTemplate, s00InternoResultSet);
         EstoqueInterno s00Interno = new ConsultaEstoqueInternoS00Repository(s00InternoTemplate)
                 .consultar("select")
@@ -115,14 +114,13 @@ class LegacyJdbcRepositoryCoverageTest {
         assertEquals("10", segregado.getCodSegregado());
     }
 
-    private ResultSet stockResultSet(UUID processamento, UUID empresaMunicipio) throws Exception {
+    private ResultSet stockResultSet(UUID processamento) throws Exception {
 
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("Processamento")).thenReturn(processamento.toString());
         when(resultSet.getString("Viman")).thenReturn("UFX");
         when(resultSet.getString("CodEmpresa")).thenReturn("001");
         when(resultSet.getString("CodIBGE")).thenReturn("3550308");
-        when(resultSet.getString("IdEmpresaMunicipio")).thenReturn(empresaMunicipio.toString());
         when(resultSet.getString("CodProduto")).thenReturn("P1");
         when(resultSet.getInt("QntDisponivel")).thenReturn(5);
         return resultSet;

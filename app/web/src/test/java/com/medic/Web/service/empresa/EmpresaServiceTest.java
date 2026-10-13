@@ -1,16 +1,10 @@
 package com.medic.Web.service.empresa;
 
-import com.medic.Web.dto.empresa.EmpresaMunicipioFilterDTO;
-import com.medic.Web.dto.empresa.EmpresaMunicipioRequestDTO;
 import com.medic.Web.dto.empresa.EmpresaRequestDTO;
 import com.medic.Web.exception.type.NotFoundException;
-import com.medic.Web.mapper.cd.CdEmpresaMunipioMapper;
 import com.medic.Web.mapper.empresa.EmpresaMapper;
-import com.medic.Web.mapper.empresa.EmpresaMunicipioMapper;
 import com.medic.Web.model.empresa.Viman;
-import com.medic.Web.repository.cd.CdEmpresaMunipioRepository;
 import com.medic.Web.repository.cd.MunicipioRepository;
-import com.medic.Web.repository.empresa.EmpresaMunicipioRepository;
 import com.medic.Web.repository.empresa.EmpresaRepository;
 import com.medic.Web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
@@ -38,21 +32,10 @@ class EmpresaServiceTest {
     @Mock
     private EmpresaMapper empresaMapper;
     @Mock
-    private EmpresaMunicipioRepository empresaMunicipioRepository;
-    @Mock
-    private CdEmpresaMunipioRepository cdEmpresaMunipioRepository;
-    @Mock
     private MunicipioRepository municipioRepository;
-    @Mock
-    private EmpresaMunicipioMapper empresaMunicipioMapper;
-    @Mock
-    private CdEmpresaMunipioMapper cdEmpresaMunipioMapper;
 
     @InjectMocks
     private ManutencaoEmpresaService empresaService;
-    @InjectMocks
-    private ManutencaoEmpresaMunicipioService empresaMunicipioService;
-
     @Test
     void shouldSaveEmpresa() {
 
@@ -126,19 +109,6 @@ class EmpresaServiceTest {
     }
 
     @Test
-    void shouldListEmpresaMunicipioByEmpresa() {
-
-        var model = TestDataFactory.empresaModel();
-        var response = TestDataFactory.empresaMunicipioResponseDTO();
-        when(empresaRepository.listEmpresaMunicipioByIdEmpresa(model.getId()))
-                .thenReturn(Flux.fromIterable(List.of(response)));
-
-        StepVerifier.create(empresaService.listEmpresaMunicipioByIDEmpresa(model.getId()))
-                .expectNext(response)
-                .verifyComplete();
-    }
-
-    @Test
     void shouldDeleteEmpresa() {
 
         var model = TestDataFactory.empresaModel();
@@ -148,56 +118,4 @@ class EmpresaServiceTest {
                 .verifyComplete();
     }
 
-    @Test
-    void shouldSaveEmpresaMunicipio() {
-
-        var model = TestDataFactory.empresaMunicipioModel();
-        UUID empresaId = UUID.randomUUID();
-        UUID cdId = UUID.randomUUID();
-        var dto = new EmpresaMunicipioRequestDTO(empresaId, cdId, model.getIdMunicipio());
-        var cdModel = TestDataFactory.cdEmpresaMunipioModel();
-        cdModel.setIdCd(cdId);
-        cdModel.setIdEmpresaMunicipio(model.getId());
-        var response = TestDataFactory.empresaMunicipioResponseDTO(model, cdId);
-
-        when(empresaMunicipioMapper.toEntity(
-                ArgumentMatchers.any(),
-                ArgumentMatchers.eq(empresaId),
-                ArgumentMatchers.eq(model.getIdMunicipio()),
-                ArgumentMatchers.any(UUID.class))).thenReturn(model);
-        when(cdEmpresaMunipioMapper.toEntity(
-                ArgumentMatchers.any(),
-                ArgumentMatchers.eq(cdId),
-                ArgumentMatchers.eq(model.getId()),
-                ArgumentMatchers.any(UUID.class))).thenReturn(cdModel);
-
-        when(empresaMunicipioRepository.save(model)).thenReturn(Mono.just(model));
-        when(cdEmpresaMunipioRepository.save(cdModel)).thenReturn(Mono.just(cdModel));
-        when(empresaMunicipioRepository.findByIdCustom(model.getId())).thenReturn(Mono.just(response));
-        StepVerifier.create(empresaMunicipioService.save(dto, UUID.randomUUID()))
-                .expectNext(response)
-                .verifyComplete();
-    }
-
-    @Test
-    void shouldListEmpresasMunicipio() {
-
-        var response = TestDataFactory.empresaMunicipioResponseDTO();
-        var filter = new EmpresaMunicipioFilterDTO("Empresa", "Cidade", "SP", "CD");
-        when(empresaMunicipioRepository.getAllAndFilter(filter)).thenReturn(Flux.fromIterable(List.of(response)));
-
-        StepVerifier.create(empresaMunicipioService.listEmpresasMunicipio(filter))
-                .expectNext(response)
-                .verifyComplete();
-    }
-
-    @Test
-    void shouldDeleteEmpresaMunicipio() {
-
-        var model = TestDataFactory.empresaMunicipioModel();
-        when(empresaMunicipioRepository.deleteById(model.getId())).thenReturn(Mono.empty());
-
-        StepVerifier.create(empresaMunicipioService.delete(model.getId()))
-                .verifyComplete();
-    }
 }

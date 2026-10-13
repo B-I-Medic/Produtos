@@ -1,12 +1,9 @@
 package com.medic.Web.repository;
 
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoFilterDTO;
-import com.medic.Web.dto.empresa.EmpresaMunicipioFilterDTO;
 import com.medic.Web.dto.municipio.MunicipioFilterDTO;
 import com.medic.Web.repository.cd.MunicipioRepositoryCustomImpl;
 import com.medic.Web.repository.config.estoque.segregado.EstoqueSegregadoRepositoryCustomImpl;
-import com.medic.Web.repository.empresa.EmpresaMunipioRepositoryCustomImpl;
-import com.medic.Web.repository.empresa.EmpresaRepositoryCustomImpl;
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
 import org.junit.jupiter.api.Test;
@@ -73,38 +70,6 @@ class CustomRepositoryCoverageTest {
                 .verifyComplete();
     }
 
-    @Test
-    void shouldMapEmpresaMunicipioRowsForFilterAndById() {
-
-        prepareQuery();
-        stubRowValues();
-        stubMappedRows();
-        var repository = new EmpresaMunipioRepositoryCustomImpl(databaseClient);
-        StepVerifier.create(repository.getAllAndFilter(
-                        new EmpresaMunicipioFilterDTO("Empresa", "", "SP", "CD")))
-                .expectNextCount(1)
-                .verifyComplete();
-
-        prepareQuery();
-        stubRowValues();
-        stubMappedRows();
-        StepVerifier.create(repository.findByIdCustom(UUID.randomUUID()))
-                .expectNextCount(1)
-                .verifyComplete();
-    }
-
-    @Test
-    void shouldMapEmpresaRowsByCompanyId() {
-
-        prepareQuery();
-        stubRowValues();
-        stubMappedRows();
-
-        StepVerifier.create(new EmpresaRepositoryCustomImpl(databaseClient)
-                        .listEmpresaMunicipioByIdEmpresa(UUID.randomUUID()))
-                .expectNextCount(1)
-                .verifyComplete();
-    }
 
     private void prepareQuery() {
 

@@ -1,7 +1,6 @@
 package com.medic.Web.support;
 
 import com.medic.Web.dto.cd.CentroDistribuicaoResponseDTO;
-import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaResponseDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
@@ -10,11 +9,9 @@ import com.medic.Web.dto.config.periodo.PeriodoResponseDTO;
 import com.medic.Web.dto.config.taxa.TaxaResponseDTO;
 import com.medic.Web.dto.usuario.UsuarioResponseDTO;
 import com.medic.Web.model.auth.PasswordResetCodeModel;
-import com.medic.Web.model.cd.CdEmpresaMunicipioModel;
 import com.medic.Web.model.cd.CentroDistribuicaoModel;
 import com.medic.Web.model.municipio.MunicipioModel;
 import com.medic.Web.model.empresa.EmpresaModel;
-import com.medic.Web.model.empresa.EmpresaMunicipioModel;
 import com.medic.Web.model.empresa.Viman;
 import com.medic.Web.model.config.estoque.EstoqueSegregadoParametroModel;
 import com.medic.Web.model.config.periodo.PeriodoEnum;
@@ -107,7 +104,7 @@ public final class TestDataFactory {
         return new CentroDistribuicaoResponseDTO(
                 model.getId(),
                 model.getDescricao(),
-                new MunicipioResumoResponseDTO(model.getMunicipioId(), "Cidade", "SP")
+                new MunicipioResponseDTO(model.getMunicipioId(), "Cidade", "123", "SP")
         );
     }
 
@@ -130,54 +127,9 @@ public final class TestDataFactory {
 
         var model = empresaModel();
         return new EmpresaResponseDTO(model.getId(), model.getDescricao(),
-                new MunicipioResumoResponseDTO(model.getMunicipioId(), "Cidade", "SP"),
+                new MunicipioResponseDTO(model.getMunicipioId(), "Cidade", "123", "SP"),
                 model.getViman(), model.getCodigoEmpresa(), model.isPossuiEstoqueInterno(),
                 model.isPossuiEstoqueSegregado(), model.isPossuiVp());
-    }
-
-    public static EmpresaMunicipioModel empresaMunicipioModel() {
-
-        var model = new EmpresaMunicipioModel();
-        model.setId(UUID.randomUUID());
-        model.setIdEmpresa(UUID.randomUUID());
-        model.setIdMunicipio(UUID.randomUUID());
-        model.setCriadoPor(UUID.randomUUID());
-        return model;
-    }
-
-    public static EmpresaMunicipioResponseDTO empresaMunicipioResponseDTO() {
-
-        var model = empresaMunicipioModel();
-        return new EmpresaMunicipioResponseDTO(
-                model.getId(),
-                "UFX",
-                "Empresa",
-                "Cidade",
-                "SP",
-                null
-        );
-    }
-
-    public static EmpresaMunicipioResponseDTO empresaMunicipioResponseDTO(EmpresaMunicipioModel model, UUID idCd) {
-
-        return new EmpresaMunicipioResponseDTO(
-                model.getId(),
-                "UFX",
-                "Empresa",
-                "Cidade",
-                "SP",
-                idCd != null ? idCd.toString() : null
-        );
-    }
-
-    public static CdEmpresaMunicipioModel cdEmpresaMunipioModel() {
-
-        var model = new CdEmpresaMunicipioModel();
-        model.setId(UUID.randomUUID());
-        model.setIdCd(UUID.randomUUID());
-        model.setIdEmpresaMunicipio(UUID.randomUUID());
-        model.setCriadoPor(UUID.randomUUID());
-        return model;
     }
 
     public static EstoqueSegregadoParametroModel estoqueSegregadoModel() {

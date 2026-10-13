@@ -3,11 +3,9 @@ package com.medic.Web;
 import com.medic.Web.config.mail.MailProperties;
 import com.medic.Web.dto.cd.CentroDistribuicaoRequestDTO;
 import com.medic.Web.dto.municipio.MunicipioRequestDTO;
-import com.medic.Web.mapper.cd.CdEmpresaMunipioMapper;
 import com.medic.Web.mapper.cd.CentroDistribuicaoMapper;
 import com.medic.Web.mapper.municipio.MunicipioMapper;
 import com.medic.Web.mapper.usuario.UsuarioMapper;
-import com.medic.Web.model.cd.CdEmpresaMunicipioModel;
 import com.medic.Web.model.cd.CentroDistribuicaoModel;
 import com.medic.Web.model.municipio.MunicipioModel;
 import com.medic.Web.model.usuario.Role;
@@ -101,7 +99,7 @@ class RemainingWebCoverageTest {
     }
 
     @Test
-    void shouldMapMunicipioAndCdEmpresaMunicipio() {
+    void shouldMapMunicipioForCreateAndResponse() {
 
         MunicipioMapper municipioMapper = new MunicipioMapper();
         MunicipioModel municipio = municipioMapper.toEntity(new MunicipioModel(),
@@ -110,15 +108,6 @@ class RemainingWebCoverageTest {
         assertEquals("Cidade", municipioResponse.descricao());
         assertEquals("123", municipioResponse.codigoIbge());
 
-        CdEmpresaMunipioMapper cdMapper = new CdEmpresaMunipioMapper();
-        UUID cdId = UUID.randomUUID();
-        UUID empresaMunicipioId = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
-        CdEmpresaMunicipioModel entity = cdMapper.toEntity(new CdEmpresaMunicipioModel(),
-                cdId, empresaMunicipioId, userId);
-        assertEquals(cdId, entity.getIdCd());
-        assertEquals(empresaMunicipioId, entity.getIdEmpresaMunicipio());
-        assertEquals(userId, entity.getCriadoPor());
     }
 
     @Test
