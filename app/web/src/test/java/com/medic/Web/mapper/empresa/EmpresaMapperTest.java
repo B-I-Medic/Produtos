@@ -73,7 +73,7 @@ class EmpresaMapperTest {
         entity.setDescricao("Empresa C");
         entity.setViman(Viman.UFX);
         entity.setCodigoEmpresa("003");
-        var municipio = new MunicipioModel(UUID.randomUUID(), "Cidade", "123", "SP");
+        var municipio = new MunicipioModel(UUID.randomUUID(), "Cidade", "123", "SP", null);
         entity.setMunicipioId(municipio.getId());
         entity.setPossuiEstoqueInterno(true);
         entity.setPossuiEstoqueSegregado(true);
