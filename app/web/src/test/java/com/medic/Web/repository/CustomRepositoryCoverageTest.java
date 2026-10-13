@@ -1,10 +1,8 @@
 package com.medic.Web.repository;
 
-import com.medic.Web.dto.cd.CdEmpresaMunicipioFilterDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoFilterDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioFilterDTO;
 import com.medic.Web.dto.municipio.MunicipioFilterDTO;
-import com.medic.Web.repository.cd.CdEmpresaMunipioRepositoryCustomImpl;
 import com.medic.Web.repository.cd.MunicipioRepositoryCustomImpl;
 import com.medic.Web.repository.config.estoque.segregado.EstoqueSegregadoRepositoryCustomImpl;
 import com.medic.Web.repository.empresa.EmpresaMunipioRepositoryCustomImpl;
@@ -41,20 +39,6 @@ class CustomRepositoryCoverageTest {
     private DatabaseClient.GenericExecuteSpec executeSpec;
     @Mock
     private Row row;
-
-    @Test
-    void shouldMapCdEmpresaMunicipioRowsAndBindOptionalFilters() {
-
-        prepareQuery();
-        stubRowValues();
-        stubMappedRows();
-
-        StepVerifier.create(new CdEmpresaMunipioRepositoryCustomImpl(databaseClient).findByFiltro(
-                        UUID.randomUUID(), new CdEmpresaMunicipioFilterDTO(" Empresa ", "", "SP")
-                ))
-                .expectNextCount(1)
-                .verifyComplete();
-    }
 
     @Test
     void shouldMapMunicipioRowsAndSupportNullFilters() {

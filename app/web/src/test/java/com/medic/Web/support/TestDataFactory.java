@@ -1,12 +1,10 @@
 package com.medic.Web.support;
 
-import com.medic.Web.dto.cd.CdEmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.cd.CentroDistribuicaoResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaMunicipioResponseDTO;
 import com.medic.Web.dto.empresa.EmpresaResponseDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
 import com.medic.Web.dto.municipio.MunicipioResponseDTO;
-import com.medic.Web.dto.municipio.MunicipioResumoResponseDTO;
 import com.medic.Web.dto.forecast.ForecastAgrupadoResponseDTO;
 import com.medic.Web.dto.config.periodo.PeriodoResponseDTO;
 import com.medic.Web.dto.config.taxa.TaxaResponseDTO;
@@ -182,19 +180,13 @@ public final class TestDataFactory {
         return model;
     }
 
-    public static CdEmpresaMunicipioResponseDTO cdEmpresaMunipioConsultaResponseDTO() {
-
-        var model = cdEmpresaMunipioModel();
-        return new CdEmpresaMunicipioResponseDTO(model.getId(), "Empresa", "Cidade", "SP");
-    }
-
     public static EstoqueSegregadoParametroModel estoqueSegregadoModel() {
 
         var model = new EstoqueSegregadoParametroModel();
         model.setId(UUID.randomUUID());
         model.setIdEmpresa(UUID.randomUUID());
         model.setCodSegregado(10);
-        model.setIdEmpresaMunicipio(UUID.randomUUID());
+        model.setCodIBGE("123");
         model.setCriadoPor(UUID.randomUUID());
         return model;
     }
@@ -204,11 +196,11 @@ public final class TestDataFactory {
         var model = estoqueSegregadoModel();
         return new EstoqueSegregadoResponseDTO(
                 model.getId(),
-                "CD",
                 "Empresa",
                 model.getCodSegregado(),
                 "Cidade",
-                "SP"
+                "SP",
+                "CD"
         );
     }
 

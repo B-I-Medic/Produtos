@@ -18,7 +18,6 @@ import com.medic.Web.service.mail.MailService;
 import com.medic.Web.utils.Comparador;
 import com.medic.Web.utils.NormalizarTexto;
 import com.medic.Web.utils.Paginacao;
-import com.medic.Web.utils.VimanDateFormatter;
 import com.medic.Web.exception.handler.ErrorResponseWriter;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -32,7 +31,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -98,7 +96,7 @@ class RemainingWebCoverageTest {
         assertNotNull(existing.getAtualizadoEm());
 
         assertNull(mapper.toDTO(existing).municipio());
-        MunicipioModel municipio = new MunicipioModel(municipioId, "Cidade", "123", "SP");
+        MunicipioModel municipio = new MunicipioModel(municipioId, "Cidade", "123", "SP", null);
         assertEquals("Cidade", mapper.toDTO(existing, municipio).municipio().descricao());
     }
 
@@ -150,7 +148,7 @@ class RemainingWebCoverageTest {
     }
 
     @Test
-    void shouldCoverTextComparisonPaginationAndDateFormatting() {
+    void shouldCoverTextComparisonAndPagination() {
 
         assertEquals(" texto ".trim().toLowerCase(), NormalizarTexto.normalizar(" Texto "));
         assertEquals("", NormalizarTexto.normalizar(null));
@@ -167,7 +165,6 @@ class RemainingWebCoverageTest {
         assertEquals(2, page.quantidadePaginas());
         var empty = Paginacao.paginar(List.of(), "1", "10");
         assertEquals(0, empty.quantidadePaginas());
-        assertEquals("20260821", VimanDateFormatter.formatterToViman(LocalDate.of(2026, 8, 21)));
     }
 
     @Test
