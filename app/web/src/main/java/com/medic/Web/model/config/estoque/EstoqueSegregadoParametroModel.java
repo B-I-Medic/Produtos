@@ -34,8 +34,8 @@ public class EstoqueSegregadoParametroModel implements Serializable, UUIDAutoGen
     @Column("cod_segregado")
     private int codSegregado;
 
-    @Column("id_empresa_municipio")
-    private UUID idEmpresaMunicipio;
+    @Column("cod_ibge")
+    private String codIBGE;
 
     @Column("criado_por")
     private UUID criadoPor;

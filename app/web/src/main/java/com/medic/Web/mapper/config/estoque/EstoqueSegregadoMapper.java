@@ -2,6 +2,7 @@ package com.medic.Web.mapper.config.estoque;
 
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoRequestDTO;
 import com.medic.Web.model.config.estoque.EstoqueSegregadoParametroModel;
+import com.medic.Web.model.municipio.MunicipioModel;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -12,11 +13,12 @@ public class EstoqueSegregadoMapper {
 
     public EstoqueSegregadoParametroModel toEntity(EstoqueSegregadoParametroModel entity,
                                                    EstoqueSegregadoRequestDTO dto,
+                                                   MunicipioModel municipio,
                                                    UUID userId) {
 
         entity.setIdEmpresa(dto.idEmpresa());
         entity.setCodSegregado(dto.codSegregado());
-        entity.setIdEmpresaMunicipio(dto.id_empresa_municipio());
+        entity.setCodIBGE(municipio.getCodIbge());
 
         if (entity.getId() == null) {
 

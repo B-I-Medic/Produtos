@@ -2,6 +2,7 @@ package com.medic.Web.service.estoque;
 
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoRequestDTO;
 import com.medic.Web.mapper.config.estoque.EstoqueSegregadoMapper;
+import com.medic.Web.repository.cd.MunicipioRepository;
 import com.medic.Web.repository.config.estoque.segregado.EstoqueSegregadoRepository;
 import com.medic.Web.service.config.estoque.ManutencaoEstoqueSegregadoService;
 import com.medic.Web.support.TestDataFactory;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +32,8 @@ class EstoqueServiceTest {
     @Mock
     private EstoqueSegregadoMapper estoqueSegregadoMapper;
     @Mock
+    private MunicipioRepository municipioRepository;
+    @Mock
     private ValidadorEmpresaEstoqueService validador;
 
     @InjectMocks
@@ -39,11 +43,14 @@ class EstoqueServiceTest {
     void shouldSaveEstoqueSegregado() {
 
         var model = TestDataFactory.estoqueSegregadoModel();
-        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), model.getIdEmpresaMunicipio());
+        var municipio = TestDataFactory.municipioModel();
+        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), municipio.getId());
 
-        when(validador.validarEstoqueSegregado(dto.idEmpresa(), dto.id_empresa_municipio())).thenReturn(Mono.just(TestDataFactory.empresaMunicipioModel()));
+        when(validador.validarEmpresa(dto.idEmpresa())).thenReturn(Mono.empty());
+        when(municipioRepository.findById(dto.idMunicipio())).thenReturn(Mono.just(municipio));
 
-        when(estoqueSegregadoMapper.toEntity(ArgumentMatchers.any(), ArgumentMatchers.eq(dto), ArgumentMatchers.any(UUID.class))).thenReturn(model);
+        when(estoqueSegregadoMapper.toEntity(ArgumentMatchers.any(), ArgumentMatchers.eq(dto),
+                ArgumentMatchers.eq(municipio), ArgumentMatchers.any(UUID.class))).thenReturn(model);
 
         when(estoqueSegregadoRepository.save(model)).thenReturn(Mono.just(model));
         StepVerifier.create(estoqueSegregadoService.save(dto, UUID.randomUUID())).verifyComplete();
@@ -53,13 +60,32 @@ class EstoqueServiceTest {
     void shouldUpdateEstoqueSegregado() {
 
         var model = TestDataFactory.estoqueSegregadoModel();
-        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), model.getIdEmpresaMunicipio());
-        when(validador.validarEstoqueSegregado(dto.idEmpresa(), dto.id_empresa_municipio())).thenReturn(Mono.just(TestDataFactory.empresaMunicipioModel()));
-        when(estoqueSegregadoMapper.toEntity(ArgumentMatchers.any(), ArgumentMatchers.eq(dto), ArgumentMatchers.any(UUID.class))).thenReturn(model);
+        var municipio = TestDataFactory.municipioModel();
+        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), municipio.getId());
+        when(validador.validarEmpresa(dto.idEmpresa())).thenReturn(Mono.empty());
+        when(municipioRepository.findById(dto.idMunicipio())).thenReturn(Mono.just(municipio));
+        when(estoqueSegregadoMapper.toEntity(ArgumentMatchers.any(), ArgumentMatchers.eq(dto),
+                ArgumentMatchers.eq(municipio), ArgumentMatchers.any(UUID.class))).thenReturn(model);
         when(estoqueSegregadoRepository.findById(model.getId())).thenReturn(Mono.just(model));
         when(estoqueSegregadoRepository.save(model)).thenReturn(Mono.just(model));
 
         StepVerifier.create(estoqueSegregadoService.update(model.getId(), dto, UUID.randomUUID())).verifyComplete();
+    }
+
+    @Test
+    void shouldRejectSaveWhenMunicipalityDoesNotExist() {
+
+        var model = TestDataFactory.estoqueSegregadoModel();
+        var municipio = TestDataFactory.municipioModel();
+        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), municipio.getId());
+        when(validador.validarEmpresa(dto.idEmpresa())).thenReturn(Mono.empty());
+        when(municipioRepository.findById(dto.idMunicipio())).thenReturn(Mono.empty());
+
+        StepVerifier.create(estoqueSegregadoService.save(dto, UUID.randomUUID()))
+                .expectErrorMessage("Municipio não encontrado")
+                .verify();
+
+        verify(estoqueSegregadoRepository, org.mockito.Mockito.never()).save(any());
     }
 
     @Test

@@ -1,8 +1,5 @@
 package com.medic.Web.validator.estoque;
 
-import com.medic.Web.model.empresa.EmpresaModel;
-import com.medic.Web.model.empresa.EmpresaMunicipioModel;
-import com.medic.Web.repository.empresa.EmpresaMunicipioRepository;
 import com.medic.Web.repository.empresa.EmpresaRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -12,22 +9,17 @@ import java.util.UUID;
 @Service
 public class ValidadorEmpresaEstoqueService {
 
-    private final EmpresaMunicipioRepository empresaMunicipioRepository;
-    private final EmpresaRepository empresaRepository;
+    private final EmpresaRepository empresaMunicipioRepository;
 
-    public ValidadorEmpresaEstoqueService(EmpresaMunicipioRepository empresaMunicipioRepository,
-                                          EmpresaRepository empresaRepository) {
+    public ValidadorEmpresaEstoqueService(EmpresaRepository empresaMunicipioRepository) {
         this.empresaMunicipioRepository = empresaMunicipioRepository;
-        this.empresaRepository = empresaRepository;
     }
 
-    public Mono<EmpresaMunicipioModel> validarEstoqueSegregado(UUID idEmpresa,
-                                                               UUID idEmpresaMunicipio) {
+    public Mono<Void> validarEmpresa(UUID idEmpresa) {
 
-        return empresaMunicipioRepository.findById(idEmpresaMunicipio)
-                .filter(empresaMunicipio -> empresaMunicipio.getIdEmpresa().equals(idEmpresa))
-                .flatMap(empresaMunicipio -> empresaRepository.findById(empresaMunicipio.getIdEmpresa())
-                        .filter(EmpresaModel::isPossuiEstoqueSegregado)
-                        .thenReturn(empresaMunicipio));
+        return empresaMunicipioRepository.findByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(idEmpresa)
+                .filter(Boolean.TRUE::equals)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Empresa não possui estoque segregado ou não existe")))
+                .then();
     }
 }

@@ -27,15 +27,15 @@ public class EstoqueSegregadoParametroController {
 
     @PostMapping("/save")
     public Mono<Void> save(@RequestBody @Valid Mono<EstoqueSegregadoRequestDTO> dto,
-                                                  @AuthenticationPrincipal UsuarioModel user) {
+                           @AuthenticationPrincipal UsuarioModel user) {
 
         return dto.flatMap(estoqueSegregado -> service.save(estoqueSegregado, user.getId()));
     }
 
     @PutMapping("/update/{estoqueSegregadoId}")
     public Mono<Void> update(@RequestBody @Valid Mono<EstoqueSegregadoRequestDTO> dto,
-                                                    @PathVariable @NotNull(message = "O ID do estoque segregado e obrigatorio") UUID estoqueSegregadoId,
-                                                    @AuthenticationPrincipal UsuarioModel user) {
+                             @PathVariable @NotNull(message = "O ID do estoque segregado e obrigatorio") UUID estoqueSegregadoId,
+                             @AuthenticationPrincipal UsuarioModel user) {
 
         return dto.flatMap(estoqueSegregado ->
                 service.update(estoqueSegregadoId, estoqueSegregado, user.getId()));

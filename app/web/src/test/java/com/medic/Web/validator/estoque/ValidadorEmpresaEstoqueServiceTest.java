@@ -1,8 +1,5 @@
 package com.medic.Web.validator.estoque;
 
-import com.medic.Web.model.empresa.EmpresaModel;
-import com.medic.Web.model.empresa.EmpresaMunicipioModel;
-import com.medic.Web.repository.empresa.EmpresaMunicipioRepository;
 import com.medic.Web.repository.empresa.EmpresaRepository;
 import com.medic.Web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
@@ -19,25 +16,31 @@ import static org.mockito.Mockito.when;
 class ValidadorEmpresaEstoqueServiceTest {
 
     @Mock
-    private EmpresaMunicipioRepository empresaMunicipioRepository;
-    @Mock
     private EmpresaRepository empresaRepository;
 
     @InjectMocks
     private ValidadorEmpresaEstoqueService service;
 
     @Test
-    void shouldValidateEstoqueSegregado() {
+    void shouldValidateCompanyWithSegregatedStock() {
 
-        EmpresaMunicipioModel empresaMunicipio = TestDataFactory.empresaMunicipioModel();
-        EmpresaModel empresa = TestDataFactory.empresaModel();
-        empresaMunicipio.setIdEmpresa(empresa.getId());
-        when(empresaMunicipioRepository.findById(empresaMunicipio.getId())).thenReturn(Mono.just(empresaMunicipio));
-        when(empresaRepository.findById(empresa.getId())).thenReturn(Mono.just(empresa));
+        var empresa = TestDataFactory.empresaModel();
+        when(empresaRepository.findByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(empresa.getId()))
+                .thenReturn(Mono.just(true));
 
-        StepVerifier.create(service.validarEstoqueSegregado(empresa.getId(), empresaMunicipio.getId()))
-                .expectNext(empresaMunicipio)
-                .verifyComplete();
+        StepVerifier.create(service.validarEmpresa(empresa.getId())).verifyComplete();
+    }
+
+    @Test
+    void shouldRejectCompanyWithoutSegregatedStock() {
+
+        var empresa = TestDataFactory.empresaModel();
+        when(empresaRepository.findByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(empresa.getId()))
+                .thenReturn(Mono.just(false));
+
+        StepVerifier.create(service.validarEmpresa(empresa.getId()))
+                .expectErrorMessage("Empresa não possui estoque segregado ou não existe")
+                .verify();
     }
 
 }

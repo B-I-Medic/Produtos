@@ -5,6 +5,7 @@ import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoRequestDTO;
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
 import com.medic.Web.mapper.config.estoque.EstoqueSegregadoMapper;
 import com.medic.Web.model.config.estoque.EstoqueSegregadoParametroModel;
+import com.medic.Web.repository.cd.MunicipioRepository;
 import com.medic.Web.repository.config.estoque.segregado.EstoqueSegregadoRepository;
 import com.medic.Web.validator.estoque.ValidadorEmpresaEstoqueService;
 import org.springframework.stereotype.Service;
@@ -17,13 +18,16 @@ import java.util.UUID;
 @Service
 public class ManutencaoEstoqueSegregadoService {
 
+    private final MunicipioRepository municipioRepository;
     private final EstoqueSegregadoRepository repository;
     private final EstoqueSegregadoMapper mapper;
     private final ValidadorEmpresaEstoqueService validadorEmpresaEstoqueService;
 
-    public ManutencaoEstoqueSegregadoService(EstoqueSegregadoRepository repository,
+    public ManutencaoEstoqueSegregadoService(MunicipioRepository municipioRepository,
+                                             EstoqueSegregadoRepository repository,
                                              EstoqueSegregadoMapper mapper,
                                              ValidadorEmpresaEstoqueService validadorEmpresaEstoqueService) {
+        this.municipioRepository = municipioRepository;
         this.repository = repository;
         this.mapper = mapper;
         this.validadorEmpresaEstoqueService = validadorEmpresaEstoqueService;
@@ -31,23 +35,27 @@ public class ManutencaoEstoqueSegregadoService {
 
     @Transactional
     public Mono<Void> save(EstoqueSegregadoRequestDTO dto,
-                                                  UUID userId) {
+                           UUID userId) {
 
-        return validadorEmpresaEstoqueService.validarEstoqueSegregado(dto.idEmpresa(), dto.id_empresa_municipio())
-                .then(Mono.just(new EstoqueSegregadoParametroModel()))
-                .map(estoqueSegregado -> mapper.toEntity(estoqueSegregado, dto, userId))
+        return validadorEmpresaEstoqueService.validarEmpresa(dto.idEmpresa())
+                .then(Mono.just(new EstoqueSegregadoParametroModel())
+                .flatMap(estoqueSegregadoParametro -> municipioRepository.findById(dto.idMunicipio())
+                        .switchIfEmpty(Mono.error(new IllegalArgumentException("Municipio não encontrado")))
+                        .map(municipio -> mapper.toEntity(estoqueSegregadoParametro, dto, municipio, userId))))
                 .flatMap(repository::save)
                 .then();
     }
 
     @Transactional
     public Mono<Void> update(UUID estoqueSegregadoId,
-                                                    EstoqueSegregadoRequestDTO dto,
-                                                    UUID userId) {
+                             EstoqueSegregadoRequestDTO dto,
+                             UUID userId) {
 
-        return validadorEmpresaEstoqueService.validarEstoqueSegregado(dto.idEmpresa(), dto.id_empresa_municipio())
+        return validadorEmpresaEstoqueService.validarEmpresa(dto.idEmpresa())
                 .then(repository.findById(estoqueSegregadoId))
-                .map(estoqueSegregado -> mapper.toEntity(estoqueSegregado, dto, userId))
+                .flatMap(estoqueSegregado -> municipioRepository.findById(dto.idMunicipio())
+                        .switchIfEmpty(Mono.error(new IllegalArgumentException("Municipio não encontrado")))
+                        .map(municipio -> mapper.toEntity(estoqueSegregado, dto, municipio, userId)))
                 .flatMap(repository::save)
                 .then();
     }

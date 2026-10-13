@@ -51,7 +51,7 @@ class EstoqueControllerTest {
     void shouldSaveEstoqueSegregado() {
 
         var model = TestDataFactory.estoqueSegregadoModel();
-        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), model.getIdEmpresaMunicipio());
+        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), TestDataFactory.municipioModel().getId());
         when(segregadoService.save(dto, user.getId())).thenReturn(Mono.empty());
 
         segregadoClient.post()
@@ -68,7 +68,7 @@ class EstoqueControllerTest {
     void shouldUpdateEstoqueSegregado() {
 
         var model = TestDataFactory.estoqueSegregadoModel();
-        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), model.getIdEmpresaMunicipio());
+        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), TestDataFactory.municipioModel().getId());
         UUID id = UUID.randomUUID();
         when(segregadoService.update(id, dto, user.getId())).thenReturn(Mono.empty());
 
