@@ -61,6 +61,7 @@ public class HandlerException {
     }
 
     @ExceptionHandler({
+            IllegalArgumentException.class,
             PasswordAlreadySetException.class,
             PasswordResetCodeException.class
     })
