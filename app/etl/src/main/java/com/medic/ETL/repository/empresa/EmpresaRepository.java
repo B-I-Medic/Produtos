@@ -31,14 +31,12 @@ public interface EmpresaRepository extends JpaRepository<EmpresaModel, UUID> {
     @Query("""
             select new com.medic.ETL.dto.empresa.EmpresaValePermanenteDTO(
                 e.viman,
-                e.codigoEmpresa,
-                m.codIBGE
+                e.codigoEmpresa
             )
             from EmpresaModel e
-            join e.municipio m
             where e.viman = :viman
               and e.possuiVp = true
-            order by e.codigoEmpresa, m.codIBGE
+            order by e.viman, e.codigoEmpresa
             """)
     List<EmpresaValePermanenteDTO> findAllValePermanenteByViman(@Param("viman") String viman);
 

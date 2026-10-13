@@ -20,11 +20,11 @@ class PrepararConsultaValePermanenteServiceTest {
     @Test
     void shouldBuildPermanentStockQueriesByViman() {
         when(repository.findAllValePermanenteByViman("UFX")).thenReturn(List.of(
-                new EmpresaValePermanenteDTO("UFX", "07", "3550308"),
-                new EmpresaValePermanenteDTO("UFX", "08", "3550308")
+                new EmpresaValePermanenteDTO("UFX", "07"),
+                new EmpresaValePermanenteDTO("UFX", "08")
         ));
         when(repository.findAllValePermanenteByViman("S00")).thenReturn(List.of(
-                new EmpresaValePermanenteDTO("S00", "02", "3304557")
+                new EmpresaValePermanenteDTO("S00", "02")
         ));
 
         var consultas = service.montarConsultas(TestDataFactory.processamento());

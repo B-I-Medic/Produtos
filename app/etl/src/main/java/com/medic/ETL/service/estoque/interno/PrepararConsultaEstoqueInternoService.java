@@ -74,7 +74,7 @@ public class PrepararConsultaEstoqueInternoService {
                         '%s' as Processamento,
                         'UFX' as Viman,
                         '07' as CodEmpresa,
-                        '%s' AS IdEmpresaMunicipio,
+                        '%s' AS CodIBGE,
                         TRIM(PRCDPR) AS CodProduto,
                         (PRQTER - PRQEDE_1) AS QntDisponivel
                     FROM SYSADM.VETEPR07
@@ -93,7 +93,7 @@ public class PrepararConsultaEstoqueInternoService {
                         '%s' as Processamento,
                         'UFX' as Viman,
                         '08' as CodEmpresa,
-                        '%s' AS IdEmpresaMunicipio,
+                        '%s' AS CodIBGE,
                         TRIM(PRCDPR) AS CodProduto,
                         (PRQTER - PRQEDE_1) AS QntDisponivel
                     FROM SYSADM.VETEPR08

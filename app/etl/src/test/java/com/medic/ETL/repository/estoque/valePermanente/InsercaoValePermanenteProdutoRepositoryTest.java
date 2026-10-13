@@ -38,7 +38,7 @@ class InsercaoValePermanenteProdutoRepositoryTest {
         verify(ps).setObject(1, estoque.getProcessamento());
         verify(ps).setString(2, "S00");
         verify(ps).setString(3, "02");
-        verify(ps).setObject(4, estoque.getIdEmpresaMunicipio());
+        verify(ps).setObject(4, estoque.getCodIBGE());
         verify(ps).setString(5, "P1");
         verify(ps).setInt(6, 25);
     }
