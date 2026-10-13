@@ -14,22 +14,18 @@ public class EstoqueSegregadoRepositoryCustomImpl implements EstoqueSegregadoRep
 
     private static final String FIND_ALL = """
             select esp.id as id,
-                cd.descricao as cd,
                 e.descricao as empresa,
                 esp.cod_segregado as cod_segregado,
                 m.descricao as municipio,
-                m.estado as estado
+                m.estado as estado,
+                cd.descricao as cd
             from estoque_segregado_parametros esp
-            join empresa_municipio em
-                on em.id = esp.id_empresa_municipio
             join empresa e
-                on e.id = em.id_empresa
+                on e.id = esp.id_empresa
             join municipio m
-                on m.id = em.id_municipio
-            join cd_empresa_municipio cem
-                on cem.id_empresa_municipio = em.id
+                on m.cod_ibge = esp.cod_ibge
             join centro_distribuicao cd
-                on cd.id = cem.id_cd
+                on m.id_centro_distribuicao = cd.id
             where (cd.descricao ilike :cd or :cd is null)
                 and (e.descricao ilike :empresa or :empresa is null)
                 and (m.descricao ilike :municipio or :municipio is null)
@@ -56,11 +52,11 @@ public class EstoqueSegregadoRepositoryCustomImpl implements EstoqueSegregadoRep
 
         return query.map((row, metadata) -> new EstoqueSegregadoResponseDTO(
                         row.get("id", UUID.class),
-                        row.get("cd", String.class),
                         row.get("empresa", String.class),
                         row.get("cod_segregado", Integer.class),
                         row.get("municipio", String.class),
-                        row.get("estado", String.class)
+                        row.get("estado", String.class),
+                        row.get("cd", String.class)
                 ))
                 .all();
     }
