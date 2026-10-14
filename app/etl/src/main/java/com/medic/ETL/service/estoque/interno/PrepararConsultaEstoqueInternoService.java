@@ -58,6 +58,7 @@ public class PrepararConsultaEstoqueInternoService {
                         (PU.PUQTER - PU.PUQEDE_1) AS QntDisponivel
                     FROM SYSADM.VETEPU PU
                     WHERE PU.PUCDUS IN (%s)
+                        AND (PU.PUQTER - PU.PUQEDE_1) > 0
                     """.formatted(
                                 processamentoId,
                                 empresa.codIBGE(),
@@ -78,6 +79,7 @@ public class PrepararConsultaEstoqueInternoService {
                         TRIM(PRCDPR) AS CodProduto,
                         (PRQTER - PRQEDE_1) AS QntDisponivel
                     FROM SYSADM.VETEPR07
+                    WHERE (PRQTER - PRQEDE_1) > 0
                     """.formatted(
                                 processamentoId,
                                 empresa.codIBGE()
@@ -97,6 +99,7 @@ public class PrepararConsultaEstoqueInternoService {
                         TRIM(PRCDPR) AS CodProduto,
                         (PRQTER - PRQEDE_1) AS QntDisponivel
                     FROM SYSADM.VETEPR08
+                    WHERE (PRQTER - PRQEDE_1) > 0
                     """.formatted(
                                 processamentoId,
                                 empresa.codIBGE()
@@ -132,6 +135,7 @@ public class PrepararConsultaEstoqueInternoService {
                         (PU.PUQTER - PU.PUQEDE_1) AS QntDisponivel
                     FROM SYSADM.VETEPU PU
                     WHERE PU.PUCDUS IN (%s)
+                        AND (PU.PUQTER - PU.PUQEDE_1) > 0
                     """.formatted(
                             processamentoId,
                             empresa.codIBGE(),
