@@ -50,6 +50,25 @@ class AnvisaAtualizacaoRepositoryTest {
     }
 
     @Test
+    void shouldPreserveANullRequestTimestampWhenInserting() {
+
+        UUID id = UUID.randomUUID();
+        UUID solicitadoPor = UUID.randomUUID();
+        LocalDate date = LocalDate.of(2026, 8, 21);
+
+        repository.insertIfAbsent(id, date, solicitadoPor, null);
+
+        verify(jdbcTemplate).update(
+                argThat(sql -> sql.contains("on conflict (data_referencia) do nothing")),
+                eq(id),
+                eq(date),
+                eq("SOLICITADA"),
+                eq(solicitadoPor),
+                eq(null)
+        );
+    }
+
+    @Test
     void shouldPreserveTheLastErrorWhenReopening() {
 
         UUID id = UUID.randomUUID();

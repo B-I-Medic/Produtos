@@ -1,7 +1,7 @@
 package com.medic.Web.controller.estoque;
 
-import com.medic.Web.controller.config.estoque.EstoqueSegregadoParametroController;
-import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoRequestDTO;
+import com.medic.Web.controller.config.estoque.EstoqueSegregadoCatalogoController;
+import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoCatalogoUpdateDTO;
 import com.medic.Web.model.usuario.UsuarioModel;
 import com.medic.Web.service.config.estoque.ManutencaoEstoqueSegregadoService;
 import com.medic.Web.support.FixedAuthenticationPrincipalResolver;
@@ -32,7 +32,7 @@ class EstoqueControllerTest {
 
         user = TestDataFactory.usuarioModel();
 
-        segregadoClient = WebTestClient.bindToController(new EstoqueSegregadoParametroController(segregadoService))
+        segregadoClient = WebTestClient.bindToController(new EstoqueSegregadoCatalogoController(segregadoService))
                 .argumentResolvers(configurer -> configurer.addCustomResolver(new FixedAuthenticationPrincipalResolver(user)))
                 .build();
     }
@@ -48,27 +48,9 @@ class EstoqueControllerTest {
     }
 
     @Test
-    void shouldSaveEstoqueSegregado() {
-
-        var model = TestDataFactory.estoqueSegregadoModel();
-        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), TestDataFactory.municipioModel().getId());
-        when(segregadoService.save(dto, user.getId())).thenReturn(Mono.empty());
-
-        segregadoClient.post()
-                .uri("/estoque/segregado/save")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(dto)
-                .exchange()
-                .expectStatus().isOk();
-
-        verify(segregadoService).save(dto, user.getId());
-    }
-
-    @Test
     void shouldUpdateEstoqueSegregado() {
 
-        var model = TestDataFactory.estoqueSegregadoModel();
-        var dto = new EstoqueSegregadoRequestDTO(model.getIdEmpresa(), model.getCodSegregado(), TestDataFactory.municipioModel().getId());
+        var dto = new EstoqueSegregadoCatalogoUpdateDTO(true, TestDataFactory.municipioModel().getId());
         UUID id = UUID.randomUUID();
         when(segregadoService.update(id, dto, user.getId())).thenReturn(Mono.empty());
 
@@ -80,16 +62,6 @@ class EstoqueControllerTest {
                 .expectStatus().isOk();
 
         verify(segregadoService).update(id, dto, user.getId());
-    }
-
-    @Test
-    void shouldDeleteEstoqueSegregado() {
-
-        UUID id = UUID.randomUUID();
-        when(segregadoService.delete(id)).thenReturn(Mono.empty());
-
-        segregadoClient.delete().uri("/estoque/segregado/delete/" + id).exchange().expectStatus().isOk();
-        verify(segregadoService).delete(id);
     }
 
 }

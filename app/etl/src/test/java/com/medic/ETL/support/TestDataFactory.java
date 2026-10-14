@@ -1,6 +1,6 @@
 package com.medic.ETL.support;
 
-import com.medic.ETL.dto.parametro.EstoqueSegregadoParametroDTO;
+import com.medic.ETL.dto.catalogo.EstoqueSegregadoCatalogoDTO;
 import com.medic.ETL.model.demanda.Demanda;
 import com.medic.ETL.model.empresa.EmpresaModel;
 import com.medic.ETL.model.estoque.interno.EstoqueInterno;
@@ -112,12 +112,13 @@ public final class TestDataFactory {
         return estoque;
     }
 
-    public static EstoqueSegregadoParametroDTO estoqueSegregadoParametro(String codEmpresa, String codIBGE, String codSegregado) {
-        EstoqueSegregadoParametroDTO parametro = new EstoqueSegregadoParametroDTO();
-        parametro.setCodEmpresa(codEmpresa);
-        parametro.setCodIBGE(codIBGE);
-        parametro.setCodSegregado(codSegregado);
-        return parametro;
+    public static EstoqueSegregadoCatalogoDTO estoqueSegregadoCatalogo(String viman, String codEmpresa, String codIBGE, String codSegregado) {
+        EstoqueSegregadoCatalogoDTO catalogo = new EstoqueSegregadoCatalogoDTO();
+        catalogo.setViman(viman);
+        catalogo.setCodEmpresa(codEmpresa);
+        catalogo.setCodIBGE(codIBGE);
+        catalogo.setCodSegregado(codSegregado);
+        return catalogo;
     }
 
 }

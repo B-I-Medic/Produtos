@@ -20,12 +20,15 @@ class PrepararConsultaEstoqueInternoServiceTest {
     @Test
     void shouldBuildQueriesUsingJoinedMunicipalityData() {
         when(repository.findAllEstoqueInternoByViman("UFX")).thenReturn(List.of(
+                new EmpresaEstoqueInternoDTO("S00", "09", "wrong-source"),
                 new EmpresaEstoqueInternoDTO("UFX", "01", "3550308"),
                 new EmpresaEstoqueInternoDTO("UFX", "03", "3550308"),
                 new EmpresaEstoqueInternoDTO("UFX", "07", "3550308"),
-                new EmpresaEstoqueInternoDTO("UFX", "08", "3550308")
+                new EmpresaEstoqueInternoDTO("UFX", "08", "3550308"),
+                new EmpresaEstoqueInternoDTO("UFX", "09", "3550308")
         ));
         when(repository.findAllEstoqueInternoByViman("S00")).thenReturn(List.of(
+                new EmpresaEstoqueInternoDTO("UFX", "09", "wrong-source"),
                 new EmpresaEstoqueInternoDTO("S00", "02", "3304557")
         ));
 
@@ -38,5 +41,20 @@ class PrepararConsultaEstoqueInternoServiceTest {
         assertTrue(consultas.consultaS00().contains("PU.PUCDUS IN (02)"));
         assertTrue(consultas.consultaS00().contains("'3304557' AS CodIBGE"));
         assertFalse(consultas.consultaS00().contains("VETEPR07"));
+    }
+
+    @Test
+    void shouldReturnBlankQueriesWhenSourceRowsDoNotMatchTheirViman() {
+        when(repository.findAllEstoqueInternoByViman("UFX")).thenReturn(List.of(
+                new EmpresaEstoqueInternoDTO("S00", "02", "3304557")
+        ));
+        when(repository.findAllEstoqueInternoByViman("S00")).thenReturn(List.of(
+                new EmpresaEstoqueInternoDTO("UFX", "01", "3550308")
+        ));
+
+        var consultas = service.montarConsultas(TestDataFactory.processamento());
+
+        assertTrue(consultas.consultaUfx().isBlank());
+        assertTrue(consultas.consultaS00().isBlank());
     }
 }

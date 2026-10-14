@@ -51,4 +51,15 @@ class ProcessarProdutoServiceTest {
         verify(consultaProdutoRepository, never()).consultarS00(org.mockito.ArgumentMatchers.anyString());
         verify(insercaoProdutoProdutoRepository, never()).inserirOuAtualizarEmLote(org.mockito.ArgumentMatchers.anyList());
     }
+
+    @Test
+    void shouldSkipNullUfxAndBlankS00Queries() {
+        when(prepararConsultaProdutoService.montarConsultas()).thenReturn(new ProdutoConsultaDTO(null, " "));
+
+        service.atualizarProdutos(TestDataFactory.processamento());
+
+        verify(consultaProdutoRepository, never()).consultarUFX(org.mockito.ArgumentMatchers.anyString());
+        verify(consultaProdutoRepository, never()).consultarS00(org.mockito.ArgumentMatchers.anyString());
+        verify(insercaoProdutoProdutoRepository, never()).inserirOuAtualizarEmLote(org.mockito.ArgumentMatchers.anyList());
+    }
 }

@@ -13,7 +13,7 @@ import com.medic.Web.model.cd.CentroDistribuicaoModel;
 import com.medic.Web.model.municipio.MunicipioModel;
 import com.medic.Web.model.empresa.EmpresaModel;
 import com.medic.Web.model.empresa.Viman;
-import com.medic.Web.model.config.estoque.EstoqueSegregadoParametroModel;
+import com.medic.Web.model.config.estoque.EstoqueSegregadoCatalogoModel;
 import com.medic.Web.model.config.periodo.PeriodoEnum;
 import com.medic.Web.model.config.periodo.PeriodoModel;
 import com.medic.Web.model.config.taxa.TaxaEnum;
@@ -132,27 +132,29 @@ public final class TestDataFactory {
                 model.isPossuiEstoqueSegregado(), model.isPossuiVp());
     }
 
-    public static EstoqueSegregadoParametroModel estoqueSegregadoModel() {
+    public static EstoqueSegregadoCatalogoModel estoqueSegregadoModel() {
 
-        var model = new EstoqueSegregadoParametroModel();
+        var model = new EstoqueSegregadoCatalogoModel();
         model.setId(UUID.randomUUID());
         model.setIdEmpresa(UUID.randomUUID());
         model.setCodSegregado(10);
         model.setCodIBGE("123");
-        model.setCriadoPor(UUID.randomUUID());
         return model;
     }
 
     public static EstoqueSegregadoResponseDTO estoqueSegregadoResponseDTO() {
 
         var model = estoqueSegregadoModel();
+        var empresa = new EmpresaResponseDTO(
+                UUID.randomUUID(), "Empresa", null, Viman.UFX, "001", true, true, true);
+        var municipio = new MunicipioResponseDTO(UUID.randomUUID(), "Cidade", "123", "SP");
         return new EstoqueSegregadoResponseDTO(
                 model.getId(),
-                "Empresa",
                 model.getCodSegregado(),
-                "Cidade",
-                "SP",
-                "CD"
+                "Motivo",
+                model.isAtivo(),
+                empresa,
+                municipio
         );
     }
 

@@ -17,7 +17,7 @@ public class EmpresaRepositoryCustomImpl implements EmpresaRepositoryCustom {
     }
 
     @Override
-    public Mono<Boolean> findByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(UUID idEmpresa) {
+    public Mono<Boolean> existsByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(UUID idEmpresa) {
 
         var sql = """
                 SELECT exists( select 1

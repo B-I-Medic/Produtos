@@ -25,7 +25,7 @@ class ValidadorEmpresaEstoqueServiceTest {
     void shouldValidateCompanyWithSegregatedStock() {
 
         var empresa = TestDataFactory.empresaModel();
-        when(empresaRepository.findByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(empresa.getId()))
+        when(empresaRepository.existsByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(empresa.getId()))
                 .thenReturn(Mono.just(true));
 
         StepVerifier.create(service.validarEmpresa(empresa.getId())).verifyComplete();
@@ -35,7 +35,7 @@ class ValidadorEmpresaEstoqueServiceTest {
     void shouldRejectCompanyWithoutSegregatedStock() {
 
         var empresa = TestDataFactory.empresaModel();
-        when(empresaRepository.findByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(empresa.getId()))
+        when(empresaRepository.existsByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(empresa.getId()))
                 .thenReturn(Mono.just(false));
 
         StepVerifier.create(service.validarEmpresa(empresa.getId()))

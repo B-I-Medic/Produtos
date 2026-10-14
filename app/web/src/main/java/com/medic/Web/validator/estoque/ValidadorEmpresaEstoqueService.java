@@ -17,7 +17,7 @@ public class ValidadorEmpresaEstoqueService {
 
     public Mono<Void> validarEmpresa(UUID idEmpresa) {
 
-        return empresaRepository.findByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(idEmpresa)
+        return empresaRepository.existsByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(idEmpresa)
                 .filter(Boolean.TRUE::equals)
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("Empresa não possui estoque segregado ou não existe")))
                 .then();

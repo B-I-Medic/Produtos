@@ -2,6 +2,7 @@ package com.medic.Web;
 
 import com.medic.Web.config.mail.MailProperties;
 import com.medic.Web.dto.cd.CentroDistribuicaoRequestDTO;
+import com.medic.Web.dto.cd.CentroDistribuicaoResponseDTO;
 import com.medic.Web.dto.municipio.MunicipioRequestDTO;
 import com.medic.Web.mapper.cd.CentroDistribuicaoMapper;
 import com.medic.Web.mapper.municipio.MunicipioMapper;
@@ -17,6 +18,7 @@ import com.medic.Web.utils.Comparador;
 import com.medic.Web.utils.NormalizarTexto;
 import com.medic.Web.utils.Paginacao;
 import com.medic.Web.exception.handler.ErrorResponseWriter;
+import com.medic.Web.exception.handler.JwtEntryPoint;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -38,9 +41,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class RemainingWebCoverageTest {
@@ -108,6 +114,9 @@ class RemainingWebCoverageTest {
         assertEquals("Cidade", municipioResponse.descricao());
         assertEquals("123", municipioResponse.codigoIbge());
 
+        var centro = new CentroDistribuicaoResponseDTO(UUID.randomUUID(), "CD Central", null);
+        assertEquals(centro, municipioMapper.toDTO(municipio, centro).centroDistribuicao());
+
     }
 
     @Test
@@ -148,6 +157,10 @@ class RemainingWebCoverageTest {
         assertFalse(Comparador.comparar(Boolean.TRUE, Boolean.FALSE));
         assertTrue(Comparador.comparar(Boolean.FALSE, null));
 
+        new NormalizarTexto();
+        new Comparador();
+        new Paginacao();
+
         var page = Paginacao.paginar(List.of("a", "b", "c"), "2", "2");
         assertEquals(List.of("c"), page.pagina());
         assertEquals(3, page.quantidadeRegistros());
@@ -172,6 +185,19 @@ class RemainingWebCoverageTest {
         StepVerifier.create(writer.write(HttpStatus.BAD_REQUEST, null, null, exchange))
                 .verifyComplete();
         assertEquals(HttpStatus.BAD_REQUEST, exchange.getResponse().getStatusCode());
+    }
+
+    @Test
+    void shouldUseFallbackMessageWhenAuthenticationExceptionHasNoMessage() {
+        ErrorResponseWriter writer = mock(ErrorResponseWriter.class);
+        MockServerWebExchange exchange = exchange("/secure");
+        when(writer.write(any(HttpStatus.class), anyString(), nullable(String.class), any()))
+                .thenReturn(Mono.empty());
+
+        StepVerifier.create(new JwtEntryPoint(writer).commence(exchange, new BadCredentialsException(null)))
+                .verifyComplete();
+
+        verify(writer).write(HttpStatus.UNAUTHORIZED, "Autenticacao", "Token invalido", exchange);
     }
 
     @Test

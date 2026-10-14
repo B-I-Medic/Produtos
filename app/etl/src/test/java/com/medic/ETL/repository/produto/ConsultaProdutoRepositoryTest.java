@@ -55,4 +55,22 @@ class ConsultaProdutoRepositoryTest {
         assertEquals(123456L, produto.getAnvisa());
         org.junit.jupiter.api.Assertions.assertNull(produto.getCriadoEm());
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void shouldMapEmptyAnvisaAndNullCreationDateFromUfx() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString("Anvisa")).thenReturn("");
+        when(resultSet.getString("CriadoEm")).thenReturn(null);
+        when(ufxJdbcTemplate.query(eq("consulta-ufx"), any(RowMapper.class)))
+                .thenAnswer(invocation -> {
+                    RowMapper<?> mapper = invocation.getArgument(1);
+                    return List.of(mapper.mapRow(resultSet, 0));
+                });
+
+        var produto = repository.consultarUFX("consulta-ufx").getFirst();
+
+        org.junit.jupiter.api.Assertions.assertNull(produto.getAnvisa());
+        org.junit.jupiter.api.Assertions.assertNull(produto.getCriadoEm());
+    }
 }

@@ -39,7 +39,12 @@ class JwtAuthenticationConfigCoverageTest {
             StepVerifier.create(filter.filter(MockServerWebExchange.from(request), chain)).verifyComplete();
         }
 
-        verify(chain, org.mockito.Mockito.times(3)).filter(any());
+        var basicAuthorization = MockServerHttpRequest.get("/secure")
+                .header("Authorization", "Basic credentials")
+                .build();
+        StepVerifier.create(filter.filter(MockServerWebExchange.from(basicAuthorization), chain)).verifyComplete();
+
+        verify(chain, org.mockito.Mockito.times(4)).filter(any());
     }
 
     @Test

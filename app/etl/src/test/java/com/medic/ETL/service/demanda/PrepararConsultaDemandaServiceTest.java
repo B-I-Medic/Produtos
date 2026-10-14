@@ -13,6 +13,7 @@ import java.util.List;
 import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -39,7 +40,8 @@ class PrepararConsultaDemandaServiceTest {
                 TestDataFactory.periodo("CIRURGIA", "20260401", "20260430"),
                 TestDataFactory.periodo("AGENDAMENTO", "20260301", "20260331"),
                 TestDataFactory.periodo("ORCAMENTO_APROVADO", "20260201", "20260228"),
-                TestDataFactory.periodo("ORCAMENTO", "20260101", "20260131")
+                TestDataFactory.periodo("ORCAMENTO", "20260101", "20260131"),
+                TestDataFactory.periodo("PERIODO_NAO_MAPEADO", "20260501", "20260531")
         ));
         when(empresaRepository.findAllByVimanAndPossuiEstoqueInternoIsTrue("UFX"))
                 .thenReturn(List.of(
@@ -109,5 +111,23 @@ class PrepararConsultaDemandaServiceTest {
         when(periodoRepository.findAll()).thenReturn(List.of(periodo));
 
         assertThrows(IllegalStateException.class, () -> service.montarConsulta(TestDataFactory.processamento()));
+
+        var periodWithQuantityOnly = TestDataFactory.periodo("ORCAMENTO", "20260101", "20260131");
+        periodWithQuantityOnly.setDataInicialViman(null);
+        periodWithQuantityOnly.setDataFinalViman(null);
+        periodWithQuantityOnly.setQuantidade(7);
+        when(periodoRepository.findAll()).thenReturn(List.of(periodWithQuantityOnly));
+        assertThrows(IllegalStateException.class, () -> service.montarConsulta(TestDataFactory.processamento()));
+    }
+
+    @Test
+    void shouldValidatePeriodResolverInputsAndDefaultClock() {
+        PeriodoIntervaloResolver resolver = new PeriodoIntervaloResolver();
+
+        assertDoesNotThrow(() -> resolver.calcular(PeriodoTipo.DIAS, 1));
+        assertThrows(IllegalArgumentException.class, () -> resolver.calcular(PeriodoTipo.DIAS, 0));
+        assertThrows(IllegalArgumentException.class, () -> resolver.calcular(PeriodoTipo.DIAS, null));
+        assertThrows(NullPointerException.class, () -> resolver.validar(null, PeriodoTipo.DIAS, 1));
+        assertThrows(NullPointerException.class, () -> new PeriodoIntervaloResolver(null));
     }
 }

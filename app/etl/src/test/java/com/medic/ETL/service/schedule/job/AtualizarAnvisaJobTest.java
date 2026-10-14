@@ -74,4 +74,36 @@ class AtualizarAnvisaJobTest {
 
         verify(atualizacaoRepository).fail(any(), any(), any(), any());
     }
+
+    @Test
+    void shouldUseTheExceptionTypeWhenFailureMessageIsBlank() throws Exception {
+        Processamento processamento = TestDataFactory.processamento();
+        AnvisaAtualizacaoClaim claim = new AnvisaAtualizacaoClaim(
+                UUID.randomUUID(), UUID.randomUUID(), processamento
+        );
+        doThrow(new IllegalArgumentException("  "))
+                .when(atualizarAnvisaService)
+                .atualizar(processamento);
+
+        job.run(claim);
+
+        verify(atualizacaoRepository).fail(any(), any(), any(), org.mockito.ArgumentMatchers.eq("IllegalArgumentException"));
+    }
+
+    @Test
+    void shouldTruncateFailureMessageToTwoThousandCharacters() throws Exception {
+        Processamento processamento = TestDataFactory.processamento();
+        AnvisaAtualizacaoClaim claim = new AnvisaAtualizacaoClaim(
+                UUID.randomUUID(), UUID.randomUUID(), processamento
+        );
+        doThrow(new IllegalStateException("x".repeat(2_001)))
+                .when(atualizarAnvisaService)
+                .atualizar(processamento);
+
+        job.run(claim);
+
+        var message = org.mockito.ArgumentCaptor.forClass(String.class);
+        verify(atualizacaoRepository).fail(any(), any(), any(), message.capture());
+        org.junit.jupiter.api.Assertions.assertEquals(2_000, message.getValue().length());
+    }
 }

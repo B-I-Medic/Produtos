@@ -45,4 +45,15 @@ class ProcessarDemandaServiceTest {
         verify(consultaDemandaRepository, never()).consultarUFX(org.mockito.ArgumentMatchers.anyString());
         verify(insercaoDemandaProdutoRepository, never()).inserirEmLote(org.mockito.ArgumentMatchers.anyList());
     }
+
+    @Test
+    void shouldNotQueryOrPersistWhenQueryIsNull() {
+        var processamento = TestDataFactory.processamento();
+        when(prepararConsultaDemandaService.montarConsulta(processamento)).thenReturn(null);
+
+        service.atualizarDemanda(processamento);
+
+        verify(consultaDemandaRepository, never()).consultarUFX(org.mockito.ArgumentMatchers.anyString());
+        verify(insercaoDemandaProdutoRepository, never()).inserirEmLote(org.mockito.ArgumentMatchers.anyList());
+    }
 }

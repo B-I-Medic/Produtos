@@ -14,6 +14,8 @@ public interface EmpresaRepository extends JpaRepository<EmpresaModel, UUID> {
 
     List<EmpresaModel> findAllByVimanAndPossuiEstoqueInternoIsTrue(String viman);
 
+    List<EmpresaModel> findAllByPossuiEstoqueSegregadoIsTrue();
+
     @Query("""
             select new com.medic.ETL.dto.empresa.EmpresaEstoqueInternoDTO(
                 e.viman,

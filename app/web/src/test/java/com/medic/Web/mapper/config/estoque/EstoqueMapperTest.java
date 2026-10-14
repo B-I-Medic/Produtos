@@ -1,7 +1,7 @@
 package com.medic.Web.mapper.config.estoque;
 
 import com.medic.Web.dto.config.estoque.segregado.EstoqueSegregadoRequestDTO;
-import com.medic.Web.model.config.estoque.EstoqueSegregadoParametroModel;
+import com.medic.Web.model.config.estoque.EstoqueSegregadoCatalogoModel;
 import com.medic.Web.model.municipio.MunicipioModel;
 import org.junit.jupiter.api.Test;
 
@@ -23,13 +23,11 @@ class EstoqueMapperTest {
         MunicipioModel municipio = new MunicipioModel();
         municipio.setCodIbge("3550308");
 
-        EstoqueSegregadoParametroModel entity = new EstoqueSegregadoParametroModel();
+        EstoqueSegregadoCatalogoModel entity = new EstoqueSegregadoCatalogoModel();
         entity.setId(UUID.randomUUID());
-        entity.setCriadoPor(UUID.randomUUID());
-        entity.setCriadoEm(Instant.now().minusSeconds(300));
 
         Instant before = Instant.now();
-        EstoqueSegregadoParametroModel mapped = segregadoMapper.toEntity(entity, dto, municipio, userId);
+        EstoqueSegregadoCatalogoModel mapped = segregadoMapper.toEntity(entity, dto, municipio, userId);
         Instant after = Instant.now();
 
         assertEquals(empresaId, mapped.getIdEmpresa());
@@ -47,14 +45,15 @@ class EstoqueMapperTest {
         UUID userId = UUID.randomUUID();
         MunicipioModel municipio = new MunicipioModel();
         municipio.setCodIbge("3304557");
-        EstoqueSegregadoParametroModel entity = segregadoMapper.toEntity(
-                new EstoqueSegregadoParametroModel(),
+        EstoqueSegregadoCatalogoModel entity = segregadoMapper.toEntity(
+                new EstoqueSegregadoCatalogoModel(),
                 new EstoqueSegregadoRequestDTO(UUID.randomUUID(), 10, UUID.randomUUID()),
                 municipio,
                 userId);
 
-        assertEquals(userId, entity.getCriadoPor());
         assertEquals("3304557", entity.getCodIBGE());
+        assertNull(entity.getAtualizadoPor());
+        assertNull(entity.getAtualizadoEm());
     }
 
 }

@@ -5,9 +5,13 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +19,10 @@ import java.security.KeyStore;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class AnvisaDownloadServiceTest {
 
@@ -25,6 +33,7 @@ class AnvisaDownloadServiceTest {
         server.start();
         try {
             AnvisaProperties properties = properties(tempDir, server, "modelos");
+            properties.getTls().setTrustStoreType(" ");
             AnvisaDownloadService.ArquivosAnvisa files = new AnvisaDownloadService(properties).baixar();
 
             assertTrue(Files.size(files.produtos()) > 0);
@@ -44,6 +53,30 @@ class AnvisaDownloadServiceTest {
         try {
             assertThrows(java.io.IOException.class,
                     () -> new AnvisaDownloadService(properties(tempDir, server, "modelos")).baixar());
+        } finally {
+            server.stop(0);
+        }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldRejectResponseStatusBelowTwoHundred(@TempDir Path tempDir) throws Exception {
+
+        HttpServer server = server(200, "unused");
+        server.start();
+        try {
+            HttpClient client = mock(HttpClient.class);
+            HttpResponse<Path> response = mock(HttpResponse.class);
+            doReturn(response).when(client).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+            doReturn(199).when(response).statusCode();
+
+            AnvisaDownloadService service = new AnvisaDownloadService(properties(tempDir, server, "modelos"));
+            ReflectionTestUtils.setField(service, "httpClient", client);
+
+            java.io.IOException exception = assertThrows(java.io.IOException.class, service::baixar);
+
+            assertTrue(exception.getMessage().contains("HTTP 199"));
+            verify(client).send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
         } finally {
             server.stop(0);
         }
@@ -75,6 +108,17 @@ class AnvisaDownloadServiceTest {
         noTrustStore.getTls().setTrustStore(" ");
         noTrustStore.getTls().setTrustStorePassword("password");
         assertThrows(IllegalStateException.class, () -> new AnvisaDownloadService(noTrustStore));
+
+        AnvisaProperties noTrustStorePassword = new AnvisaProperties();
+        noTrustStorePassword.getTls().setTrustStore(tempDir.resolve("store.p12").toString());
+        noTrustStorePassword.getTls().setTrustStorePassword(null);
+        assertThrows(IllegalStateException.class, () -> new AnvisaDownloadService(noTrustStorePassword));
+
+        AnvisaProperties explicitStoreType = new AnvisaProperties();
+        explicitStoreType.getTls().setTrustStore(tempDir.resolve("missing.p12").toString());
+        explicitStoreType.getTls().setTrustStorePassword("password");
+        explicitStoreType.getTls().setTrustStoreType("PKCS12");
+        assertThrows(IllegalStateException.class, () -> new AnvisaDownloadService(explicitStoreType));
 
         AnvisaProperties invalidStore = new AnvisaProperties();
         invalidStore.getTls().setTrustStore(tempDir.resolve("missing.p12").toString());

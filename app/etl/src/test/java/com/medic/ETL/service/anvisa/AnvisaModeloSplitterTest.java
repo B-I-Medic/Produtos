@@ -34,5 +34,6 @@ class AnvisaModeloSplitterTest {
         assertEquals(List.of(), splitter.split(null));
         assertEquals(List.of(), splitter.split("  "));
         assertEquals(List.of(", ,"), splitter.split(", ,"));
+        assertEquals(List.of("BLOCK1002010S Kit canula"), splitter.split(", BLOCK1002010S Kit canula"));
     }
 }

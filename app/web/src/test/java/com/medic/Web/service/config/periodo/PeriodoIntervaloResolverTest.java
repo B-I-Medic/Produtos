@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PeriodoIntervaloResolverTest {
@@ -100,11 +101,47 @@ class PeriodoIntervaloResolverTest {
         periodo.setTipoPeriodo(PeriodoTipo.DIAS);
 
         assertThrows(IllegalStateException.class, () -> resolver.resolver(periodo));
+
+        PeriodoModel periodWithQuantityOnly = new PeriodoModel();
+        periodWithQuantityOnly.setDescricao(PeriodoEnum.ORCAMENTO);
+        periodWithQuantityOnly.setQuantidade(7);
+        assertThrows(IllegalStateException.class, () -> resolver.resolver(periodWithQuantityOnly));
     }
 
     @Test
     void shouldRejectNonPositiveQuantity() {
 
         assertThrows(IllegalArgumentException.class, () -> resolver.calcular(PeriodoTipo.DIAS, 0));
+        assertThrows(IllegalArgumentException.class, () -> resolver.calcular(PeriodoTipo.DIAS, null));
+        assertThrows(NullPointerException.class, () -> resolver.calcular(null, 1));
+        assertThrows(NullPointerException.class, () -> resolver.validar(null, PeriodoTipo.DIAS, 1));
+        assertThrows(NullPointerException.class, () -> new PeriodoIntervaloResolver(null));
+        assertDoesNotThrow(() -> new PeriodoIntervaloResolver().calcular(PeriodoTipo.DIAS, 1));
+    }
+
+    @Test
+    void shouldAcceptMatchingHistoricalAndFuturePeriodRules() {
+        PeriodoModel historical = new PeriodoModel();
+        historical.setDescricao(PeriodoEnum.ORCAMENTO);
+        historical.setTipoPeriodo(PeriodoTipo.DIAS);
+        historical.setQuantidade(3);
+        assertEquals(LocalDate.of(2026, 9, 18), resolver.resolver(historical).dataInicial());
+
+        PeriodoModel future = new PeriodoModel();
+        future.setDescricao(PeriodoEnum.AGENDAMENTO);
+        future.setTipoPeriodo(PeriodoTipo.PROXIMOS_DIAS);
+        future.setQuantidade(3);
+        assertEquals(LocalDate.of(2026, 9, 24), resolver.resolver(future).dataFinal());
+    }
+
+    @Test
+    void shouldAcceptUpcomingClosedMonthsForAgendamento() {
+
+        PeriodoModel future = new PeriodoModel();
+        future.setDescricao(PeriodoEnum.AGENDAMENTO);
+        future.setTipoPeriodo(PeriodoTipo.PROXIMOS_MESES_FECHADOS);
+        future.setQuantidade(2);
+
+        assertEquals(LocalDate.of(2026, 11, 30), resolver.resolver(future).dataFinal());
     }
 }

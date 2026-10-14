@@ -16,15 +16,20 @@ import reactor.test.StepVerifier;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class RefreshTokenServiceCoverageTest {
@@ -71,6 +76,20 @@ class RefreshTokenServiceCoverageTest {
         StepVerifier.create(service().rotate("consumed"))
                 .expectError(InvalidRefreshTokenException.class).verify();
         verify(repository).revokeByFamilyId(eq(consumed.getFamilyId()), any());
+    }
+
+    @Test
+    void shouldRejectTokenWithoutExpiration() {
+        RefreshTokenModel withoutExpiration = token(
+                TestDataFactory.usuarioModel(), Instant.now().plus(1, ChronoUnit.DAYS), null);
+        withoutExpiration.setExpiraEm(null);
+        when(repository.findByTokenHash(anyString())).thenReturn(Mono.just(withoutExpiration));
+
+        StepVerifier.create(service().rotate("without-expiration"))
+                .expectError(InvalidRefreshTokenException.class)
+                .verify();
+
+        verify(repository, never()).consumeIfActive(any(), any());
     }
 
     @Test
@@ -138,6 +157,24 @@ class RefreshTokenServiceCoverageTest {
         assertEquals(30, RefreshTokenService.configuredValidityDays("-1"));
         assertEquals(30, RefreshTokenService.configuredValidityDays("not-a-number"));
         assertEquals(45, RefreshTokenService.configuredValidityDays("45"));
+    }
+
+    @Test
+    void shouldWrapUnavailableSha256Algorithm() throws NoSuchAlgorithmException {
+
+        RefreshTokenService service = service();
+        UsuarioModel user = TestDataFactory.usuarioModel();
+
+        try (var messageDigest = mockStatic(MessageDigest.class, CALLS_REAL_METHODS)) {
+            messageDigest.when(() -> MessageDigest.getInstance("SHA-256"))
+                    .thenThrow(new NoSuchAlgorithmException("SHA-256 indisponivel"));
+
+            IllegalStateException error = assertThrows(
+                    IllegalStateException.class,
+                    () -> service.issue(user)
+            );
+            org.junit.jupiter.api.Assertions.assertTrue(error.getMessage().contains("SHA-256 indisponivel"));
+        }
     }
 
     private RefreshTokenService service() {

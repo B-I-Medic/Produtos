@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -103,6 +104,20 @@ class AnvisaAtualizacaoServiceTest {
                     assertEquals(id.toString(), event.id());
                     assertEquals(completed, event.data());
                 })
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldContinueStreamingUntilTheFailedTerminalStatus() {
+        UUID id = UUID.randomUUID();
+        AnvisaAtualizacaoResponseDTO pending = response("EM_PROCESSAMENTO", id);
+        AnvisaAtualizacaoResponseDTO failed = response("FALHOU", id);
+        when(atualizacaoRepository.findById(id)).thenReturn(Mono.just(pending), Mono.just(failed));
+
+        StepVerifier.withVirtualTime(() -> service().acompanhar(id))
+                .expectNextMatches(event -> pending.equals(event.data()))
+                .thenAwait(Duration.ofSeconds(1))
+                .expectNextMatches(event -> failed.equals(event.data()))
                 .verifyComplete();
     }
 

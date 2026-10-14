@@ -64,6 +64,21 @@ class ForecastRepositoryCustomImplTest {
     }
 
     @Test
+    void shouldUseDefaultGroupByWhenFilterListIsEmpty() {
+        var response = TestDataFactory.forecastAgrupadoResponseDTO();
+        stubQuery(response);
+        var filter = new ForecastFilterDTO(null, null, null, null, null, null, null, List.of());
+
+        StepVerifier.create(new ForecastRepositoryCustomImpl(databaseClient).findByFilter(filter))
+                .expectNext(response)
+                .verifyComplete();
+
+        var sqlCaptor = ArgumentCaptor.forClass(String.class);
+        verify(databaseClient).sql(sqlCaptor.capture());
+        assertTrue(sqlCaptor.getValue().contains("group by centro_distribuicao, empresa, estado, municipio, anvisa, marca, cod_produto, produto"));
+    }
+
+    @Test
     void shouldBindFiltersAndCustomGroupBy() {
 
         var response = TestDataFactory.forecastAgrupadoResponseDTO();

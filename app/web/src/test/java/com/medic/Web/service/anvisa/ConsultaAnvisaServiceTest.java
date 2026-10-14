@@ -119,7 +119,8 @@ class ConsultaAnvisaServiceTest {
                 new AnvisaRepositoryCustom.EmpresaConsulta("Sem produto", "UFX", "99")
         ));
         when(repository.findProdutosLocais("81420890023")).thenReturn(Flux.just(
-                new AnvisaProdutoLocalConsulta("S00", "10", "P1", "Produto Avant")
+                new AnvisaProdutoLocalConsulta("S00", "10", "P1", "Produto Avant"),
+                new AnvisaProdutoLocalConsulta(null, "10", "P2", "Sem origem")
         ));
 
         StepVerifier.create(service.comparar("81420890023"))

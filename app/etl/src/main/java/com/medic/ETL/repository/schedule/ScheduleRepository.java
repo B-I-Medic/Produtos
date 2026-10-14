@@ -20,5 +20,5 @@ public interface ScheduleRepository extends JpaRepository<ScheduleModel, UUID> {
     @Transactional
     @Query("update ScheduleModel schedule set schedule.ultimaExecucao = :ultimaExecucao where schedule.job = :job")
     void atualizarUltimaExecucao(@Param("job") ScheduleJob job,
-                                @Param("ultimaExecucao") Instant ultimaExecucao);
+                                 @Param("ultimaExecucao") Instant ultimaExecucao);
 }

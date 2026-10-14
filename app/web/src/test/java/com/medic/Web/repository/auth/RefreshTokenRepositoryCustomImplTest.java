@@ -28,18 +28,20 @@ class RefreshTokenRepositoryCustomImplTest {
         when(client.sql(anyString())).thenReturn(executeSpec);
         when(executeSpec.bind(anyString(), any())).thenReturn(executeSpec);
         when(executeSpec.fetch()).thenReturn(fetchSpec);
-        when(fetchSpec.rowsUpdated()).thenReturn(Mono.just(1L), Mono.just(2L), Mono.just(0L));
+        when(fetchSpec.rowsUpdated()).thenReturn(Mono.just(1L), Mono.just(0L), Mono.just(2L), Mono.just(0L));
 
         RefreshTokenRepositoryCustomImpl repository = new RefreshTokenRepositoryCustomImpl(client);
         StepVerifier.create(repository.consumeIfActive(UUID.randomUUID(), Instant.now()))
                 .expectNext(true).verifyComplete();
+        StepVerifier.create(repository.consumeIfActive(UUID.randomUUID(), Instant.now()))
+                .expectNext(false).verifyComplete();
         StepVerifier.create(repository.revokeByFamilyId(UUID.randomUUID(), Instant.now()))
                 .expectNext(2L).verifyComplete();
         StepVerifier.create(repository.revokeByUsuarioId(UUID.randomUUID(), Instant.now()))
                 .expectNext(0L).verifyComplete();
 
-        verify(client, org.mockito.Mockito.times(3)).sql(anyString());
-        assertEquals(3, org.mockito.Mockito.mockingDetails(executeSpec).getInvocations().stream()
+        verify(client, org.mockito.Mockito.times(4)).sql(anyString());
+        assertEquals(4, org.mockito.Mockito.mockingDetails(executeSpec).getInvocations().stream()
                 .filter(invocation -> invocation.getMethod().getName().equals("fetch"))
                 .count());
     }

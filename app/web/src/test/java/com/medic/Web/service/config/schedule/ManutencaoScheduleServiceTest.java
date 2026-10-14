@@ -101,6 +101,10 @@ class ManutencaoScheduleServiceTest {
                 .expectErrorMatches(error -> error instanceof IllegalArgumentException
                         && "Cron inválido".equals(error.getMessage()))
                 .verify();
+
+        StepVerifier.create(service.atualizar(UUID.randomUUID(), "   ", UUID.randomUUID()))
+                .expectError(IllegalArgumentException.class)
+                .verify();
     }
 
     @Test

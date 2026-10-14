@@ -76,4 +76,17 @@ class ProcessarValePermanenteServiceTest {
         verify(consultaS00Repository, never()).consultar(org.mockito.ArgumentMatchers.anyString());
         verify(insercaoRepository, never()).inserirEmLote(org.mockito.ArgumentMatchers.anyList());
     }
+
+    @Test
+    void shouldSkipNullUfxAndBlankS00Queries() {
+        var processamento = TestDataFactory.processamento();
+        when(prepararConsultaService.montarConsultas(processamento))
+                .thenReturn(new ValePermanenteConsultaDTO(null, null));
+
+        service.processarValePermanente(processamento);
+
+        verify(consultaUfxRepository, never()).consultar(org.mockito.ArgumentMatchers.anyString());
+        verify(consultaS00Repository, never()).consultar(org.mockito.ArgumentMatchers.anyString());
+        verify(insercaoRepository, never()).inserirEmLote(org.mockito.ArgumentMatchers.anyList());
+    }
 }

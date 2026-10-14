@@ -1,11 +1,12 @@
-package com.medic.ETL.dto.parametro;
+package com.medic.ETL.dto.catalogo;
 
 import lombok.Data;
 
 @Data
-public class EstoqueSegregadoParametroDTO {
+public class EstoqueSegregadoCatalogoDTO {
 
     private String codEmpresa;
+    private String viman;
     private String codIBGE;
     private String codSegregado;
 }

@@ -6,5 +6,5 @@ import java.util.UUID;
 
 public interface EmpresaRepositoryCustom {
 
-    Mono<Boolean> findByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(UUID idMunicipio);
+    Mono<Boolean> existsByIdEmpresaAndPossuiEstoqueSegregadoIsTrue(UUID idMunicipio);
 }

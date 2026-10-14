@@ -67,6 +67,19 @@ class ProcessarEstoqueInternoServiceTest {
     void shouldNotQueryOrPersistWhenQueriesAreBlank() {
         var processamento = TestDataFactory.processamento();
         when(prepararConsultaEstoqueInternoService.montarConsultas(processamento))
+                .thenReturn(new EstoqueInternoConsultaDTO(null, null));
+
+        service.processarEstoqueInterno(processamento);
+
+        verify(consultaUfxRepository, never()).consultar(org.mockito.ArgumentMatchers.anyString());
+        verify(consultaS00Repository, never()).consultar(org.mockito.ArgumentMatchers.anyString());
+        verify(insercaoRepository, never()).inserirEmLote(org.mockito.ArgumentMatchers.anyList());
+    }
+
+    @Test
+    void shouldSkipNullUfxAndBlankS00Queries() {
+        var processamento = TestDataFactory.processamento();
+        when(prepararConsultaEstoqueInternoService.montarConsultas(processamento))
                 .thenReturn(new EstoqueInternoConsultaDTO(null, " "));
 
         service.processarEstoqueInterno(processamento);

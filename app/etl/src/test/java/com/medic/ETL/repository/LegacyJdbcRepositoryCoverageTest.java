@@ -8,9 +8,10 @@ import com.medic.ETL.repository.demanda.ConsultaDemandaRepository;
 import com.medic.ETL.repository.estoque.interno.ConsultaEstoqueInternoS00Repository;
 import com.medic.ETL.repository.estoque.interno.ConsultaEstoqueInternoUFXRepository;
 import com.medic.ETL.repository.estoque.segregado.ConsultaConsultaSegregadoUFXRepository;
+import com.medic.ETL.repository.estoque.segregado.ConsultaConsultaSegregadoS00Repository;
 import com.medic.ETL.repository.estoque.valePermanente.ConsultaS00Repository;
 import com.medic.ETL.repository.estoque.valePermanente.ConsultaUFXRepository;
-import com.medic.ETL.repository.parametro.EstoqueSegregadoParametroRepository;
+import com.medic.ETL.repository.catalogo.EstoqueSegregadoCatalogoRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -76,6 +77,13 @@ class LegacyJdbcRepositoryCoverageTest {
                 .consultar("select")
                 .getFirst();
 
+        JdbcTemplate segregadoS00Template = mock(JdbcTemplate.class);
+        ResultSet segregadoS00ResultSet = stockResultSet(processamento);
+        stubQuery(segregadoS00Template, segregadoS00ResultSet);
+        EstoqueSegregado segregadoS00 = new ConsultaConsultaSegregadoS00Repository(segregadoS00Template)
+                .consultar("select")
+                .getFirst();
+
         JdbcTemplate ufxInternoTemplate = mock(JdbcTemplate.class);
         ResultSet ufxInternoResultSet = stockResultSet(processamento);
         stubQuery(ufxInternoTemplate, ufxInternoResultSet);
@@ -93,6 +101,9 @@ class LegacyJdbcRepositoryCoverageTest {
         assertEquals(processamento, s00Vale.getProcessamento());
         assertEquals("3550308", ufxVale.getCodIBGE());
         assertEquals("3550308", segregado.getCodIBGE());
+        assertEquals("UFX", segregadoS00.getViman());
+        assertEquals("P1", segregadoS00.getCodProduto());
+        assertEquals(5, segregadoS00.getQntDisponivel());
         assertEquals("001", ufxInterno.getCodEmpresa());
         assertEquals(5, s00Interno.getQntDisponivel());
     }
@@ -106,8 +117,8 @@ class LegacyJdbcRepositoryCoverageTest {
         when(segregadoResultSet.getString("CodIBGE")).thenReturn("3550308");
         when(segregadoResultSet.getString("codSegregado")).thenReturn("10");
         stubQuery(segregadoTemplate, segregadoResultSet);
-        var segregado = new EstoqueSegregadoParametroRepository(segregadoTemplate)
-                .obterEstoqueSegregadoParametros().getFirst();
+        var segregado = new EstoqueSegregadoCatalogoRepository(segregadoTemplate)
+                .obterEstoqueSegregadoCatalogo().getFirst();
 
         assertEquals("002", segregado.getCodEmpresa());
         assertEquals("3550308", segregado.getCodIBGE());

@@ -1,9 +1,9 @@
 package com.medic.ETL.service.estoque.segregado;
 
 import com.medic.ETL.dto.consulta.EstoqueSegregadoConsultaDTO;
-import com.medic.ETL.dto.parametro.EstoqueSegregadoParametroDTO;
+import com.medic.ETL.dto.catalogo.EstoqueSegregadoCatalogoDTO;
 import com.medic.ETL.model.processamento.Processamento;
-import com.medic.ETL.repository.parametro.EstoqueSegregadoParametroRepository;
+import com.medic.ETL.repository.catalogo.EstoqueSegregadoCatalogoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,33 +16,41 @@ import java.util.Set;
 @Service
 public class PrepararConsultaEstoqueSegregadoService {
 
-    private final EstoqueSegregadoParametroRepository estoqueSegregadoParametroRepository;
+    private final EstoqueSegregadoCatalogoRepository estoqueSegregadoCatalogoRepository;
 
-    public PrepararConsultaEstoqueSegregadoService(EstoqueSegregadoParametroRepository estoqueSegregadoParametroRepository) {
-        this.estoqueSegregadoParametroRepository = estoqueSegregadoParametroRepository;
+    public PrepararConsultaEstoqueSegregadoService(EstoqueSegregadoCatalogoRepository estoqueSegregadoCatalogoRepository) {
+        this.estoqueSegregadoCatalogoRepository = estoqueSegregadoCatalogoRepository;
     }
 
     public EstoqueSegregadoConsultaDTO montarConsultas(Processamento processamento) {
 
-        var parametros = estoqueSegregadoParametroRepository.obterEstoqueSegregadoParametros();
+        var empresas = estoqueSegregadoCatalogoRepository.obterEstoqueSegregadoCatalogo();
+        String processamentoId = processamento.getId().toString().replace("'", "''");
 
-        String processamentoId = escapeSql(processamento.getId().toString());
-
-        String consultaUfx = montarConsultaUfx(parametros, processamentoId);
-
-        return new EstoqueSegregadoConsultaDTO(consultaUfx);
+        return new EstoqueSegregadoConsultaDTO(
+                montarConsulta(empresas, processamentoId, "UFX"),
+                montarConsulta(empresas, processamentoId, "S00")
+        );
     }
 
-    private String montarConsultaUfx(List<EstoqueSegregadoParametroDTO> empresas,
-                                     String processamentoId) {
+    private String montarConsulta(List<EstoqueSegregadoCatalogoDTO> empresas,
+                                  String processamentoId,
+                                  String viman) {
 
         Map<ChaveConsultaSegregado, Set<String>> codigosSegregadosPorGrupo = new LinkedHashMap<>();
 
-        for (EstoqueSegregadoParametroDTO empresa : empresas) {
+        for (EstoqueSegregadoCatalogoDTO empresa : empresas) {
+
+            if (!viman.equalsIgnoreCase(empresa.getViman())) {
+                continue;
+            }
+
+            String codigoEmpresa = validarCodigo(empresa.getCodEmpresa());
+            String codIbge = validarCodIbge(empresa.getCodIBGE());
 
             ChaveConsultaSegregado chave = new ChaveConsultaSegregado(
-                    empresa.getCodEmpresa(),
-                    empresa.getCodIBGE()
+                    codigoEmpresa,
+                    codIbge
             );
 
             codigosSegregadosPorGrupo
@@ -59,7 +67,7 @@ public class PrepararConsultaEstoqueSegregadoService {
             consultas.add("""
                     SELECT
                         '%s' as Processamento,
-                        'UFX' as Viman,
+                        '%s' as Viman,
                         '%s' as CodEmpresa,
                         '%s' AS CodIBGE,
                         TRIM(ESCDPR) AS CodProduto,
@@ -69,9 +77,10 @@ public class PrepararConsultaEstoqueSegregadoService {
                     GROUP BY ESCDPR
                     """.formatted(
                     processamentoId,
+                    viman,
                     escapeSql(chave.codEmpresa()),
                     escapeSql(chave.codIBGE()),
-                    escapeSql(chave.codEmpresa()),
+                    chave.codEmpresa(),
                     quotedValues(entry.getValue())
             ));
         }
@@ -89,12 +98,34 @@ public class PrepararConsultaEstoqueSegregadoService {
 
     private String numericValue(String value) {
 
-        return escapeSql(value);
+        try {
+            return Integer.toString(Integer.parseInt(value.trim()));
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("Codigo de estoque segregado invalido: " + value, exception);
+        }
+    }
+
+    private String validarCodigo(String value) {
+
+        if (value == null || !value.trim().matches("\\d{1,2}")) {
+            throw new IllegalArgumentException("Codigo de empresa invalido para consulta de estoque segregado: " + value);
+        }
+
+        return value.trim();
+    }
+
+    private String validarCodIbge(String value) {
+
+        if (value == null || !value.trim().matches("\\d{1,10}")) {
+            throw new IllegalArgumentException("Codigo IBGE invalido para consulta de estoque segregado: " + value);
+        }
+
+        return value.trim();
     }
 
     private String escapeSql(String value) {
 
-        return value.replace("'", "''");
+        return value == null ? "" : value.replace("'", "''");
     }
 
     private record ChaveConsultaSegregado(String codEmpresa, String codIBGE) {
