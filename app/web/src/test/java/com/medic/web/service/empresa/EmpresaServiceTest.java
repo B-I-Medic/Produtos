@@ -17,7 +17,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.Mockito.never;
@@ -95,17 +94,15 @@ class EmpresaServiceTest {
     @Test
     void shouldListEmpresas() {
 
-        var model = TestDataFactory.empresaModel();
         var response = TestDataFactory.empresaResponseDTO();
-        when(empresaRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
-        var municipio = TestDataFactory.municipioModel();
-        model.setMunicipioId(municipio.getId());
-        when(municipioRepository.findById(municipio.getId())).thenReturn(Mono.just(municipio));
-        when(empresaMapper.toDTO(model, municipio)).thenReturn(response);
+        when(empresaRepository.findAllWithMunicipio()).thenReturn(Flux.just(response));
 
         StepVerifier.create(empresaService.listEmpresas())
                 .expectNext(response)
                 .verifyComplete();
+
+        verify(empresaRepository).findAllWithMunicipio();
+        verify(municipioRepository, never()).findById(ArgumentMatchers.any(UUID.class));
     }
 
     @Test
