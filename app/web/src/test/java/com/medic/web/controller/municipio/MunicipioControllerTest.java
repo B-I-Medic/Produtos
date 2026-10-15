@@ -20,7 +20,7 @@ class MunicipioControllerTest {
 
         ConsultaMunicipioService municipioService = mock(ConsultaMunicipioService.class);
         var municipioResponse = TestDataFactory.municipioResponseDTO();
-        var filter = new MunicipioFilterDTO("Cidade", "SP");
+        var filter = new MunicipioFilterDTO("Cidade", "SP", "CD Central");
         when(municipioService.listMunicipios(filter)).thenReturn(Flux.fromIterable(List.of(municipioResponse)));
 
         WebTestClient.bindToController(new MunicipioController(municipioService))
@@ -29,6 +29,7 @@ class MunicipioControllerTest {
                         .path("/municipio/get")
                         .queryParam("descricao", "Cidade")
                         .queryParam("estado", "SP")
+                        .queryParam("centroDistribuicao", "CD Central")
                         .build())
                 .exchange()
                 .expectStatus().isOk()

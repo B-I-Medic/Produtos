@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoFilterDTO;
 import com.medic.web.dto.municipio.MunicipioFilterDTO;
 import com.medic.web.model.empresa.Viman;
-import com.medic.web.repository.cd.MunicipioRepositoryCustomImpl;
+import com.medic.web.repository.cd.CentroDistribuicaoRepositoryCustomImpl;
+import com.medic.web.repository.municipio.MunicipioRepositoryCustomImpl;
 import com.medic.web.repository.config.estoque.segregado.EstoqueSegregadoRepositoryCustomImpl;
 import com.medic.web.repository.empresa.EmpresaRepositoryCustomImpl;
 import com.medic.web.support.TestDataFactory;
@@ -31,6 +32,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,21 +48,96 @@ class CustomRepositoryCoverageTest {
     @Test
     void shouldMapMunicipioRowsAndSupportNullFilters() {
 
+        UUID municipioId = UUID.randomUUID();
+        UUID centroDistribuicaoId = UUID.randomUUID();
         prepareQuery();
         stubRowValues();
+        when(row.get("id", UUID.class)).thenReturn(municipioId);
+        when(row.get("descricao", String.class)).thenReturn("Cidade");
+        when(row.get("cod_ibge", String.class)).thenReturn("1234567");
+        when(row.get("estado", String.class)).thenReturn("SP");
+        when(row.get("cd_id", UUID.class)).thenReturn(centroDistribuicaoId);
+        when(row.get("cd_descricao", String.class)).thenReturn("CD Central");
         stubMappedRows();
 
+        var filter = new MunicipioFilterDTO(" Cidade ", null, " Central ");
         StepVerifier.create(new MunicipioRepositoryCustomImpl(databaseClient)
-                        .findByFiltro(new MunicipioFilterDTO(" Cidade ", null)))
-                .expectNextCount(1)
+                        .findByFiltro(filter))
+                .expectNextMatches(response -> response.id().equals(municipioId)
+                        && response.descricao().equals("Cidade")
+                        && response.codigoIbge().equals("1234567")
+                        && response.estado().equals("SP")
+                        && response.centroDistribuicao().id().equals(centroDistribuicaoId)
+                        && response.centroDistribuicao().descricao().equals("CD Central")
+                        && response.centroDistribuicao().municipio() == null)
                 .verifyComplete();
+
+        var sql = org.mockito.ArgumentCaptor.forClass(String.class);
+        verify(databaseClient).sql(sql.capture());
+        assertTrue(sql.getValue().contains("LEFT JOIN centro_distribuicao cd"));
+        verify(executeSpec).bind("descricao", "%Cidade%");
+        verify(executeSpec).bind("centroDistribuicao", "%Central%");
+        verify(executeSpec).bindNull("estado", String.class);
 
         prepareQuery();
         stubRowValues();
+        when(row.get("cd_id", UUID.class)).thenReturn(null);
         stubMappedRows();
         StepVerifier.create(new MunicipioRepositoryCustomImpl(databaseClient).findByFiltro(null))
-                .expectNextCount(1)
+                .expectNextMatches(response -> response.centroDistribuicao() == null)
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldMapCentroDistribuicaoRowsWithMunicipioUsingSingleJoinQuery() {
+
+        UUID centroDistribuicaoId = UUID.randomUUID();
+        UUID municipioId = UUID.randomUUID();
+        prepareQuery();
+        stubRowValues();
+        when(row.get("cd_id", UUID.class)).thenReturn(centroDistribuicaoId);
+        when(row.get("cd_descricao", String.class)).thenReturn("CD Central");
+        when(row.get("municipio_id", UUID.class)).thenReturn(municipioId);
+        when(row.get("municipio_descricao", String.class)).thenReturn("Cidade");
+        when(row.get("municipio_cod_ibge", String.class)).thenReturn("1234567");
+        when(row.get("municipio_estado", String.class)).thenReturn("SP");
+        stubMappedRows();
+
+        StepVerifier.create(new CentroDistribuicaoRepositoryCustomImpl(databaseClient).findAllWithMunicipio())
+                .expectNextMatches(response -> response.id().equals(centroDistribuicaoId)
+                        && response.descricao().equals("CD Central")
+                        && response.municipio() != null
+                        && response.municipio().id().equals(municipioId)
+                        && response.municipio().descricao().equals("Cidade")
+                        && response.municipio().codigoIbge().equals("1234567")
+                        && response.municipio().estado().equals("SP")
+                        && response.municipio().centroDistribuicao() == null)
+                .verifyComplete();
+
+        var sql = org.mockito.ArgumentCaptor.forClass(String.class);
+        verify(databaseClient).sql(sql.capture());
+        assertTrue(sql.getValue().contains("LEFT JOIN municipio m"));
+        assertTrue(sql.getValue().contains("ON m.id = cd.municipio_id"));
+    }
+
+    @Test
+    void shouldMapCentroDistribuicaoWithoutMunicipio() {
+
+        UUID centroDistribuicaoId = UUID.randomUUID();
+        prepareQuery();
+        stubRowValues();
+        when(row.get("cd_id", UUID.class)).thenReturn(centroDistribuicaoId);
+        when(row.get("cd_descricao", String.class)).thenReturn("CD sem município");
+        when(row.get("municipio_id", UUID.class)).thenReturn(null);
+        stubMappedRows();
+
+        StepVerifier.create(new CentroDistribuicaoRepositoryCustomImpl(databaseClient).findAllWithMunicipio())
+                .expectNextMatches(response -> response.id().equals(centroDistribuicaoId)
+                        && response.descricao().equals("CD sem município")
+                        && response.municipio() == null)
+                .verifyComplete();
+
+        verify(databaseClient).sql(anyString());
     }
 
     @Test
@@ -94,6 +171,25 @@ class CustomRepositoryCoverageTest {
                         .getAllAndFilter(null))
                 .expectNextMatches(response -> response.municipio() == null)
                 .verifyComplete();
+    }
+
+    @Test
+    void shouldFilterSegregatedStockByCompanyId() {
+
+        UUID idEmpresa = UUID.randomUUID();
+        prepareQuery();
+        stubRowValues();
+        stubMappedRows();
+
+        StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient).getAllByIdEmpresa(idEmpresa))
+                .expectNextMatches(response -> response.codSegregado() == 1
+                        && response.empresa().viman() == Viman.UFX)
+                .verifyComplete();
+
+        var sql = org.mockito.ArgumentCaptor.forClass(String.class);
+        org.mockito.Mockito.verify(databaseClient).sql(sql.capture());
+        org.mockito.Mockito.verify(executeSpec).bind("idEmpresa", idEmpresa);
+        assertTrue(sql.getValue().contains("esp.id_empresa = :idEmpresa"));
     }
 
     @Test
@@ -142,6 +238,7 @@ class CustomRepositoryCoverageTest {
         lenient().when(executeSpec.bind(anyString(), any())).thenReturn(executeSpec);
         lenient().when(executeSpec.bindNull(anyString(), eq(String.class))).thenReturn(executeSpec);
         lenient().when(executeSpec.bindNull(anyString(), eq(Integer.class))).thenReturn(executeSpec);
+        lenient().when(executeSpec.bindNull(anyString(), eq(UUID.class))).thenReturn(executeSpec);
     }
 
     private void stubRowValues() {

@@ -6,7 +6,7 @@ import com.medic.web.mapper.cd.CentroDistribuicaoMapper;
 import com.medic.web.model.cd.CentroDistribuicaoModel;
 import com.medic.web.exception.type.NotFoundException;
 import com.medic.web.repository.cd.CentroDistribuicaoRepository;
-import com.medic.web.repository.cd.MunicipioRepository;
+import com.medic.web.repository.municipio.MunicipioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -63,11 +63,7 @@ public class ManutencaoCDService {
     @Transactional(readOnly = true)
     public Flux<CentroDistribuicaoResponseDTO> listCDs() {
 
-        return repository.findAll()
-                .flatMap(cd -> Mono.justOrEmpty(cd.getMunicipioId())
-                        .flatMap(municipioRepository::findById)
-                        .map(municipio -> mapper.toDTO(cd, municipio))
-                        .switchIfEmpty(Mono.fromSupplier(() -> mapper.toDTO(cd))));
+        return repository.findAllWithMunicipio();
     }
 
     private <T> Mono<T> municipioNotFound(UUID municipioId) {

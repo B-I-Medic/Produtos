@@ -5,7 +5,7 @@ import com.medic.web.exception.type.NotFoundException;
 import com.medic.web.mapper.cd.CentroDistribuicaoMapper;
 import com.medic.web.model.cd.CentroDistribuicaoModel;
 import com.medic.web.repository.cd.CentroDistribuicaoRepository;
-import com.medic.web.repository.cd.MunicipioRepository;
+import com.medic.web.repository.municipio.MunicipioRepository;
 import com.medic.web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +17,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.Mockito.never;
@@ -95,17 +94,14 @@ class CdServiceTest {
     @Test
     void shouldListCentroDistribuicao() {
 
-        CentroDistribuicaoModel model = TestDataFactory.centroDistribuicaoModel();
         var response = TestDataFactory.centroDistribuicaoResponseDTO();
-        when(centroDistribuicaoRepository.findAll()).thenReturn(Flux.fromIterable(List.of(model)));
-        var municipio = TestDataFactory.municipioModel();
-        model.setMunicipioId(municipio.getId());
-        when(municipioRepository.findById(municipio.getId())).thenReturn(Mono.just(municipio));
-        when(centroDistribuicaoMapper.toDTO(model, municipio)).thenReturn(response);
+        when(centroDistribuicaoRepository.findAllWithMunicipio()).thenReturn(Flux.just(response));
 
         StepVerifier.create(manutencaoCDService.listCDs())
                 .expectNext(response)
                 .verifyComplete();
+
+        verify(municipioRepository, never()).findById(ArgumentMatchers.any(UUID.class));
     }
 
     @Test
