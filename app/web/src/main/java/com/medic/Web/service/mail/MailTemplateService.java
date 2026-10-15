@@ -12,6 +12,9 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class MailTemplateService {
 
+    private static final String APPLICATION_LINK_BLOCK_START = "<!-- application-link:start -->";
+    private static final String APPLICATION_LINK_BLOCK_END = "<!-- application-link:end -->";
+
     public Mono<String> forgotPassword(String nome, String codigo) {
 
         return readTemplate("templates/forgot-password.html")
@@ -25,10 +28,33 @@ public class MailTemplateService {
                                       String linkAplicacao) {
 
         return readTemplate("templates/new-user-access.html")
-                .map(template -> template
-                        .replace("{nome}", nome)
-                        .replace("{senha}", senha)
-                        .replace("{linkAplicacao}", linkAplicacao));
+                .map(template -> {
+                    String renderedTemplate = template
+                            .replace("{nome}", nome)
+                            .replace("{senha}", senha)
+                            .replace("{linkAplicacao}", linkAplicacao == null ? "" : linkAplicacao);
+
+                    return renderApplicationLinkBlock(renderedTemplate, linkAplicacao);
+                });
+    }
+
+    private String renderApplicationLinkBlock(String template, String linkAplicacao) {
+
+        if (linkAplicacao == null || linkAplicacao.isBlank() || "N/A".equalsIgnoreCase(linkAplicacao.trim())) {
+            int blockStart = template.indexOf(APPLICATION_LINK_BLOCK_START);
+            int blockEnd = template.indexOf(APPLICATION_LINK_BLOCK_END, blockStart);
+
+            if (blockStart < 0 || blockEnd < 0) {
+                return template;
+            }
+
+            return template.substring(0, blockStart)
+                    + template.substring(blockEnd + APPLICATION_LINK_BLOCK_END.length());
+        }
+
+        return template
+                .replace(APPLICATION_LINK_BLOCK_START, "")
+                .replace(APPLICATION_LINK_BLOCK_END, "");
     }
 
     private Mono<String> readTemplate(String path) {

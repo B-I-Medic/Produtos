@@ -1,5 +1,6 @@
 package com.medic.Web.service.usuario;
 
+import com.medic.Web.config.properties.ApplicationProperties;
 import com.medic.Web.dto.usuario.UsuarioPaginaDTO;
 import com.medic.Web.dto.usuario.UsuarioRequestDTO;
 import com.medic.Web.dto.usuario.UsuarioResponseDTO;
@@ -36,6 +37,8 @@ class UsuarioServiceTest {
     private MailService mailService;
     @Mock
     private MailTemplateService mailTemplateService;
+    @Mock
+    private ApplicationProperties applicationProperties;
 
     @InjectMocks
     private ManutencaoUsuarioService manutencaoService;
@@ -50,6 +53,7 @@ class UsuarioServiceTest {
         UsuarioRequestDTO dto = new UsuarioRequestDTO("teste@medic.com", "Teste", Role.ADMIN);
         when(mapper.toEntity(org.mockito.ArgumentMatchers.any(UsuarioModel.class), org.mockito.ArgumentMatchers.eq(dto), org.mockito.ArgumentMatchers.any(UUID.class))).thenReturn(user);
         when(repository.save(user)).thenReturn(Mono.just(user));
+        when(applicationProperties.getLink()).thenReturn("https://produtos.surgilog.com.br/homolog/");
         when(mailTemplateService.newUserAccess(user.getNome(), System.getenv("PRODUTO_SENHA_PADRAO"), "https://produtos.surgilog.com.br/homolog/"))
                 .thenReturn(Mono.just("body"));
         when(mailService.sendSimpleEmail(user.getEmail(), "Acesso liberado", "body"))

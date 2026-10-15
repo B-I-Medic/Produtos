@@ -1,3 +1,6 @@
+application:
+  link: "https://produtos.surgilog.com.br/homolog/"
+
 spring:
   application:
     name: produto-web-hml

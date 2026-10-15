@@ -1,5 +1,6 @@
 package com.medic.Web.service.usuario;
 
+import com.medic.Web.config.properties.ApplicationProperties;
 import com.medic.Web.dto.usuario.UsuarioRequestDTO;
 import com.medic.Web.dto.usuario.UsuarioResponseDTO;
 import com.medic.Web.mapper.usuario.UsuarioMapper;
@@ -15,21 +16,22 @@ import java.util.UUID;
 @Service
 public class ManutencaoUsuarioService {
 
-    private static final String APPLICATION_LINK = "https://produtos.surgilog.com.br/homolog/";
-
     private final UsuarioRepository repository;
     private final UsuarioMapper mapper;
     private final MailService mailService;
     private final MailTemplateService mailTemplateService;
+    private final ApplicationProperties applicationProperties;
 
     public ManutencaoUsuarioService(UsuarioRepository repository,
                                     UsuarioMapper mapper,
                                     MailService mailService,
-                                    MailTemplateService mailTemplateService) {
+                                    MailTemplateService mailTemplateService,
+                                    ApplicationProperties applicationProperties) {
         this.repository = repository;
         this.mapper = mapper;
         this.mailService = mailService;
         this.mailTemplateService = mailTemplateService;
+        this.applicationProperties = applicationProperties;
     }
 
     public Mono<UsuarioResponseDTO> save(UsuarioRequestDTO usuario,
@@ -42,7 +44,7 @@ public class ManutencaoUsuarioService {
                         .newUserAccess(
                                 user.getNome(),
                                 System.getenv("PRODUTO_SENHA_PADRAO"),
-                                APPLICATION_LINK
+                                applicationProperties.getLink()
                         )
                         .flatMap(body -> mailService.sendSimpleEmail(
                                 user.getEmail(),
