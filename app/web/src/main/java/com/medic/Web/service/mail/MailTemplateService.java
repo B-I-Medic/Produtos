@@ -31,8 +31,7 @@ public class MailTemplateService {
                 .map(template -> {
                     String renderedTemplate = template
                             .replace("{nome}", nome)
-                            .replace("{senha}", senha)
-                            .replace("{linkAplicacao}", linkAplicacao == null ? "" : linkAplicacao);
+                            .replace("{senha}", senha);
 
                     return renderApplicationLinkBlock(renderedTemplate, linkAplicacao);
                 });
@@ -53,6 +52,7 @@ public class MailTemplateService {
         }
 
         return template
+                .replace("data-application-href=\"{linkAplicacao}\"", "href=\"" + linkAplicacao + "\"")
                 .replace(APPLICATION_LINK_BLOCK_START, "")
                 .replace(APPLICATION_LINK_BLOCK_END, "");
     }
