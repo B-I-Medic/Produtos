@@ -4,7 +4,7 @@ import com.medic.web.dto.empresa.EmpresaRequestDTO;
 import com.medic.web.exception.type.NotFoundException;
 import com.medic.web.mapper.empresa.EmpresaMapper;
 import com.medic.web.model.empresa.Viman;
-import com.medic.web.repository.cd.MunicipioRepository;
+import com.medic.web.repository.municipio.MunicipioRepository;
 import com.medic.web.repository.empresa.EmpresaRepository;
 import com.medic.web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;

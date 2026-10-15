@@ -5,7 +5,7 @@ import com.medic.web.dto.empresa.EmpresaResponseDTO;
 import com.medic.web.exception.type.NotFoundException;
 import com.medic.web.mapper.empresa.EmpresaMapper;
 import com.medic.web.model.empresa.EmpresaModel;
-import com.medic.web.repository.cd.MunicipioRepository;
+import com.medic.web.repository.municipio.MunicipioRepository;
 import com.medic.web.repository.empresa.EmpresaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

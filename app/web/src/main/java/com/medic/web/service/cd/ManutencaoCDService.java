@@ -6,7 +6,7 @@ import com.medic.web.mapper.cd.CentroDistribuicaoMapper;
 import com.medic.web.model.cd.CentroDistribuicaoModel;
 import com.medic.web.exception.type.NotFoundException;
 import com.medic.web.repository.cd.CentroDistribuicaoRepository;
-import com.medic.web.repository.cd.MunicipioRepository;
+import com.medic.web.repository.municipio.MunicipioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;

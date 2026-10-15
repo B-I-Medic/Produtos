@@ -1,7 +1,7 @@
 package com.medic.web.service.estoque;
 
 import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoCatalogoUpdateDTO;
-import com.medic.web.repository.cd.MunicipioRepository;
+import com.medic.web.repository.municipio.MunicipioRepository;
 import com.medic.web.repository.config.estoque.segregado.EstoqueSegregadoRepository;
 import com.medic.web.service.config.estoque.ManutencaoEstoqueSegregadoService;
 import com.medic.web.support.TestDataFactory;

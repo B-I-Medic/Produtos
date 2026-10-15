@@ -1,4 +1,4 @@
-package com.medic.web.repository.cd;
+package com.medic.web.repository.municipio;
 
 import com.medic.web.model.municipio.MunicipioModel;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;

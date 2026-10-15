@@ -12,4 +12,8 @@ public record CentroDistribuicaoResponseDTO(
         String descricao,
         MunicipioResponseDTO municipio
 ) {
+
+    public CentroDistribuicaoResponseDTO(UUID id, String descricao) {
+        this(id, descricao, null);
+    }
 }
