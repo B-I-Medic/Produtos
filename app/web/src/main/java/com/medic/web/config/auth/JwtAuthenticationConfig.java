@@ -1,0 +1,78 @@
+package com.medic.web.config.auth;
+
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.medic.web.model.usuario.UsuarioModel;
+import com.medic.web.exception.type.auth.InvalidTokenException;
+import com.medic.web.exception.handler.JwtEntryPoint;
+import com.medic.web.repository.usuario.UsuarioRepository;
+import com.medic.web.service.auth.JwtService;
+import org.jspecify.annotations.NonNull;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+
+@Configuration
+public class JwtAuthenticationConfig implements WebFilter {
+
+    private final JwtService jwtService;
+    private final UsuarioRepository repository;
+    private final JwtEntryPoint entryPoint;
+
+    public JwtAuthenticationConfig(JwtService jwtService, UsuarioRepository repository, JwtEntryPoint entryPoint) {
+        this.jwtService = jwtService;
+        this.repository = repository;
+        this.entryPoint = entryPoint;
+    }
+
+    @Override
+    public @NonNull Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
+
+        String path = exchange.getRequest().getPath().value();
+        if (path.equals("/auth/refresh") || path.equals("/auth/logout")) {
+            return chain.filter(exchange);
+        }
+
+        String header = exchange.getRequest().getHeaders().getFirst("Authorization");
+
+        if (header == null || !header.startsWith("Bearer ")) {
+            return chain.filter(exchange);
+        }
+
+        String token = header.substring(7);
+
+        try {
+            String subject = jwtService.getSubject(token);
+
+            List<SimpleGrantedAuthority> authorities = jwtService.getRoles(token)
+                    .stream()
+                    .map(role -> "ROLE_" + role)
+                    .map(SimpleGrantedAuthority::new)
+                    .toList();
+
+            return repository.findByEmail(subject)
+                    .switchIfEmpty(Mono.error(new BadCredentialsException("Email invalido")))
+                    .filter(UsuarioModel::getAtivo)
+                    .switchIfEmpty(Mono.error(new DisabledException("Usuario inativo")))
+                    .map(u -> new UsernamePasswordAuthenticationToken(u, null, authorities))
+                    .flatMap(auth ->
+                            chain.filter(exchange)
+                                    .contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth))
+                    );
+        } catch (TokenExpiredException ex) {
+            return entryPoint.commence(exchange, new BadCredentialsException("Token expirado"));
+
+        } catch (JWTVerificationException ex) {
+            return entryPoint.commence(exchange, new InvalidTokenException());
+        }
+    }
+}

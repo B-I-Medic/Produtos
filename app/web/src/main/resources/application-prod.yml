@@ -1,3 +1,6 @@
+application:
+  link: "https://produtos.surgilog.com.br/"
+
 spring:
   application:
     name: produto-web-prod
