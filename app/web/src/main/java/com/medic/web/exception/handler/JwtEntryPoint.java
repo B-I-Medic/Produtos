@@ -19,7 +19,7 @@ public class JwtEntryPoint implements ServerAuthenticationEntryPoint {
     }
 
     @Override
-    public @NonNull Mono<Void> commence(ServerWebExchange exchange, AuthenticationException ex) {
+    public @NonNull Mono<Void> commence(@NonNull ServerWebExchange exchange, AuthenticationException ex) {
         return writer.write(
                 org.springframework.http.HttpStatus.UNAUTHORIZED,
                 "Autenticacao",

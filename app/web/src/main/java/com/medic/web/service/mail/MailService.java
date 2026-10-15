@@ -10,12 +10,16 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-@RequiredArgsConstructor
 @Service
 public class MailService {
 
     private final JavaMailSender mailSender;
     private final MailProperties mailProperties;
+
+    public MailService(JavaMailSender mailSender, MailProperties mailProperties) {
+        this.mailSender = mailSender;
+        this.mailProperties = mailProperties;
+    }
 
     public Mono<Void> sendSimpleEmail(String to, String subject, String text) {
 
