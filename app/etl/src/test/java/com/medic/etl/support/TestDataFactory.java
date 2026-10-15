@@ -1,0 +1,124 @@
+package com.medic.etl.support;
+
+import com.medic.etl.dto.catalogo.EstoqueSegregadoCatalogoDTO;
+import com.medic.etl.model.demanda.Demanda;
+import com.medic.etl.model.empresa.EmpresaModel;
+import com.medic.etl.model.estoque.interno.EstoqueInterno;
+import com.medic.etl.model.estoque.segregado.EstoqueSegregado;
+import com.medic.etl.model.estoque.valePermanente.ValePermanente;
+import com.medic.etl.model.periodo.PeriodoModel;
+import com.medic.etl.model.periodo.PeriodoTipo;
+import com.medic.etl.model.processamento.Processamento;
+import com.medic.etl.model.produto.Produto;
+
+import java.time.Instant;
+import java.util.UUID;
+
+public final class TestDataFactory {
+
+    private TestDataFactory() {
+    }
+
+    public static Processamento processamento() {
+        Processamento processamento = new Processamento();
+        processamento.setId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        return processamento;
+    }
+
+    public static EmpresaModel empresa(String codigoEmpresa) {
+        EmpresaModel empresa = new EmpresaModel();
+        empresa.setId(UUID.randomUUID());
+        empresa.setViman("UFX");
+        empresa.setCodigoEmpresa(codigoEmpresa);
+        empresa.setPossuiEstoqueInterno(true);
+        return empresa;
+    }
+
+    public static PeriodoModel periodo(String descricao, String inicio, String fim) {
+        PeriodoModel periodo = new PeriodoModel();
+        periodo.setDescricao(descricao);
+        periodo.setDataInicialViman(inicio);
+        periodo.setDataFinalViman(fim);
+        return periodo;
+    }
+
+    public static PeriodoModel periodoRelativo(String descricao, PeriodoTipo tipo, int quantidade) {
+        PeriodoModel periodo = new PeriodoModel();
+        periodo.setDescricao(descricao);
+        periodo.setTipoPeriodo(tipo);
+        periodo.setQuantidade(quantidade);
+        return periodo;
+    }
+
+    public static Produto produto(String viman, String codEmpresa, String codProduto) {
+        Produto produto = new Produto();
+        produto.setViman(viman);
+        produto.setCodEmpresa(codEmpresa);
+        produto.setCodProduto(codProduto);
+        produto.setDescricao("Produto");
+        produto.setMarca("Marca");
+        produto.setTipo("Tipo");
+        produto.setAnvisa(123L);
+        produto.setSituacao("ATIVO");
+        produto.setCriadoPor("ETL");
+        produto.setCriadoEm(Instant.parse("2026-08-10T10:00:00Z"));
+        return produto;
+    }
+
+    public static Demanda demanda() {
+        Demanda demanda = new Demanda();
+        demanda.setProcessamento(processamento().getId());
+        demanda.setCodEmpresa("01");
+        demanda.setIbge("3550308");
+        demanda.setCodProduto("P1");
+        demanda.setQntOrcado(1);
+        demanda.setQntAprovado(2);
+        demanda.setQntAgendado(3);
+        demanda.setQntUtilizado(4);
+        demanda.setQntTotal(10);
+        return demanda;
+    }
+
+    public static EstoqueInterno estoqueInterno(Integer quantidade) {
+        EstoqueInterno estoque = new EstoqueInterno();
+        estoque.setProcessamento(processamento().getId());
+        estoque.setViman("UFX");
+        estoque.setCodEmpresa("01");
+        estoque.setCodIBGE("3550308");
+        estoque.setCodProduto("P1");
+        estoque.setQntDisponivel(quantidade);
+        return estoque;
+    }
+
+    public static EstoqueSegregado estoqueSegregado(Integer quantidade) {
+        EstoqueSegregado estoque = new EstoqueSegregado();
+        estoque.setProcessamento(processamento().getId());
+        estoque.setViman("UFX");
+        estoque.setCodEmpresa("01");
+        estoque.setCodIBGE("3550308");
+        estoque.setCodProduto("P1");
+        estoque.setQntDisponivel(quantidade);
+        return estoque;
+    }
+
+    public static ValePermanente valePermanente(Integer quantidade) {
+        ValePermanente estoque = new ValePermanente();
+        estoque.setProcessamento(processamento().getId());
+        estoque.setViman("S00");
+        estoque.setCodEmpresa("02");
+        estoque.setCodIBGE("3304557");
+        estoque.setCodProduto("P1");
+        estoque.setQntDisponivel(quantidade);
+        return estoque;
+    }
+
+    public static EstoqueSegregadoCatalogoDTO estoqueSegregadoCatalogo(String viman, String codEmpresa, String codIBGE, String codSegregado) {
+        EstoqueSegregadoCatalogoDTO catalogo = new EstoqueSegregadoCatalogoDTO();
+        catalogo.setViman(viman);
+        catalogo.setCodEmpresa(codEmpresa);
+        catalogo.setCodIBGE(codIBGE);
+        catalogo.setCodSegregado(codSegregado);
+        return catalogo;
+    }
+
+}

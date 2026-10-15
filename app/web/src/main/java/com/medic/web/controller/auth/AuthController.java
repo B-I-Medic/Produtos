@@ -1,0 +1,70 @@
+package com.medic.web.controller.auth;
+
+import com.medic.web.dto.auth.LoginRequestDTO;
+import com.medic.web.dto.auth.LoginResponseDTO;
+import com.medic.web.dto.auth.PasswordRequestDTO;
+import com.medic.web.dto.auth.RefreshTokenRequestDTO;
+import com.medic.web.dto.auth.ResetPasswordRequestDTO;
+import com.medic.web.model.usuario.UsuarioModel;
+import com.medic.web.service.auth.AuthService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
+
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
+
+    private final AuthService service;
+
+    public AuthController(AuthService service) {
+        this.service = service;
+    }
+
+    @PostMapping("/login")
+    public Mono<LoginResponseDTO> login(@RequestBody @Valid Mono<LoginRequestDTO> dto) {
+
+        return dto
+                .flatMap(service::login);
+    }
+
+    @PostMapping("/refresh")
+    public Mono<LoginResponseDTO> refresh(@RequestBody @Valid Mono<RefreshTokenRequestDTO> dto) {
+
+        return dto
+                .map(RefreshTokenRequestDTO::refreshToken)
+                .flatMap(service::refresh);
+    }
+
+    @PostMapping("/logout")
+    public Mono<Void> logout(@RequestBody @Valid Mono<RefreshTokenRequestDTO> dto) {
+
+        return dto
+                .map(RefreshTokenRequestDTO::refreshToken)
+                .flatMap(service::logout);
+    }
+
+    @PostMapping("/forgot-password")
+    public Mono<Void> forgotPassword(@RequestParam @Email(message = "O email está inválido") @NotBlank(message = "O email é obrigatório") String mail) {
+
+        return service.forgotPassword(mail);
+    }
+
+    @PostMapping("/reset-password")
+    public Mono<Void> resetPassword(@RequestBody @Valid Mono<ResetPasswordRequestDTO> dto) {
+
+        return dto
+                .flatMap(service::resetPassword);
+    }
+
+    @PostMapping("/first-acess")
+    public Mono<Void> firstAccess(@RequestBody @Valid Mono<PasswordRequestDTO> dto,
+                                 @AuthenticationPrincipal UsuarioModel user) {
+
+        return dto
+                .flatMap(pss -> service.firstAccess(pss, user.getId()));
+    }
+}

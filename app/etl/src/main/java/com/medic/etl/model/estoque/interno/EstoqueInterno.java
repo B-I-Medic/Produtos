@@ -1,0 +1,16 @@
+package com.medic.etl.model.estoque.interno;
+
+import lombok.Data;
+
+import java.util.UUID;
+
+@Data
+public class EstoqueInterno {
+
+    private UUID processamento;
+    private String viman;
+    private String codEmpresa;
+    private String codIBGE;
+    private String codProduto;
+    private Integer qntDisponivel;
+}
