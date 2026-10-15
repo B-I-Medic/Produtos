@@ -63,11 +63,7 @@ public class ManutencaoCDService {
     @Transactional(readOnly = true)
     public Flux<CentroDistribuicaoResponseDTO> listCDs() {
 
-        return repository.findAll()
-                .flatMap(cd -> Mono.justOrEmpty(cd.getMunicipioId())
-                        .flatMap(municipioRepository::findById)
-                        .map(municipio -> mapper.toDTO(cd, municipio))
-                        .switchIfEmpty(Mono.fromSupplier(() -> mapper.toDTO(cd))));
+        return repository.findAllWithMunicipio();
     }
 
     private <T> Mono<T> municipioNotFound(UUID municipioId) {
