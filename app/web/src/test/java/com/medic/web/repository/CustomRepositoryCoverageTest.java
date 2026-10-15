@@ -97,6 +97,25 @@ class CustomRepositoryCoverageTest {
     }
 
     @Test
+    void shouldFilterSegregatedStockByCompanyId() {
+
+        UUID idEmpresa = UUID.randomUUID();
+        prepareQuery();
+        stubRowValues();
+        stubMappedRows();
+
+        StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient).getAllByIdEmpresa(idEmpresa))
+                .expectNextMatches(response -> response.codSegregado() == 1
+                        && response.empresa().viman() == Viman.UFX)
+                .verifyComplete();
+
+        var sql = org.mockito.ArgumentCaptor.forClass(String.class);
+        org.mockito.Mockito.verify(databaseClient).sql(sql.capture());
+        org.mockito.Mockito.verify(executeSpec).bind("idEmpresa", idEmpresa);
+        assertTrue(sql.getValue().contains("esp.id_empresa = :idEmpresa"));
+    }
+
+    @Test
     void shouldOmitInverseRelationsFromNestedResponseJson() {
 
         var response = TestDataFactory.estoqueSegregadoResponseDTO();
@@ -142,6 +161,7 @@ class CustomRepositoryCoverageTest {
         lenient().when(executeSpec.bind(anyString(), any())).thenReturn(executeSpec);
         lenient().when(executeSpec.bindNull(anyString(), eq(String.class))).thenReturn(executeSpec);
         lenient().when(executeSpec.bindNull(anyString(), eq(Integer.class))).thenReturn(executeSpec);
+        lenient().when(executeSpec.bindNull(anyString(), eq(UUID.class))).thenReturn(executeSpec);
     }
 
     private void stubRowValues() {

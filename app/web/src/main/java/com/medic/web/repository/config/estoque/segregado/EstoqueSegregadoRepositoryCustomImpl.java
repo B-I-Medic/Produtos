@@ -36,7 +36,8 @@ public class EstoqueSegregadoRepositoryCustomImpl implements EstoqueSegregadoRep
             where (e.descricao ilike :empresa or :empresa is null)
                 and (m.descricao ilike :municipio or :municipio is null)
                 and (m.estado ilike :estado or :estado is null)
-                and (esp.cod_segregado = :codSegregado or :codSegregado is null);
+                and (esp.cod_segregado = :codSegregado or :codSegregado is null)
+                and (esp.id_empresa = :idEmpresa or :idEmpresa is null);
             """;
 
     private final DatabaseClient databaseClient;
@@ -48,12 +49,24 @@ public class EstoqueSegregadoRepositoryCustomImpl implements EstoqueSegregadoRep
     @Override
     public Flux<EstoqueSegregadoResponseDTO> getAllAndFilter(EstoqueSegregadoFilterDTO filter) {
 
+        return query(filter, null);
+    }
+
+    @Override
+    public Flux<EstoqueSegregadoResponseDTO> getAllByIdEmpresa(UUID idEmpresa) {
+
+        return query(null, idEmpresa);
+    }
+
+    private Flux<EstoqueSegregadoResponseDTO> query(EstoqueSegregadoFilterDTO filter, UUID idEmpresa) {
+
         var query = databaseClient.sql(FIND_ALL);
 
         query = bindNullableText(query, "empresa", filter == null ? null : filter.empresa());
         query = bindNullableText(query, "municipio", filter == null ? null : filter.municipio());
         query = bindNullableText(query, "estado", filter == null ? null : filter.estado());
         query = bindNullableInteger(query, "codSegregado", filter == null ? null : filter.cod_segregado());
+        query = bindNullableUuid(query, "idEmpresa", idEmpresa);
 
         return query.map((row, metadata) -> {
 
@@ -113,5 +126,16 @@ public class EstoqueSegregadoRepositoryCustomImpl implements EstoqueSegregadoRep
         }
 
         return query.bindNull(name, Integer.class);
+    }
+
+    private DatabaseClient.GenericExecuteSpec bindNullableUuid(DatabaseClient.GenericExecuteSpec query,
+                                                               String name,
+                                                               UUID value) {
+
+        if (value != null) {
+            return query.bind(name, value);
+        }
+
+        return query.bindNull(name, UUID.class);
     }
 }

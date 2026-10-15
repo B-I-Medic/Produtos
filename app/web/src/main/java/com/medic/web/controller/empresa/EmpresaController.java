@@ -1,8 +1,10 @@
 package com.medic.web.controller.empresa;
 
+import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
 import com.medic.web.dto.empresa.EmpresaRequestDTO;
 import com.medic.web.dto.empresa.EmpresaResponseDTO;
 import com.medic.web.model.usuario.UsuarioModel;
+import com.medic.web.service.config.estoque.ManutencaoEstoqueSegregadoService;
 import com.medic.web.service.empresa.ManutencaoEmpresaService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -19,9 +21,12 @@ import java.util.UUID;
 public class EmpresaController {
 
     private final ManutencaoEmpresaService service;
+    private final ManutencaoEstoqueSegregadoService estoqueSegregadoService;
 
-    public EmpresaController(ManutencaoEmpresaService service) {
+    public EmpresaController(ManutencaoEmpresaService service,
+                             ManutencaoEstoqueSegregadoService estoqueSegregadoService) {
         this.service = service;
+        this.estoqueSegregadoService = estoqueSegregadoService;
     }
 
     @PostMapping("/save")
@@ -50,6 +55,13 @@ public class EmpresaController {
     public Flux<EmpresaResponseDTO> listEmpresas() {
 
         return service.listEmpresas();
+    }
+
+    @GetMapping(value = "/{empresaId}/estoque-segregado/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<EstoqueSegregadoResponseDTO> consultarEstoqueSegregado(
+            @PathVariable @NotNull(message = "O ID da empresa e obrigatorio") UUID empresaId) {
+
+        return estoqueSegregadoService.listEstoqueSegregadoByEmpresa(empresaId);
     }
 
 }

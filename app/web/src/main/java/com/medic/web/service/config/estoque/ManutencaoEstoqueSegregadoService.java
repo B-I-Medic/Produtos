@@ -54,6 +54,12 @@ public class ManutencaoEstoqueSegregadoService {
         return repository.getAllAndFilter(filter);
     }
 
+    @Transactional(readOnly = true)
+    public Flux<EstoqueSegregadoResponseDTO> listEstoqueSegregadoByEmpresa(UUID idEmpresa) {
+
+        return repository.getAllByIdEmpresa(idEmpresa);
+    }
+
     private Mono<EstoqueSegregadoCatalogoModel> atualizarRegistro(EstoqueSegregadoCatalogoModel registro,
                                                                   EstoqueSegregadoCatalogoUpdateDTO dto,
                                                                   UUID userId) {
