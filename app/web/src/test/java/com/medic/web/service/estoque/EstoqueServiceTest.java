@@ -4,8 +4,8 @@ import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoCatalogoUpdate
 import com.medic.web.repository.municipio.MunicipioRepository;
 import com.medic.web.repository.config.estoque.segregado.EstoqueSegregadoRepository;
 import com.medic.web.service.config.estoque.ManutencaoEstoqueSegregadoService;
-import com.medic.web.support.TestDataFactory;
 import com.medic.web.validator.estoque.ValidadorEmpresaEstoqueService;
+import com.medic.web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +15,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -88,29 +87,6 @@ class EstoqueServiceTest {
                 .verify();
 
         verify(estoqueSegregadoRepository, never()).save(any());
-    }
-
-    @Test
-    void shouldListEstoqueSegregado() {
-
-        var response = TestDataFactory.estoqueSegregadoResponseDTO();
-        when(estoqueSegregadoRepository.getAllAndFilter(any())).thenReturn(Flux.fromIterable(List.of(response)));
-
-        StepVerifier.create(estoqueSegregadoService.listEstoqueSegregado(null)).expectNext(response).verifyComplete();
-    }
-
-    @Test
-    void shouldListEstoqueSegregadoByEmpresaId() {
-
-        UUID empresaId = UUID.randomUUID();
-        var response = TestDataFactory.estoqueSegregadoResponseDTO();
-        when(estoqueSegregadoRepository.getAllByIdEmpresa(empresaId)).thenReturn(Flux.just(response));
-
-        StepVerifier.create(estoqueSegregadoService.listEstoqueSegregadoByEmpresa(empresaId))
-                .expectNext(response)
-                .verifyComplete();
-
-        verify(estoqueSegregadoRepository).getAllByIdEmpresa(empresaId);
     }
 
     @Test

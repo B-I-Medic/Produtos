@@ -9,7 +9,6 @@ import com.medic.web.repository.municipio.MunicipioRepository;
 import com.medic.web.repository.empresa.EmpresaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -57,12 +56,6 @@ public class ManutencaoEmpresaService {
     public Mono<Void> delete(UUID empresaId) {
 
         return repository.deleteById(empresaId);
-    }
-
-    @Transactional(readOnly = true)
-    public Flux<EmpresaResponseDTO> listEmpresas() {
-
-        return repository.findAllWithMunicipio();
     }
 
     private <T> Mono<T> municipioNotFound(UUID municipioId) {

@@ -13,7 +13,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -89,19 +88,6 @@ class CdServiceTest {
                 .verify();
 
         verify(centroDistribuicaoRepository, never()).save(ArgumentMatchers.any());
-    }
-
-    @Test
-    void shouldListCentroDistribuicao() {
-
-        var response = TestDataFactory.centroDistribuicaoResponseDTO();
-        when(centroDistribuicaoRepository.findAllWithMunicipio()).thenReturn(Flux.just(response));
-
-        StepVerifier.create(manutencaoCDService.listCDs())
-                .expectNext(response)
-                .verifyComplete();
-
-        verify(municipioRepository, never()).findById(ArgumentMatchers.any(UUID.class));
     }
 
     @Test

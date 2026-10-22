@@ -4,7 +4,6 @@ import com.medic.web.dto.forecast.ForecastFilterDTO;
 import com.medic.web.dto.forecast.ForecastAgrupadoResponseDTO;
 import com.medic.web.dto.forecast.AgrupamentosPadrao;
 import com.medic.web.service.forecast.ConsultaForecastService;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,13 +20,13 @@ public class ForecastController {
         this.service = service;
     }
 
-    @GetMapping(value = {"/get"}, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping("/get")
     public Flux<ForecastAgrupadoResponseDTO> listForecastAgrupado(@ModelAttribute ForecastFilterDTO filter) {
 
         return service.listForecastAgrupado(filter);
     }
 
-    @GetMapping(value = {"/agrupamentos-disponiveis/get"}, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping("/agrupamentos-disponiveis/get")
     public Flux<AgrupamentosPadrao> listAgrupamentosDisponiveis() {
 
         return Flux.fromArray(AgrupamentosPadrao.values());

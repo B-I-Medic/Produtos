@@ -10,13 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,16 +32,6 @@ class EstoqueControllerTest {
         segregadoClient = WebTestClient.bindToController(new EstoqueSegregadoCatalogoController(segregadoService))
                 .argumentResolvers(configurer -> configurer.addCustomResolver(new FixedAuthenticationPrincipalResolver(user)))
                 .build();
-    }
-
-    @Test
-    void shouldListEstoqueSegregado() {
-
-        var response = TestDataFactory.estoqueSegregadoResponseDTO();
-        when(segregadoService.listEstoqueSegregado(any())).thenReturn(Flux.fromIterable(List.of(response)));
-
-        segregadoClient.get().uri("/estoque/segregado/get").exchange().expectStatus().isOk();
-        verify(segregadoService).listEstoqueSegregado(any());
     }
 
     @Test

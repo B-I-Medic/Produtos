@@ -1,16 +1,16 @@
 package com.medic.web.controller.municipio;
 
-import com.medic.web.dto.municipio.MunicipioFilterDTO;
+import com.medic.web.dto.municipio.MunicipioPaginaDTO;
 import com.medic.web.dto.municipio.MunicipioResponseDTO;
+import com.medic.web.dto.pagina.PaginaResponseDTO;
+import jakarta.validation.Valid;
 import com.medic.web.service.municipio.ConsultaMunicipioService;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @RestController
+@Validated
 @RequestMapping("/municipio")
 public class MunicipioController {
 
@@ -20,9 +20,9 @@ public class MunicipioController {
         this.service = service;
     }
 
-    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<MunicipioResponseDTO> listMunicipios(@ModelAttribute MunicipioFilterDTO filter) {
+    @GetMapping("/get/paginado")
+    public Mono<PaginaResponseDTO<MunicipioResponseDTO>> getPage(@ModelAttribute @Valid MunicipioPaginaDTO filtro) {
 
-        return service.listMunicipios(filter);
+        return service.getPage(filtro);
     }
 }

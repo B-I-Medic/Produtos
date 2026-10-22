@@ -1,17 +1,19 @@
 package com.medic.web.controller.empresa;
 
 import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
+import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoPaginaDTO;
+import com.medic.web.dto.empresa.EmpresaPaginaDTO;
 import com.medic.web.dto.empresa.EmpresaRequestDTO;
 import com.medic.web.dto.empresa.EmpresaResponseDTO;
+import com.medic.web.dto.pagina.PaginaResponseDTO;
 import com.medic.web.model.usuario.UsuarioModel;
-import com.medic.web.service.config.estoque.ManutencaoEstoqueSegregadoService;
+import com.medic.web.service.config.estoque.ConsultaEstoqueSegregadoService;
+import com.medic.web.service.empresa.ConsultaEmpresaService;
 import com.medic.web.service.empresa.ManutencaoEmpresaService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -21,12 +23,15 @@ import java.util.UUID;
 public class EmpresaController {
 
     private final ManutencaoEmpresaService service;
-    private final ManutencaoEstoqueSegregadoService estoqueSegregadoService;
+    private final ConsultaEmpresaService consultaService;
+    private final ConsultaEstoqueSegregadoService consultaEstoqueSegregadoService;
 
     public EmpresaController(ManutencaoEmpresaService service,
-                             ManutencaoEstoqueSegregadoService estoqueSegregadoService) {
+                             ConsultaEmpresaService consultaService,
+                             ConsultaEstoqueSegregadoService consultaEstoqueSegregadoService) {
         this.service = service;
-        this.estoqueSegregadoService = estoqueSegregadoService;
+        this.consultaService = consultaService;
+        this.consultaEstoqueSegregadoService = consultaEstoqueSegregadoService;
     }
 
     @PostMapping("/save")
@@ -51,17 +56,17 @@ public class EmpresaController {
         return service.delete(empresaId);
     }
 
-    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<EmpresaResponseDTO> listEmpresas() {
+    @GetMapping("/get/paginado")
+    public Mono<PaginaResponseDTO<EmpresaResponseDTO>> getPage(@ModelAttribute @Valid EmpresaPaginaDTO dto) {
 
-        return service.listEmpresas();
+        return consultaService.getPage(dto);
     }
 
-    @GetMapping(value = "/{empresaId}/estoque-segregado/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<EstoqueSegregadoResponseDTO> consultarEstoqueSegregado(
-            @PathVariable @NotNull(message = "O ID da empresa e obrigatorio") UUID empresaId) {
+    @GetMapping("/{empresaId}/estoque-segregado/get/paginado")
+    public Mono<PaginaResponseDTO<EstoqueSegregadoResponseDTO>> consultarEstoqueSegregado(@PathVariable @NotNull(message = "O ID da empresa e obrigatorio") UUID empresaId,
+                                                                                          @ModelAttribute @Valid EstoqueSegregadoPaginaDTO filtro) {
 
-        return estoqueSegregadoService.listEstoqueSegregadoByEmpresa(empresaId);
+        return consultaEstoqueSegregadoService.getPage(empresaId, filtro);
     }
 
 }

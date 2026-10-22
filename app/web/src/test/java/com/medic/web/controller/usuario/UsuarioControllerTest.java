@@ -17,9 +17,11 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class UsuarioControllerTest {
@@ -45,11 +47,27 @@ class UsuarioControllerTest {
         when(consultaService.getPage(any(UsuarioPaginaDTO.class))).thenReturn(Mono.just(response));
 
         client.get()
-                .uri("/usuario/get/paginado?numeroPagina=1&tamanhoPagina=10")
+                .uri("/usuario/get/paginado?numeroPagina=1&tamanhoPagina=10&ordenarPor=nome&direcaoOrdenacao=DESC")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.quantidadeRegistros").isEqualTo(1);
+
+        var filtro = org.mockito.ArgumentCaptor.forClass(UsuarioPaginaDTO.class);
+        verify(consultaService).getPage(filtro.capture());
+        assertEquals("nome", filtro.getValue().getOrdenarPor());
+        assertEquals("DESC", filtro.getValue().getDirecaoOrdenacao());
+    }
+
+    @Test
+    void shouldRejectUnsupportedSortField() {
+
+        client.get()
+                .uri("/usuario/get/paginado?numeroPagina=1&tamanhoPagina=10&ordenarPor=id")
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        verifyNoInteractions(consultaService);
     }
 
     @Test

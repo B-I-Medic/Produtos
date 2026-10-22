@@ -5,6 +5,7 @@ import com.medic.web.dto.forecast.ForecastAgrupadoResponseDTO;
 import com.medic.web.service.forecast.ConsultaForecastService;
 import com.medic.web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 
@@ -40,6 +41,7 @@ class ForecastControllerTest {
                         .build())
                 .exchange()
                 .expectStatus().isOk()
+                .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
                 .expectBodyList(ForecastAgrupadoResponseDTO.class)
                 .hasSize(1)
                 .contains(response);
@@ -53,6 +55,7 @@ class ForecastControllerTest {
                 .get().uri("/forecast/agrupamentos-disponiveis/get")
                 .exchange()
                 .expectStatus().isOk()
+                .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
                 .expectBodyList(AgrupamentosPadrao.class)
                 .hasSize(AgrupamentosPadrao.values().length);
     }

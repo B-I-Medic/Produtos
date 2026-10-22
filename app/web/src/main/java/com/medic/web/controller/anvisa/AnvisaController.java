@@ -72,13 +72,13 @@ public class AnvisaController {
                 atualizacaoService.atualizarConfiguracao(value, user.getId()));
     }
 
-    @GetMapping(value = "/{codAnvisa}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping("/{codAnvisa}")
     public Flux<AnvisaResponseDTO> consultar(@PathVariable String codAnvisa) {
 
         return service.consultar(codAnvisa);
     }
 
-    @GetMapping(value = "/comparacao/{codAnvisa}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping("/comparacao/{codAnvisa}")
     public Flux<AnvisaEmpresaComparacaoDTO> comparar(@PathVariable String codAnvisa) {
 
         return service.comparar(codAnvisa);

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 class AnvisaControllerTest {
 
     @Test
-    void shouldExposeOfficialAnvisaDataAsSse() {
+    void shouldExposeOfficialAnvisaDataAsJson() {
 
         ConsultaAnvisaService service = mock(ConsultaAnvisaService.class);
         AnvisaAtualizacaoService atualizacaoService = mock(AnvisaAtualizacaoService.class);
@@ -36,13 +36,14 @@ class AnvisaControllerTest {
                 .uri("/anvisa/81420890023")
                 .exchange()
                 .expectStatus().isOk()
+                .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
                 .expectBodyList(AnvisaResponseDTO.class)
                 .hasSize(1)
                 .contains(response);
     }
 
     @Test
-    void shouldExposeCompaniesWithProductsAsSse() {
+    void shouldExposeCompaniesWithProductsAsJson() {
 
         ConsultaAnvisaService service = mock(ConsultaAnvisaService.class);
         AnvisaAtualizacaoService atualizacaoService = mock(AnvisaAtualizacaoService.class);
@@ -59,7 +60,7 @@ class AnvisaControllerTest {
                 .uri("/anvisa/comparacao/81420890023")
                 .exchange()
                 .expectStatus().isOk()
-                .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
+                .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
                 .expectBodyList(AnvisaEmpresaComparacaoDTO.class)
                 .hasSize(1)
                 .contains(response);

@@ -1,8 +1,7 @@
 package com.medic.web.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoFilterDTO;
-import com.medic.web.dto.municipio.MunicipioFilterDTO;
+import com.medic.web.dto.municipio.MunicipioPaginaDTO;
 import com.medic.web.model.empresa.Viman;
 import com.medic.web.repository.cd.CentroDistribuicaoRepositoryCustomImpl;
 import com.medic.web.repository.municipio.MunicipioRepositoryCustomImpl;
@@ -60,9 +59,11 @@ class CustomRepositoryCoverageTest {
         when(row.get("cd_descricao", String.class)).thenReturn("CD Central");
         stubMappedRows();
 
-        var filter = new MunicipioFilterDTO(" Cidade ", null, " Central ");
+        var filter = new MunicipioPaginaDTO();
+        filter.setDescricao(" Cidade ");
+        filter.setCentroDistribuicao(centroDistribuicaoId);
         StepVerifier.create(new MunicipioRepositoryCustomImpl(databaseClient)
-                        .findByFiltro(filter))
+                        .findPageByFilter(filter, 10, 0))
                 .expectNextMatches(response -> response.id().equals(municipioId)
                         && response.descricao().equals("Cidade")
                         && response.codigoIbge().equals("1234567")
@@ -76,14 +77,14 @@ class CustomRepositoryCoverageTest {
         verify(databaseClient).sql(sql.capture());
         assertTrue(sql.getValue().contains("LEFT JOIN centro_distribuicao cd"));
         verify(executeSpec).bind("descricao", "%Cidade%");
-        verify(executeSpec).bind("centroDistribuicao", "%Central%");
-        verify(executeSpec).bindNull("estado", String.class);
+        verify(executeSpec).bind("centroDistribuicao", centroDistribuicaoId);
+        assertTrue(sql.getValue().contains("cd.id = :centroDistribuicao"));
 
         prepareQuery();
         stubRowValues();
         when(row.get("cd_id", UUID.class)).thenReturn(null);
         stubMappedRows();
-        StepVerifier.create(new MunicipioRepositoryCustomImpl(databaseClient).findByFiltro(null))
+        StepVerifier.create(new MunicipioRepositoryCustomImpl(databaseClient).findPageByFilter(null, 10, 0))
                 .expectNextMatches(response -> response.centroDistribuicao() == null)
                 .verifyComplete();
     }
@@ -103,7 +104,7 @@ class CustomRepositoryCoverageTest {
         when(row.get("municipio_estado", String.class)).thenReturn("SP");
         stubMappedRows();
 
-        StepVerifier.create(new CentroDistribuicaoRepositoryCustomImpl(databaseClient).findAllWithMunicipio())
+        StepVerifier.create(new CentroDistribuicaoRepositoryCustomImpl(databaseClient).findPageByFilter(null, 10, 0))
                 .expectNextMatches(response -> response.id().equals(centroDistribuicaoId)
                         && response.descricao().equals("CD Central")
                         && response.municipio() != null
@@ -131,46 +132,13 @@ class CustomRepositoryCoverageTest {
         when(row.get("municipio_id", UUID.class)).thenReturn(null);
         stubMappedRows();
 
-        StepVerifier.create(new CentroDistribuicaoRepositoryCustomImpl(databaseClient).findAllWithMunicipio())
+        StepVerifier.create(new CentroDistribuicaoRepositoryCustomImpl(databaseClient).findPageByFilter(null, 10, 0))
                 .expectNextMatches(response -> response.id().equals(centroDistribuicaoId)
                         && response.descricao().equals("CD sem município")
                         && response.municipio() == null)
                 .verifyComplete();
 
         verify(databaseClient).sql(anyString());
-    }
-
-    @Test
-    void shouldMapSegregatedStockRowsWithAndWithoutIntegerFilter() {
-
-        prepareQuery();
-        stubRowValues();
-        stubMappedRows();
-        StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient)
-                        .getAllAndFilter(new EstoqueSegregadoFilterDTO(10, "Empresa", "Cidade", "SP")))
-                .expectNextMatches(response -> response.codSegregado() == 1
-                        && response.empresa().viman() == Viman.UFX
-                        && response.empresa().municipio() == null
-                        && response.municipio() != null
-                        && response.municipio().centroDistribuicao() == null)
-                .verifyComplete();
-
-        prepareQuery();
-        stubRowValues();
-        stubMappedRows();
-        StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient)
-                        .getAllAndFilter(null))
-                .expectNextCount(1)
-                .verifyComplete();
-
-        prepareQuery();
-        stubRowValues();
-        lenient().when(row.get("municipio_id", UUID.class)).thenReturn(null);
-        stubMappedRows();
-        StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient)
-                        .getAllAndFilter(null))
-                .expectNextMatches(response -> response.municipio() == null)
-                .verifyComplete();
     }
 
     @Test
@@ -181,7 +149,8 @@ class CustomRepositoryCoverageTest {
         stubRowValues();
         stubMappedRows();
 
-        StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient).getAllByIdEmpresa(idEmpresa))
+        StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient)
+                        .findPageByEmpresaAndFilter(idEmpresa, null, 10, 0))
                 .expectNextMatches(response -> response.codSegregado() == 1
                         && response.empresa().viman() == Viman.UFX)
                 .verifyComplete();
