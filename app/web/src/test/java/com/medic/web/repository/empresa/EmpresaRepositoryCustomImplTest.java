@@ -149,6 +149,9 @@ class EmpresaRepositoryCustomImplTest {
 
         var repository = new EmpresaRepositoryCustomImpl(databaseClient);
         EmpresaPaginaDTO filtro = new EmpresaPaginaDTO();
+        filtro.setOrdenarPor("id");
+        assertThrows(IllegalArgumentException.class, () -> repository.findPageByFilter(filtro, 10, 0));
+
         filtro.setOrdenarPor("municipio; DROP TABLE empresa");
 
         assertThrows(IllegalArgumentException.class, () -> repository.findPageByFilter(filtro, 10, 0));
