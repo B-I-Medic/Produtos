@@ -1,13 +1,11 @@
 package com.medic.web.repository.config.estoque.segregado;
 
-import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoFilterDTO;
 import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
 import com.medic.web.dto.empresa.EmpresaResponseDTO;
 import com.medic.web.dto.municipio.MunicipioResponseDTO;
 import com.medic.web.model.empresa.Viman;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 
 import java.util.UUID;
@@ -33,11 +31,7 @@ public class EstoqueSegregadoRepositoryCustomImpl implements EstoqueSegregadoRep
                 on e.id = esp.id_empresa
             left join municipio m
                 on m.cod_ibge = esp.cod_ibge
-            where (e.descricao ilike :empresa or :empresa is null)
-                and (m.descricao ilike :municipio or :municipio is null)
-                and (m.estado ilike :estado or :estado is null)
-                and (esp.cod_segregado = :codSegregado or :codSegregado is null)
-                and (esp.id_empresa = :idEmpresa or :idEmpresa is null);
+            where esp.id_empresa = :idEmpresa;
             """;
 
     private final DatabaseClient databaseClient;
@@ -47,26 +41,9 @@ public class EstoqueSegregadoRepositoryCustomImpl implements EstoqueSegregadoRep
     }
 
     @Override
-    public Flux<EstoqueSegregadoResponseDTO> getAllAndFilter(EstoqueSegregadoFilterDTO filter) {
-
-        return query(filter, null);
-    }
-
-    @Override
     public Flux<EstoqueSegregadoResponseDTO> getAllByIdEmpresa(UUID idEmpresa) {
 
-        return query(null, idEmpresa);
-    }
-
-    private Flux<EstoqueSegregadoResponseDTO> query(EstoqueSegregadoFilterDTO filter, UUID idEmpresa) {
-
-        var query = databaseClient.sql(FIND_ALL);
-
-        query = bindNullableText(query, "empresa", filter == null ? null : filter.empresa());
-        query = bindNullableText(query, "municipio", filter == null ? null : filter.municipio());
-        query = bindNullableText(query, "estado", filter == null ? null : filter.estado());
-        query = bindNullableInteger(query, "codSegregado", filter == null ? null : filter.cod_segregado());
-        query = bindNullableUuid(query, "idEmpresa", idEmpresa);
+        var query = databaseClient.sql(FIND_ALL).bind("idEmpresa", idEmpresa);
 
         return query.map((row, metadata) -> {
 
@@ -101,41 +78,4 @@ public class EstoqueSegregadoRepositoryCustomImpl implements EstoqueSegregadoRep
                 .all();
     }
 
-    private String like(String value) {
-
-        return "%" + value.trim() + "%";
-    }
-
-    private DatabaseClient.GenericExecuteSpec bindNullableText(DatabaseClient.GenericExecuteSpec query,
-                                                               String name,
-                                                               String value) {
-
-        if (StringUtils.hasText(value)) {
-            return query.bind(name, like(value));
-        }
-
-        return query.bindNull(name, String.class);
-    }
-
-    private DatabaseClient.GenericExecuteSpec bindNullableInteger(DatabaseClient.GenericExecuteSpec query,
-                                                                  String name,
-                                                                  Integer value) {
-
-        if (value != null) {
-            return query.bind(name, value);
-        }
-
-        return query.bindNull(name, Integer.class);
-    }
-
-    private DatabaseClient.GenericExecuteSpec bindNullableUuid(DatabaseClient.GenericExecuteSpec query,
-                                                               String name,
-                                                               UUID value) {
-
-        if (value != null) {
-            return query.bind(name, value);
-        }
-
-        return query.bindNull(name, UUID.class);
-    }
 }

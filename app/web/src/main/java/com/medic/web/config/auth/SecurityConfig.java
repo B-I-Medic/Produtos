@@ -78,11 +78,9 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/municipio/get",
                                         "/forecast/get",
                                         "/forecast/agrupamentos-disponiveis/get",
-                                        "/estoque/segregado/get",
                                         "/periodo/get",
                                         "/taxa/get",
-                                        "/schedule/get",
-                                        "/processamento/get"
+                                        "/schedule/get"
                                 ).access(hasRole("USER", roleHierarchy))
                                 .pathMatchers(HttpMethod.POST, "/anvisa/atualizacoes")
                                 .access(hasRole("USER", roleHierarchy))

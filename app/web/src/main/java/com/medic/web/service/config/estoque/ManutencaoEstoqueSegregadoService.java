@@ -1,7 +1,6 @@
 package com.medic.web.service.config.estoque;
 
 import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoCatalogoUpdateDTO;
-import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoFilterDTO;
 import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
 import com.medic.web.model.config.estoque.EstoqueSegregadoCatalogoModel;
 import com.medic.web.repository.municipio.MunicipioRepository;
@@ -46,12 +45,6 @@ public class ManutencaoEstoqueSegregadoService {
                 })
                 .flatMap(repository::save)
                 .then();
-    }
-
-    @Transactional(readOnly = true)
-    public Flux<EstoqueSegregadoResponseDTO> listEstoqueSegregado(EstoqueSegregadoFilterDTO filter) {
-
-        return repository.getAllAndFilter(filter);
     }
 
     @Transactional(readOnly = true)

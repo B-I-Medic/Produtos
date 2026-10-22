@@ -1,7 +1,6 @@
 package com.medic.web.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoFilterDTO;
 import com.medic.web.dto.municipio.MunicipioFilterDTO;
 import com.medic.web.model.empresa.Viman;
 import com.medic.web.repository.cd.CentroDistribuicaoRepositoryCustomImpl;
@@ -138,39 +137,6 @@ class CustomRepositoryCoverageTest {
                 .verifyComplete();
 
         verify(databaseClient).sql(anyString());
-    }
-
-    @Test
-    void shouldMapSegregatedStockRowsWithAndWithoutIntegerFilter() {
-
-        prepareQuery();
-        stubRowValues();
-        stubMappedRows();
-        StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient)
-                        .getAllAndFilter(new EstoqueSegregadoFilterDTO(10, "Empresa", "Cidade", "SP")))
-                .expectNextMatches(response -> response.codSegregado() == 1
-                        && response.empresa().viman() == Viman.UFX
-                        && response.empresa().municipio() == null
-                        && response.municipio() != null
-                        && response.municipio().centroDistribuicao() == null)
-                .verifyComplete();
-
-        prepareQuery();
-        stubRowValues();
-        stubMappedRows();
-        StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient)
-                        .getAllAndFilter(null))
-                .expectNextCount(1)
-                .verifyComplete();
-
-        prepareQuery();
-        stubRowValues();
-        lenient().when(row.get("municipio_id", UUID.class)).thenReturn(null);
-        stubMappedRows();
-        StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient)
-                        .getAllAndFilter(null))
-                .expectNextMatches(response -> response.municipio() == null)
-                .verifyComplete();
     }
 
     @Test
