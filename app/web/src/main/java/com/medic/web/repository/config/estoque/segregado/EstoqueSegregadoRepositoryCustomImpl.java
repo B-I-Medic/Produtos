@@ -122,15 +122,14 @@ public class EstoqueSegregadoRepositoryCustomImpl implements EstoqueSegregadoRep
     }
 
     private String where(EstoqueSegregadoPaginaDTO filtro) {
-
-        if (filtro == null) return "";
-
         List<String> conditions = new ArrayList<>();
 
         conditions.add("esp.id_empresa = :idEmpresa");
 
-        if (filtro.getDescricao() != null) conditions.add("LOWER(TRIM(esp.descricao)) = LOWER(TRIM(:descricao))");
-        if (filtro.getMunicipio() != null) conditions.add("m.id = :municipio");
+        if (filtro != null && filtro.getDescricao() != null) {
+            conditions.add("LOWER(TRIM(esp.descricao)) = LOWER(TRIM(:descricao))");
+        }
+        if (filtro != null && filtro.getMunicipio() != null) conditions.add("m.id = :municipio");
 
         return " WHERE " + String.join(" AND ", conditions);
     }

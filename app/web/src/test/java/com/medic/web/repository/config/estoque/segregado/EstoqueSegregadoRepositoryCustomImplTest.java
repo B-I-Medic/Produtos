@@ -111,6 +111,11 @@ class EstoqueSegregadoRepositoryCustomImplTest {
     @Test
     void shouldRejectUnsupportedSortField() {
         var filtro = new EstoqueSegregadoPaginaDTO();
+        filtro.setOrdenarPor("id");
+        assertThrows(IllegalArgumentException.class,
+                () -> new EstoqueSegregadoRepositoryCustomImpl(mock(DatabaseClient.class))
+                        .findPageByEmpresaAndFilter(UUID.randomUUID(), filtro, 10, 0));
+
         filtro.setOrdenarPor("municipio DESC; DROP TABLE empresa");
         assertThrows(IllegalArgumentException.class,
                 () -> new EstoqueSegregadoRepositoryCustomImpl(mock(DatabaseClient.class))
