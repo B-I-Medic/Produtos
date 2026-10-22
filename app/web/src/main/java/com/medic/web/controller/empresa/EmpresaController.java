@@ -57,7 +57,7 @@ public class EmpresaController {
         return service.delete(empresaId);
     }
 
-    @GetMapping("/get")
+    @GetMapping("/get/paginado")
     public Mono<PaginaResponseDTO<EmpresaResponseDTO>> getPage(@ModelAttribute @Valid EmpresaPaginaDTO dto) {
 
         return consultaService.getPage(dto);
