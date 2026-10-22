@@ -56,7 +56,7 @@ class EmpresaControllerTest {
                 .thenReturn(Mono.just(page));
 
         empresaClient.get()
-                .uri("/empresa/get?numeroPagina=1&tamanhoPagina=10&descricao=Empresa&codigo=001&viman=UFX"
+                .uri("/empresa/get/paginado?numeroPagina=1&tamanhoPagina=10&descricao=Empresa&codigo=001&viman=UFX"
                         + "&possui_estoque_interno=true&possui_estoque_segregado=false&possui_vp=true"
                         + "&municipio=" + municipioId + "&ordenarPor=municipio&direcaoOrdenacao=DESC")
                 .exchange()
@@ -81,7 +81,7 @@ class EmpresaControllerTest {
     void shouldRejectUnsupportedEmpresaSortField() {
 
         empresaClient.get()
-                .uri("/empresa/get?numeroPagina=1&tamanhoPagina=10&ordenarPor=senha")
+                .uri("/empresa/get/paginado?numeroPagina=1&tamanhoPagina=10&ordenarPor=senha")
                 .exchange()
                 .expectStatus().isBadRequest();
 
