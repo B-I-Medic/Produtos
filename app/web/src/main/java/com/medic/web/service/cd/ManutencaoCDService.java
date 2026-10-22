@@ -9,7 +9,6 @@ import com.medic.web.repository.cd.CentroDistribuicaoRepository;
 import com.medic.web.repository.municipio.MunicipioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -58,12 +57,6 @@ public class ManutencaoCDService {
     public Mono<Void> delete(UUID cdId) {
 
         return repository.deleteById(cdId);
-    }
-
-    @Transactional(readOnly = true)
-    public Flux<CentroDistribuicaoResponseDTO> listCDs() {
-
-        return repository.findAllWithMunicipio();
     }
 
     private <T> Mono<T> municipioNotFound(UUID municipioId) {

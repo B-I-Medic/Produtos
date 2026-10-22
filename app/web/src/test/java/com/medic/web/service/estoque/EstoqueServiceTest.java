@@ -5,6 +5,7 @@ import com.medic.web.repository.municipio.MunicipioRepository;
 import com.medic.web.repository.config.estoque.segregado.EstoqueSegregadoRepository;
 import com.medic.web.service.config.estoque.ManutencaoEstoqueSegregadoService;
 import com.medic.web.validator.estoque.ValidadorEmpresaEstoqueService;
+import com.medic.web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

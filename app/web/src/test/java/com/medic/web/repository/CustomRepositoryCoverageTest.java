@@ -102,7 +102,7 @@ class CustomRepositoryCoverageTest {
         when(row.get("municipio_estado", String.class)).thenReturn("SP");
         stubMappedRows();
 
-        StepVerifier.create(new CentroDistribuicaoRepositoryCustomImpl(databaseClient).findAllWithMunicipio())
+        StepVerifier.create(new CentroDistribuicaoRepositoryCustomImpl(databaseClient).findPageByFilter(null, 10, 0))
                 .expectNextMatches(response -> response.id().equals(centroDistribuicaoId)
                         && response.descricao().equals("CD Central")
                         && response.municipio() != null
@@ -130,7 +130,7 @@ class CustomRepositoryCoverageTest {
         when(row.get("municipio_id", UUID.class)).thenReturn(null);
         stubMappedRows();
 
-        StepVerifier.create(new CentroDistribuicaoRepositoryCustomImpl(databaseClient).findAllWithMunicipio())
+        StepVerifier.create(new CentroDistribuicaoRepositoryCustomImpl(databaseClient).findPageByFilter(null, 10, 0))
                 .expectNextMatches(response -> response.id().equals(centroDistribuicaoId)
                         && response.descricao().equals("CD sem município")
                         && response.municipio() == null)

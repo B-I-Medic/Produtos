@@ -1,26 +1,32 @@
 package com.medic.web.controller.cd;
 
 import com.medic.web.dto.cd.CentroDistribuicaoRequestDTO;
+import com.medic.web.dto.cd.CentroDistribuicaoPaginaDTO;
 import com.medic.web.dto.cd.CentroDistribuicaoResponseDTO;
+import com.medic.web.dto.pagina.PaginaResponseDTO;
 import com.medic.web.model.usuario.UsuarioModel;
+import com.medic.web.service.cd.ConsultaCDService;
 import com.medic.web.service.cd.ManutencaoCDService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
 @RestController
+@Validated
 @RequestMapping("/centro-distribuicao")
 public class CdController {
 
     private final ManutencaoCDService service;
+    private final ConsultaCDService consultaCDService;
 
-    public CdController(ManutencaoCDService service) {
+    public CdController(ManutencaoCDService service, ConsultaCDService consultaCDService) {
         this.service = service;
+        this.consultaCDService = consultaCDService;
     }
 
     @PostMapping("/save")
@@ -46,9 +52,9 @@ public class CdController {
         return service.delete(cdId);
     }
 
-    @GetMapping("/get")
-    public Flux<CentroDistribuicaoResponseDTO> listCds() {
+    @GetMapping("/get/paginado")
+    public Mono<PaginaResponseDTO<CentroDistribuicaoResponseDTO>> getPage(@ModelAttribute @Valid CentroDistribuicaoPaginaDTO filtro) {
 
-        return service.listCDs();
+        return consultaCDService.getPage(filtro);
     }
 }

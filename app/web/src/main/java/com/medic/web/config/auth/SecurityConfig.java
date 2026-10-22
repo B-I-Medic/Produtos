@@ -72,7 +72,7 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/auth/reset-password"
                                 ).permitAll()
                                 .pathMatchers("/auth/first-acess",
-                                        "/centro-distribuicao/get",
+                                        "/centro-distribuicao/get/paginado",
                                         "/empresa/get/paginado",
                                         "/empresa/*/estoque-segregado/get",
                                         "/municipio/get",

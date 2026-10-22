@@ -5,6 +5,7 @@ import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoCatalogoUpdate
 import com.medic.web.model.usuario.UsuarioModel;
 import com.medic.web.service.config.estoque.ManutencaoEstoqueSegregadoService;
 import com.medic.web.support.FixedAuthenticationPrincipalResolver;
+import com.medic.web.support.TestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
