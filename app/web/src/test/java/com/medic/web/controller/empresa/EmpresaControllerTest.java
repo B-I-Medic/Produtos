@@ -55,7 +55,7 @@ class EmpresaControllerTest {
 
         empresaClient.get()
                 .uri("/empresa/get/paginado?numeroPagina=1&tamanhoPagina=10&descricao=Empresa&codigo=001&viman=UFX"
-                        + "&possui_estoque_interno=true&possui_estoque_segregado=false&possui_vp=true"
+                        + "&possuiEstoqueInterno=true&possuiEstoqueSegregado=false&possuiVp=true"
                         + "&municipio=" + municipioId + "&ordenarPor=municipio&direcaoOrdenacao=DESC")
                 .exchange()
                 .expectStatus().isOk()
