@@ -46,7 +46,10 @@ class ScheduleControllerTest {
                 .uri("/schedule/get")
                 .exchange()
                 .expectStatus().isOk()
-                .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM);
+                .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
+                .expectBodyList(ScheduleResponseDTO.class)
+                .hasSize(1)
+                .contains(response);
 
         verify(service).listSchedules();
     }

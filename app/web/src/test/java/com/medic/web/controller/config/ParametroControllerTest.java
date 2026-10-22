@@ -3,7 +3,9 @@ package com.medic.web.controller.config;
 import com.medic.web.controller.config.periodo.PeriodoController;
 import com.medic.web.controller.config.taxa.TaxaController;
 import com.medic.web.dto.config.periodo.PeriodoRequestDTO;
+import com.medic.web.dto.config.periodo.PeriodoResponseDTO;
 import com.medic.web.dto.config.taxa.TaxaRequestDTO;
+import com.medic.web.dto.config.taxa.TaxaResponseDTO;
 import com.medic.web.model.usuario.UsuarioModel;
 import com.medic.web.model.config.periodo.PeriodoTipo;
 import com.medic.web.service.config.periodo.ManutencaoPeriodoService;
@@ -52,7 +54,10 @@ class ParametroControllerTest {
         var response = TestDataFactory.periodoResponseDTO();
         when(periodoService.listPeriods()).thenReturn(Flux.fromIterable(List.of(response)));
 
-        periodoClient.get().uri("/periodo/get").exchange().expectStatus().isOk();
+        periodoClient.get().uri("/periodo/get")
+                .exchange().expectStatus().isOk()
+                .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
+                .expectBodyList(PeriodoResponseDTO.class).hasSize(1).contains(response);
     }
 
     @Test
@@ -95,7 +100,10 @@ class ParametroControllerTest {
         var response = TestDataFactory.taxaResponseDTO();
         when(taxaService.listRates()).thenReturn(Flux.fromIterable(List.of(response)));
 
-        taxaClient.get().uri("/taxa/get").exchange().expectStatus().isOk();
+        taxaClient.get().uri("/taxa/get")
+                .exchange().expectStatus().isOk()
+                .expectHeader().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)
+                .expectBodyList(TaxaResponseDTO.class).hasSize(1).contains(response);
     }
 
     @Test

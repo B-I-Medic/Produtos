@@ -6,7 +6,6 @@ import com.medic.web.model.usuario.UsuarioModel;
 import com.medic.web.service.config.periodo.ManutencaoPeriodoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -24,7 +23,7 @@ public class PeriodoController {
         this.service = service;
     }
 
-    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping("/get")
     public Flux<PeriodoResponseDTO> listPeriods() {
 
         return service.listPeriods();
