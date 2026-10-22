@@ -75,7 +75,7 @@ public class SecurityConfig implements WebFluxConfigurer {
                                         "/centro-distribuicao/get/paginado",
                                         "/empresa/get/paginado",
                                         "/empresa/*/estoque-segregado/get/paginado",
-                                        "/municipio/get",
+                                        "/municipio/get/paginado",
                                         "/forecast/get",
                                         "/forecast/agrupamentos-disponiveis/get",
                                         "/periodo/get",

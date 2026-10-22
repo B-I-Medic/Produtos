@@ -1,7 +1,7 @@
 package com.medic.web.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.medic.web.dto.municipio.MunicipioFilterDTO;
+import com.medic.web.dto.municipio.MunicipioPaginaDTO;
 import com.medic.web.model.empresa.Viman;
 import com.medic.web.repository.cd.CentroDistribuicaoRepositoryCustomImpl;
 import com.medic.web.repository.municipio.MunicipioRepositoryCustomImpl;
@@ -59,9 +59,11 @@ class CustomRepositoryCoverageTest {
         when(row.get("cd_descricao", String.class)).thenReturn("CD Central");
         stubMappedRows();
 
-        var filter = new MunicipioFilterDTO(" Cidade ", null, " Central ");
+        var filter = new MunicipioPaginaDTO();
+        filter.setDescricao(" Cidade ");
+        filter.setCentroDistribuicao(centroDistribuicaoId);
         StepVerifier.create(new MunicipioRepositoryCustomImpl(databaseClient)
-                        .findByFiltro(filter))
+                        .findPageByFilter(filter, 10, 0))
                 .expectNextMatches(response -> response.id().equals(municipioId)
                         && response.descricao().equals("Cidade")
                         && response.codigoIbge().equals("1234567")
@@ -75,14 +77,14 @@ class CustomRepositoryCoverageTest {
         verify(databaseClient).sql(sql.capture());
         assertTrue(sql.getValue().contains("LEFT JOIN centro_distribuicao cd"));
         verify(executeSpec).bind("descricao", "%Cidade%");
-        verify(executeSpec).bind("centroDistribuicao", "%Central%");
-        verify(executeSpec).bindNull("estado", String.class);
+        verify(executeSpec).bind("centroDistribuicao", centroDistribuicaoId);
+        assertTrue(sql.getValue().contains("cd.id = :centroDistribuicao"));
 
         prepareQuery();
         stubRowValues();
         when(row.get("cd_id", UUID.class)).thenReturn(null);
         stubMappedRows();
-        StepVerifier.create(new MunicipioRepositoryCustomImpl(databaseClient).findByFiltro(null))
+        StepVerifier.create(new MunicipioRepositoryCustomImpl(databaseClient).findPageByFilter(null, 10, 0))
                 .expectNextMatches(response -> response.centroDistribuicao() == null)
                 .verifyComplete();
     }
