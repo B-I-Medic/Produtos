@@ -117,55 +117,42 @@ class UsuarioServiceTest {
         UsuarioModel user = TestDataFactory.usuarioModel();
         UsuarioResponseDTO response = TestDataFactory.usuarioResponseDTO();
         UsuarioPaginaDTO dto = new UsuarioPaginaDTO();
-        dto.setNumeroPagina("1");
+        dto.setNumeroPagina("2");
         dto.setTamanhoPagina("10");
+        dto.setNome("Nome");
+        dto.setOrdenarPor("nome");
+        dto.setDirecaoOrdenacao("DESC");
 
-        when(repository.findAll()).thenReturn(Flux.fromIterable(List.of(user)));
+        when(repository.findPageByFilter(dto, 10, 10)).thenReturn(Flux.just(user));
+        when(repository.countByFilter(dto)).thenReturn(Mono.just(21L));
         when(mapper.toDTO(user)).thenReturn(response);
 
         StepVerifier.create(consultaService.getPage(dto))
-                .expectNextMatches(page -> page.pagina().size() == 1 && page.quantidadeRegistros() == 1)
+                .expectNextMatches(page -> page.pagina().equals(List.of(response))
+                        && page.quantidadeRegistros() == 21
+                        && page.quantidadePaginas() == 3)
                 .verifyComplete();
+
+        verify(repository).findPageByFilter(dto, 10, 10);
+        verify(repository).countByFilter(dto);
     }
 
     @Test
-    void shouldApplyEveryUserFilterIncludingRole() {
-        UsuarioModel user = TestDataFactory.usuarioModel();
-        user.setNome("Nome");
-        user.setEmail("nome@example.com");
-        user.setAtivo(true);
-        user.setRole(Role.ADMIN);
-        when(repository.findAll()).thenReturn(Flux.just(user));
-        when(mapper.toDTO(user)).thenReturn(TestDataFactory.usuarioResponseDTO());
-
+    void shouldKeepFilteredCountWhenRequestedPageIsEmpty() {
         UsuarioPaginaDTO filter = new UsuarioPaginaDTO();
-        filter.setNumeroPagina("1");
-        filter.setTamanhoPagina("10");
-        filter.setNome("Nome");
-        filter.setEmail("nome@example.com");
-        filter.setAtivo(true);
-        filter.setRole(Role.ADMIN);
-
-        StepVerifier.create(consultaService.getPage(filter))
-                .expectNextMatches(page -> page.pagina().size() == 1)
-                .verifyComplete();
-
-        filter.setNome("Outro");
-        assertNoUsers(filter);
-        filter.setNome("Nome");
-        filter.setEmail("outro@example.com");
-        assertNoUsers(filter);
-        filter.setEmail("nome@example.com");
+        filter.setNumeroPagina("3");
+        filter.setTamanhoPagina("2");
         filter.setAtivo(false);
-        assertNoUsers(filter);
-        filter.setAtivo(true);
-        filter.setRole(Role.USER);
-        assertNoUsers(filter);
-    }
+        when(repository.findPageByFilter(filter, 2, 4)).thenReturn(Flux.empty());
+        when(repository.countByFilter(filter)).thenReturn(Mono.just(5L));
 
-    private void assertNoUsers(UsuarioPaginaDTO filter) {
         StepVerifier.create(consultaService.getPage(filter))
-                .expectNextMatches(page -> page.pagina().isEmpty())
+                .expectNextMatches(page -> page.pagina().isEmpty()
+                        && page.quantidadeRegistros() == 5
+                        && page.quantidadePaginas() == 3)
                 .verifyComplete();
+
+        verify(repository).findPageByFilter(filter, 2, 4);
+        verify(repository).countByFilter(filter);
     }
 }

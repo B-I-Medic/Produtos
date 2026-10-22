@@ -4,13 +4,9 @@ import com.medic.web.dto.pagina.PaginaResponseDTO;
 import com.medic.web.dto.usuario.UsuarioPaginaDTO;
 import com.medic.web.dto.usuario.UsuarioResponseDTO;
 import com.medic.web.mapper.usuario.UsuarioMapper;
-import com.medic.web.model.usuario.UsuarioModel;
 import com.medic.web.repository.usuario.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-
-import static com.medic.web.utils.Comparador.comparar;
-import static com.medic.web.utils.Paginacao.paginar;
 
 @Service
 public class ConsultaUsuarioService {
@@ -26,26 +22,20 @@ public class ConsultaUsuarioService {
 
     public Mono<PaginaResponseDTO<UsuarioResponseDTO>> getPage(UsuarioPaginaDTO usuarioPaginaDTO) {
 
-        return repository.findAll()
-                .filter(usuario -> filtrar(usuario, usuarioPaginaDTO))
-                .map(mapper::toDTO)
-                .collectList()
-                .map(usuarios -> paginar(
-                        usuarios,
-                        usuarioPaginaDTO.getNumeroPagina(),
-                        usuarioPaginaDTO.getTamanhoPagina())
-                );
-    }
+        int pagina = Integer.parseInt(usuarioPaginaDTO.getNumeroPagina());
+        int tamanhoPagina = Integer.parseInt(usuarioPaginaDTO.getTamanhoPagina());
+        long deslocamento = (long) (pagina - 1) * tamanhoPagina;
 
-    private boolean filtrar(UsuarioModel usuario, UsuarioPaginaDTO filtro) {
-
-        boolean matchNome = comparar(usuario.getNome(), filtro.getNome());
-        boolean matchEmail = comparar(usuario.getEmail(), filtro.getEmail());
-        boolean matchAtivo = comparar(usuario.getAtivo(), filtro.getAtivo());
-
-        String roleString = filtro.getRole() != null ? filtro.getRole().name() : null;
-        boolean matchRole = comparar(usuario.getRole().name(), roleString);
-
-        return matchNome && matchEmail && matchAtivo && matchRole;
+        return Mono.zip(
+                        repository.findPageByFilter(usuarioPaginaDTO, tamanhoPagina, deslocamento)
+                                .map(mapper::toDTO)
+                                .collectList(),
+                        repository.countByFilter(usuarioPaginaDTO)
+                )
+                .map(resultado -> {
+                    int quantidadeRegistros = Math.toIntExact(resultado.getT2());
+                    int quantidadePaginas = (int) Math.ceil((double) quantidadeRegistros / tamanhoPagina);
+                    return new PaginaResponseDTO<>(resultado.getT1(), quantidadeRegistros, quantidadePaginas);
+                });
     }
 }
