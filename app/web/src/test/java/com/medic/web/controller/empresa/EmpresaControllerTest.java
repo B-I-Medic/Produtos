@@ -1,10 +1,13 @@
 package com.medic.web.controller.empresa;
 
 import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
+import com.medic.web.dto.empresa.EmpresaPaginaDTO;
 import com.medic.web.dto.empresa.EmpresaRequestDTO;
+import com.medic.web.dto.pagina.PaginaResponseDTO;
 import com.medic.web.model.empresa.Viman;
 import com.medic.web.model.usuario.UsuarioModel;
 import com.medic.web.service.config.estoque.ManutencaoEstoqueSegregadoService;
+import com.medic.web.service.empresa.ConsultaEmpresaService;
 import com.medic.web.service.empresa.ManutencaoEmpresaService;
 import com.medic.web.support.FixedAuthenticationPrincipalResolver;
 import com.medic.web.support.TestDataFactory;
@@ -19,6 +22,7 @@ import reactor.test.StepVerifier;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -27,6 +31,7 @@ import static org.mockito.Mockito.when;
 class EmpresaControllerTest {
 
     private final ManutencaoEmpresaService empresaService = mock(ManutencaoEmpresaService.class);
+    private final ConsultaEmpresaService consultaEmpresaService = mock(ConsultaEmpresaService.class);
     private final ManutencaoEstoqueSegregadoService estoqueSegregadoService = mock(ManutencaoEstoqueSegregadoService.class);
     private WebTestClient empresaClient;
     private UsuarioModel user;
@@ -36,19 +41,51 @@ class EmpresaControllerTest {
 
         user = TestDataFactory.usuarioModel();
 
-        empresaClient = WebTestClient.bindToController(new EmpresaController(empresaService, estoqueSegregadoService))
+        empresaClient = WebTestClient.bindToController(new EmpresaController(empresaService, consultaEmpresaService, estoqueSegregadoService))
                 .argumentResolvers(configurer -> configurer.addCustomResolver(new FixedAuthenticationPrincipalResolver(user)))
                 .build();
     }
 
     @Test
-    void shouldListEmpresas() {
+    void shouldGetFilteredSortedEmpresaPage() {
 
         var response = TestDataFactory.empresaResponseDTO();
-        when(empresaService.listEmpresas()).thenReturn(Flux.fromIterable(List.of(response)));
+        var page = new PaginaResponseDTO<>(List.of(response), 1, 1);
+        UUID municipioId = UUID.randomUUID();
+        when(consultaEmpresaService.getPage(org.mockito.ArgumentMatchers.any(EmpresaPaginaDTO.class)))
+                .thenReturn(Mono.just(page));
 
-        empresaClient.get().uri("/empresa/get").exchange().expectStatus().isOk();
-        verify(empresaService).listEmpresas();
+        empresaClient.get()
+                .uri("/empresa/get?numeroPagina=1&tamanhoPagina=10&descricao=Empresa&codigo=001&viman=UFX"
+                        + "&possui_estoque_interno=true&possui_estoque_segregado=false&possui_vp=true"
+                        + "&municipio=" + municipioId + "&ordenarPor=municipio&direcaoOrdenacao=DESC")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.quantidadeRegistros").isEqualTo(1);
+
+        var filtro = org.mockito.ArgumentCaptor.forClass(EmpresaPaginaDTO.class);
+        verify(consultaEmpresaService).getPage(filtro.capture());
+        assertEquals("Empresa", filtro.getValue().getDescricao());
+        assertEquals("001", filtro.getValue().getCodigo());
+        assertEquals(Viman.UFX, filtro.getValue().getViman());
+        assertEquals(true, filtro.getValue().getPossuiEstoqueInterno());
+        assertEquals(false, filtro.getValue().getPossuiEstoqueSegregado());
+        assertEquals(true, filtro.getValue().getPossuiVp());
+        assertEquals(municipioId, filtro.getValue().getMunicipio());
+        assertEquals("municipio", filtro.getValue().getOrdenarPor());
+        assertEquals("DESC", filtro.getValue().getDirecaoOrdenacao());
+    }
+
+    @Test
+    void shouldRejectUnsupportedEmpresaSortField() {
+
+        empresaClient.get()
+                .uri("/empresa/get?numeroPagina=1&tamanhoPagina=10&ordenarPor=senha")
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        verifyNoInteractions(consultaEmpresaService);
     }
 
     @Test

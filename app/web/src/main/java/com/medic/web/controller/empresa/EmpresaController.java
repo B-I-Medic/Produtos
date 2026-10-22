@@ -1,10 +1,13 @@
 package com.medic.web.controller.empresa;
 
 import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
+import com.medic.web.dto.empresa.EmpresaPaginaDTO;
 import com.medic.web.dto.empresa.EmpresaRequestDTO;
 import com.medic.web.dto.empresa.EmpresaResponseDTO;
+import com.medic.web.dto.pagina.PaginaResponseDTO;
 import com.medic.web.model.usuario.UsuarioModel;
 import com.medic.web.service.config.estoque.ManutencaoEstoqueSegregadoService;
+import com.medic.web.service.empresa.ConsultaEmpresaService;
 import com.medic.web.service.empresa.ManutencaoEmpresaService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -21,11 +24,14 @@ import java.util.UUID;
 public class EmpresaController {
 
     private final ManutencaoEmpresaService service;
+    private final ConsultaEmpresaService consultaService;
     private final ManutencaoEstoqueSegregadoService estoqueSegregadoService;
 
     public EmpresaController(ManutencaoEmpresaService service,
+                             ConsultaEmpresaService consultaService,
                              ManutencaoEstoqueSegregadoService estoqueSegregadoService) {
         this.service = service;
+        this.consultaService = consultaService;
         this.estoqueSegregadoService = estoqueSegregadoService;
     }
 
@@ -51,10 +57,10 @@ public class EmpresaController {
         return service.delete(empresaId);
     }
 
-    @GetMapping(value = "/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<EmpresaResponseDTO> listEmpresas() {
+    @GetMapping("/get")
+    public Mono<PaginaResponseDTO<EmpresaResponseDTO>> getPage(@ModelAttribute @Valid EmpresaPaginaDTO dto) {
 
-        return service.listEmpresas();
+        return consultaService.getPage(dto);
     }
 
     @GetMapping(value = "/{empresaId}/estoque-segregado/get", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

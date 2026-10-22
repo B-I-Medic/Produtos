@@ -19,6 +19,7 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -54,7 +55,7 @@ class EmpresaRepositoryMappingTest {
         when(row.get("municipio_estado", String.class)).thenReturn("SP");
         stubMappedRows();
 
-        StepVerifier.create(new EmpresaRepositoryCustomImpl(databaseClient).findAllWithMunicipio())
+        StepVerifier.create(new EmpresaRepositoryCustomImpl(databaseClient).findPageByFilter(null, 10, 0))
                 .expectNextMatches(response -> response.id().equals(empresaId)
                         && response.descricao().equals("Empresa Central")
                         && response.viman() == Viman.UFX
@@ -74,6 +75,8 @@ class EmpresaRepositoryMappingTest {
         verify(databaseClient).sql(sql.capture());
         assertTrue(sql.getValue().contains("LEFT JOIN municipio m"));
         assertTrue(sql.getValue().contains("ON m.id = e.municipio_id"));
+        assertTrue(sql.getValue().contains("ORDER BY LOWER(e.descricao) ASC, e.id ASC"));
+        assertTrue(sql.getValue().contains("LIMIT :limite OFFSET :deslocamento"));
     }
 
     @Test
@@ -91,7 +94,7 @@ class EmpresaRepositoryMappingTest {
         when(row.get("municipio_id", UUID.class)).thenReturn(null);
         stubMappedRows();
 
-        StepVerifier.create(new EmpresaRepositoryCustomImpl(databaseClient).findAllWithMunicipio())
+        StepVerifier.create(new EmpresaRepositoryCustomImpl(databaseClient).findPageByFilter(null, 10, 0))
                 .expectNextMatches(response -> response.id().equals(empresaId)
                         && response.descricao().equals("Empresa sem município")
                         && response.viman() == null
@@ -108,6 +111,7 @@ class EmpresaRepositoryMappingTest {
     private void prepareQuery() {
 
         when(databaseClient.sql(anyString())).thenReturn(executeSpec);
+        when(executeSpec.bind(anyString(), any())).thenReturn(executeSpec);
     }
 
     private void stubMappedRows() {

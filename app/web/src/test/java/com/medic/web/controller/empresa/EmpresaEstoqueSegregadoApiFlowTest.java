@@ -6,6 +6,7 @@ import com.medic.web.repository.config.estoque.segregado.EstoqueSegregadoReposit
 import com.medic.web.repository.config.estoque.segregado.EstoqueSegregadoRepositoryCustomImpl;
 import com.medic.web.service.config.estoque.ManutencaoEstoqueSegregadoService;
 import com.medic.web.service.empresa.ManutencaoEmpresaService;
+import com.medic.web.service.empresa.ConsultaEmpresaService;
 import com.medic.web.validator.estoque.ValidadorEmpresaEstoqueService;
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
@@ -79,7 +80,8 @@ class EmpresaEstoqueSegregadoApiFlowTest {
                 mock(MunicipioRepository.class),
                 repository,
                 mock(ValidadorEmpresaEstoqueService.class));
-        var controller = new EmpresaController(mock(ManutencaoEmpresaService.class), service);
+        var controller = new EmpresaController(mock(ManutencaoEmpresaService.class),
+                mock(ConsultaEmpresaService.class), service);
         var client = WebTestClient.bindToController(controller).build();
 
         var result = client.get()

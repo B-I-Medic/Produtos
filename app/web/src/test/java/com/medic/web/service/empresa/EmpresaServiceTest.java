@@ -13,7 +13,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -89,20 +88,6 @@ class EmpresaServiceTest {
                 .verify();
 
         verify(empresaRepository, never()).save(ArgumentMatchers.any());
-    }
-
-    @Test
-    void shouldListEmpresas() {
-
-        var response = TestDataFactory.empresaResponseDTO();
-        when(empresaRepository.findAllWithMunicipio()).thenReturn(Flux.just(response));
-
-        StepVerifier.create(empresaService.listEmpresas())
-                .expectNext(response)
-                .verifyComplete();
-
-        verify(empresaRepository).findAllWithMunicipio();
-        verify(municipioRepository, never()).findById(ArgumentMatchers.any(UUID.class));
     }
 
     @Test
