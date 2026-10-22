@@ -1,14 +1,12 @@
 package com.medic.web.service.config.estoque;
 
 import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoCatalogoUpdateDTO;
-import com.medic.web.dto.config.estoque.segregado.EstoqueSegregadoResponseDTO;
 import com.medic.web.model.config.estoque.EstoqueSegregadoCatalogoModel;
 import com.medic.web.repository.municipio.MunicipioRepository;
 import com.medic.web.repository.config.estoque.segregado.EstoqueSegregadoRepository;
 import com.medic.web.validator.estoque.ValidadorEmpresaEstoqueService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
@@ -45,12 +43,6 @@ public class ManutencaoEstoqueSegregadoService {
                 })
                 .flatMap(repository::save)
                 .then();
-    }
-
-    @Transactional(readOnly = true)
-    public Flux<EstoqueSegregadoResponseDTO> listEstoqueSegregadoByEmpresa(UUID idEmpresa) {
-
-        return repository.getAllByIdEmpresa(idEmpresa);
     }
 
     private Mono<EstoqueSegregadoCatalogoModel> atualizarRegistro(EstoqueSegregadoCatalogoModel registro,

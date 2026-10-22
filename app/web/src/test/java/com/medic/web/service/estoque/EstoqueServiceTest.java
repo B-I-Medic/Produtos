@@ -90,20 +90,6 @@ class EstoqueServiceTest {
     }
 
     @Test
-    void shouldListEstoqueSegregadoByEmpresaId() {
-
-        UUID empresaId = UUID.randomUUID();
-        var response = TestDataFactory.estoqueSegregadoResponseDTO();
-        when(estoqueSegregadoRepository.getAllByIdEmpresa(empresaId)).thenReturn(Flux.just(response));
-
-        StepVerifier.create(estoqueSegregadoService.listEstoqueSegregadoByEmpresa(empresaId))
-                .expectNext(response)
-                .verifyComplete();
-
-        verify(estoqueSegregadoRepository).getAllByIdEmpresa(empresaId);
-    }
-
-    @Test
     void shouldDeactivateEstoqueSegregadoAndKeepMunicipality() {
 
         var model = TestDataFactory.estoqueSegregadoModel();

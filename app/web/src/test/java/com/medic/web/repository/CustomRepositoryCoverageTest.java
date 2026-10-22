@@ -147,7 +147,8 @@ class CustomRepositoryCoverageTest {
         stubRowValues();
         stubMappedRows();
 
-        StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient).getAllByIdEmpresa(idEmpresa))
+        StepVerifier.create(new EstoqueSegregadoRepositoryCustomImpl(databaseClient)
+                        .findPageByEmpresaAndFilter(idEmpresa, null, 10, 0))
                 .expectNextMatches(response -> response.codSegregado() == 1
                         && response.empresa().viman() == Viman.UFX)
                 .verifyComplete();

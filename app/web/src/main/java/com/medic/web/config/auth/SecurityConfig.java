@@ -74,7 +74,7 @@ public class SecurityConfig implements WebFluxConfigurer {
                                 .pathMatchers("/auth/first-acess",
                                         "/centro-distribuicao/get/paginado",
                                         "/empresa/get/paginado",
-                                        "/empresa/*/estoque-segregado/get",
+                                        "/empresa/*/estoque-segregado/get/paginado",
                                         "/municipio/get",
                                         "/forecast/get",
                                         "/forecast/agrupamentos-disponiveis/get",
