@@ -159,7 +159,6 @@ class UsuarioRepositoryCustomImplTest {
     private static Stream<Arguments> supportedSortFields() {
 
         return Stream.of(
-                Arguments.of("id", "u.id ASC"),
                 Arguments.of("nome", "LOWER(u.nome) ASC, u.id ASC"),
                 Arguments.of("email", "LOWER(u.email) ASC, u.id ASC"),
                 Arguments.of("role", "CASE u.role WHEN 'USER' THEN 0 WHEN 'MASTER' THEN 1 WHEN 'ADMIN' THEN 2 ELSE 3 END ASC, u.id ASC"),
@@ -172,6 +171,10 @@ class UsuarioRepositoryCustomImplTest {
 
         var repository = new UsuarioRepositoryCustomImpl(databaseClient);
         UsuarioPaginaDTO filtro = new UsuarioPaginaDTO();
+        filtro.setOrdenarPor("id");
+
+        assertThrows(IllegalArgumentException.class, () -> repository.findPageByFilter(filtro, 10, 0));
+
         filtro.setOrdenarPor("nome; DROP TABLE usuario");
 
         assertThrows(IllegalArgumentException.class, () -> repository.findPageByFilter(filtro, 10, 0));

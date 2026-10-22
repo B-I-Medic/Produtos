@@ -28,7 +28,6 @@ public class UsuarioRepositoryCustomImpl implements UsuarioRepositoryCustom {
             """;
 
     private static final Map<String, String> ORDER_BY_COLUMNS = Map.of(
-            "id", "u.id",
             "nome", "LOWER(u.nome)",
             "email", "LOWER(u.email)",
             "role", "CASE u.role WHEN 'USER' THEN 0 WHEN 'MASTER' THEN 1 WHEN 'ADMIN' THEN 2 ELSE 3 END",
@@ -122,23 +121,26 @@ public class UsuarioRepositoryCustomImpl implements UsuarioRepositoryCustom {
 
     private String orderBy(UsuarioPaginaDTO filtro) {
 
-        String field = filtro == null || filtro.getOrdenarPor() == null
-                ? "id"
-                : filtro.getOrdenarPor().toLowerCase(Locale.ROOT);
+        boolean defaultOrdering = filtro == null || filtro.getOrdenarPor() == null;
+        String field = defaultOrdering ? null : filtro.getOrdenarPor().toLowerCase(Locale.ROOT);
+
+        if (defaultOrdering) {
+            return "u.id ASC";
+        }
 
         String column = ORDER_BY_COLUMNS.get(field);
         if (column == null) {
             throw new IllegalArgumentException("Campo inválido para ordenação de usuários");
         }
 
-        String direction = filtro == null || filtro.getDirecaoOrdenacao() == null
+        String direction = filtro.getDirecaoOrdenacao() == null
                 ? "ASC"
                 : filtro.getDirecaoOrdenacao().toUpperCase(Locale.ROOT);
+
         if (!"ASC".equals(direction) && !"DESC".equals(direction)) {
             throw new IllegalArgumentException("A direção da ordenação deve ser ASC ou DESC");
         }
 
-        String desempateId = "id".equals(field) ? "" : ", u.id ASC";
-        return column + " " + direction + desempateId;
+        return column + " " + direction + ", u.id ASC";
     }
 }

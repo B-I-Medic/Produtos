@@ -63,7 +63,7 @@ class UsuarioControllerTest {
     void shouldRejectUnsupportedSortField() {
 
         client.get()
-                .uri("/usuario/get/paginado?numeroPagina=1&tamanhoPagina=10&ordenarPor=senha")
+                .uri("/usuario/get/paginado?numeroPagina=1&tamanhoPagina=10&ordenarPor=id")
                 .exchange()
                 .expectStatus().isBadRequest();
 

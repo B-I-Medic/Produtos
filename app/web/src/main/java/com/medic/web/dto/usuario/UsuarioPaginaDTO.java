@@ -16,8 +16,8 @@ public class UsuarioPaginaDTO extends PaginaRequestDTO {
     Role role;
     Boolean ativo;
 
-    @Schema(example = "nome", allowableValues = {"id", "nome", "email", "role", "ativo"})
-    @Pattern(regexp = "(?i)^(id|nome|email|role|ativo)$",
+    @Schema(example = "nome", allowableValues = {"nome", "email", "role", "ativo"})
+    @Pattern(regexp = "(?i)^(nome|email|role|ativo)$",
             message = "Ordenação deve ser por id, nome, email, role ou ativo")
     private String ordenarPor;
 
