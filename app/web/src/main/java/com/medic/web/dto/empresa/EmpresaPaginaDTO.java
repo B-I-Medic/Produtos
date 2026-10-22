@@ -33,16 +33,4 @@ public class EmpresaPaginaDTO extends PaginaRequestDTO {
     @Schema(example = "ASC", allowableValues = {"ASC", "DESC"})
     @Pattern(regexp = "(?i)^(ASC|DESC)$", message = "A direção da ordenação deve ser ASC ou DESC")
     private String direcaoOrdenacao;
-
-    public void setPossui_estoque_interno(Boolean value) {
-        this.possuiEstoqueInterno = value;
-    }
-
-    public void setPossui_estoque_segregado(Boolean value) {
-        this.possuiEstoqueSegregado = value;
-    }
-
-    public void setPossui_vp(Boolean value) {
-        this.possuiVp = value;
-    }
 }
