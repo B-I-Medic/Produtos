@@ -144,7 +144,7 @@ class ForecastRepositoryCustomImplTest {
         @SuppressWarnings("unchecked")
         RowsFetchSpec<Long> countFetchSpec = org.mockito.Mockito.mock(RowsFetchSpec.class);
         when(executeSpec.map(org.mockito.ArgumentMatchers.<BiFunction<Row, RowMetadata, Long>>any()))
-                .thenReturn(countFetchSpec);
+                .thenReturn(rowsFetchSpec, countFetchSpec);
         when(countFetchSpec.one()).thenReturn(reactor.core.publisher.Mono.just(1L));
         var repository = new ForecastRepositoryCustomImpl(databaseClient);
         var filter = filter(1, 10);

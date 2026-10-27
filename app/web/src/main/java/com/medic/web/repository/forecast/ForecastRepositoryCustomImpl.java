@@ -17,6 +17,9 @@ import java.util.Set;
 @Repository
 public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
 
+    private static final int DEFAULT_PAGE_NUMBER = 1;
+    private static final int DEFAULT_PAGE_SIZE = 10;
+
     private static final List<AgrupamentosPadrao> DEFAULT_GROUP_BY = List.of(AgrupamentosPadrao.values());
 
     private static final String FILTER_PREDICATES = """
@@ -76,8 +79,13 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
 
         var selectedColumns = Set.copyOf(groupByColumns);
 
-        int tamanhoPagina = Integer.parseInt(filter.getTamanhoPagina());
-        long deslocamento = (long) (Integer.parseInt(filter.getNumeroPagina()) - 1) * tamanhoPagina;
+        int tamanhoPagina = filter == null || !StringUtils.hasText(filter.getTamanhoPagina())
+                ? DEFAULT_PAGE_SIZE
+                : Integer.parseInt(filter.getTamanhoPagina());
+        int numeroPagina = filter == null || !StringUtils.hasText(filter.getNumeroPagina())
+                ? DEFAULT_PAGE_NUMBER
+                : Integer.parseInt(filter.getNumeroPagina());
+        long deslocamento = (long) (numeroPagina - 1) * tamanhoPagina;
         query = query.bind("limite", tamanhoPagina).bind("deslocamento", deslocamento);
 
         return query.map((row, metadata) -> new ForecastAgrupadoResponseDTO(
