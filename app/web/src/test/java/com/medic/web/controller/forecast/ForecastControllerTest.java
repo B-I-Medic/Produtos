@@ -1,14 +1,12 @@
 package com.medic.web.controller.forecast;
 
 import com.medic.web.dto.forecast.AgrupamentosPadrao;
-import com.medic.web.dto.forecast.ForecastAgrupadoResponseDTO;
 import com.medic.web.dto.pagina.PaginaResponseDTO;
 import com.medic.web.service.forecast.ConsultaForecastService;
 import com.medic.web.support.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Flux;
 
 import java.util.List;
 
