@@ -1,16 +1,21 @@
 package com.medic.web.dto.forecast;
 
+import com.medic.web.dto.pagina.PaginaRequestDTO;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.util.List;
 
-public record ForecastFilterDTO(
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class ForecastFilterDTO extends PaginaRequestDTO {
 
-        String centroDistribuicao,
-        String empresa,
-        String estado,
-        String municipio,
-        String anvisa,
-        String marca,
-        String produto,
-        List<AgrupamentosPadrao> groupBy
-) {
+    private String centroDistribuicao;
+    private String empresa;
+    private String estado;
+    private String municipio;
+    private String anvisa;
+    private String marca;
+    private String produto;
+    private List<AgrupamentosPadrao> groupBy;
 }

@@ -8,6 +8,7 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,16 @@ import java.util.Set;
 public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
 
     private static final List<AgrupamentosPadrao> DEFAULT_GROUP_BY = List.of(AgrupamentosPadrao.values());
+
+    private static final String FILTER_PREDICATES = """
+            (centro_distribuicao ilike :centro_distribuicao or :centro_distribuicao is null)
+                and (empresa ilike :empresa or :empresa is null)
+                and (municipio ilike :municipio or :municipio is null)
+                and (cod_produto = :produto or :produto is null)
+                and (marca ilike :marca or :marca is null)
+                and (anvisa like :anvisa or :anvisa is null)
+                and (estado like :estado or :estado is null)
+            """;
 
     private static final String BASE_SQL = """
                         select
@@ -35,18 +46,18 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
                                 else (sum(necessidade_de_compra) * -1)
                             end as necessidade_de_compra_real
                         from necessidade_de_compra
-                        where (centro_distribuicao ilike :centro_distribuicao or :centro_distribuicao is null)
-                            and (empresa ilike :empresa or :empresa is null)
-                            and (municipio ilike :municipio or :municipio is null)
-                            and (
-                                (produto ilike :produto or :produto is null)
-                                or (cod_produto ilike :produto or :produto is null)
-                               )
-                            and (marca ilike :marca or :marca is null)
-                            and (anvisa like :anvisa or :anvisa is null)
-                            and (estado like :estado or :estado is null)
+                        where %s
                         group by %s
-                        order by %s;
+                        order by %s
+                        limit :limite offset :deslocamento;
+            """;
+
+    private static final String COUNT_SQL = """
+            select count(*) as quantidade from (
+                select %s from necessidade_de_compra
+                where %s
+                group by %s
+            ) grupos
             """;
 
     private final DatabaseClient databaseClient;
@@ -58,18 +69,16 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
     @Override
     public Flux<ForecastAgrupadoResponseDTO> findByFilter(ForecastFilterDTO filter) {
 
-        var groupByColumns = resolveGroupByColumns(filter == null ? null : filter.groupBy());
+        var groupByColumns = resolveGroupByColumns(filter == null ? null : filter.getGroupBy());
         var query = databaseClient.sql(buildSql(groupByColumns));
 
-        query = bindNullableText(query, "centro_distribuicao", filter == null ? null : filter.centroDistribuicao());
-        query = bindNullableText(query, "empresa", filter == null ? null : filter.empresa());
-        query = bindNullableText(query, "estado", filter == null ? null : filter.estado());
-        query = bindNullableText(query, "municipio", filter == null ? null : filter.municipio());
-        query = bindNullableText(query, "anvisa", filter == null ? null : filter.anvisa());
-        query = bindNullableText(query, "marca", filter == null ? null : filter.marca());
-        query = bindNullableText(query, "produto", filter == null ? null : filter.produto());
+        query = bindFilters(query, filter);
 
         var selectedColumns = Set.copyOf(groupByColumns);
+
+        int tamanhoPagina = Integer.parseInt(filter.getTamanhoPagina());
+        long deslocamento = (long) (Integer.parseInt(filter.getNumeroPagina()) - 1) * tamanhoPagina;
+        query = query.bind("limite", tamanhoPagina).bind("deslocamento", deslocamento);
 
         return query.map((row, metadata) -> new ForecastAgrupadoResponseDTO(
                         readString(row, "centro_distribuicao", selectedColumns),
@@ -94,13 +103,36 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
                 .all();
     }
 
+    @Override
+    public Mono<Long> countByFilter(ForecastFilterDTO filter) {
+
+        var columns = resolveGroupByColumns(filter == null ? null : filter.getGroupBy());
+
+        var query = databaseClient.sql(COUNT_SQL.formatted(String.join(", ", columns), FILTER_PREDICATES, String.join(", ", columns)));
+        query = bindFilters(query, filter);
+
+        return query.map((row, metadata) -> row.get("quantidade", Long.class)).one();
+    }
+
+    private DatabaseClient.GenericExecuteSpec bindFilters(DatabaseClient.GenericExecuteSpec query, ForecastFilterDTO filter) {
+
+        query = bindNullableText(query, "centro_distribuicao", filter == null ? null : filter.getCentroDistribuicao());
+        query = bindNullableText(query, "empresa", filter == null ? null : filter.getEmpresa());
+        query = bindNullableText(query, "estado", filter == null ? null : filter.getEstado());
+        query = bindNullableText(query, "municipio", filter == null ? null : filter.getMunicipio());
+        query = bindNullableText(query, "anvisa", filter == null ? null : filter.getAnvisa());
+        query = bindNullableText(query, "marca", filter == null ? null : filter.getMarca());
+
+        return bindNullableExactText(query, "produto", filter == null ? null : filter.getProduto());
+    }
+
     private String buildSql(List<String> groupByColumns) {
 
         var selectColumns = String.join(", ", groupByColumns);
         var groupBy = String.join(", ", groupByColumns);
         var orderBy = buildOrderBy(groupByColumns);
 
-        return BASE_SQL.formatted(selectColumns, groupBy, orderBy);
+        return BASE_SQL.formatted(selectColumns, FILTER_PREDICATES, groupBy, orderBy);
     }
 
     private String buildOrderBy(List<String> groupByColumns) {
@@ -116,6 +148,11 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
         }
 
         orderByColumns.add("necessidade_de_compra_real desc");
+        for (String column : groupByColumns) {
+            if (!orderByColumns.contains(column + " asc")) {
+                orderByColumns.add(column + " asc");
+            }
+        }
 
         return String.join(", ", orderByColumns);
     }
@@ -144,6 +181,16 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
 
         if (StringUtils.hasText(value)) {
             return query.bind(name, "%" + value.trim() + "%");
+        }
+
+        return query.bindNull(name, String.class);
+    }
+
+    private DatabaseClient.GenericExecuteSpec bindNullableExactText(DatabaseClient.GenericExecuteSpec query,
+                                                                    String name,
+                                                                    String value) {
+        if (StringUtils.hasText(value)) {
+            return query.bind(name, value.trim());
         }
 
         return query.bindNull(name, String.class);

@@ -39,10 +39,7 @@ class ForecastRepositoryMappingCoverageTest {
 
         prepareQuery();
         stubRows();
-        ForecastFilterDTO filter = new ForecastFilterDTO(
-                null, null, null, null, null, null, null,
-                List.of(AgrupamentosPadrao.values())
-        );
+        ForecastFilterDTO filter = filter(List.of(AgrupamentosPadrao.values()));
 
         StepVerifier.create(new ForecastRepositoryCustomImpl(databaseClient).findByFilter(filter))
                 .assertNext(response -> {
@@ -57,10 +54,7 @@ class ForecastRepositoryMappingCoverageTest {
 
         prepareQuery();
         stubRows();
-        ForecastFilterDTO filter = new ForecastFilterDTO(
-                null, null, null, null, null, null, null,
-                List.of(AgrupamentosPadrao.EMPRESA)
-        );
+        ForecastFilterDTO filter = filter(List.of(AgrupamentosPadrao.EMPRESA));
 
         StepVerifier.create(new ForecastRepositoryCustomImpl(databaseClient).findByFilter(filter))
                 .assertNext(response -> {
@@ -93,5 +87,13 @@ class ForecastRepositoryMappingCoverageTest {
                 .when(executeSpec)
                 .map(org.mockito.ArgumentMatchers
                         .<BiFunction<Row, RowMetadata, com.medic.web.dto.forecast.ForecastAgrupadoResponseDTO>>any());
+    }
+
+    private ForecastFilterDTO filter(List<AgrupamentosPadrao> groupBy) {
+        ForecastFilterDTO filter = new ForecastFilterDTO();
+        filter.setGroupBy(groupBy);
+        filter.setNumeroPagina("1");
+        filter.setTamanhoPagina("10");
+        return filter;
     }
 }

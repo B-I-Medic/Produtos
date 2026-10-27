@@ -11,8 +11,7 @@ public enum AgrupamentosPadrao {
     MUNICIPIO("municipio"),
     ANVISA("anvisa"),
     MARCA("marca"),
-    COD_PRODUTO("cod_produto"),
-    PRODUTO("produto");
+    COD_PRODUTO("cod_produto");
 
     private final String descricao;
 
