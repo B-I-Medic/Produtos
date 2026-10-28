@@ -14,6 +14,7 @@ import org.springframework.r2dbc.core.RowsFetchSpec;
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.List;
@@ -140,12 +141,21 @@ class ForecastRepositoryCustomImplTest {
 
     @Test
     void shouldUseSharedFilterPredicatesForResultAndCountQueries() {
-        stubQuery(TestDataFactory.forecastAgrupadoResponseDTO());
+        var resultExecuteSpec = org.mockito.Mockito.mock(DatabaseClient.GenericExecuteSpec.class);
+        var countExecuteSpec = org.mockito.Mockito.mock(DatabaseClient.GenericExecuteSpec.class);
+        var result = TestDataFactory.forecastAgrupadoResponseDTO();
+        when(databaseClient.sql(anyString())).thenReturn(resultExecuteSpec, countExecuteSpec);
+        stubBindings(resultExecuteSpec);
+        stubBindings(countExecuteSpec);
         @SuppressWarnings("unchecked")
         RowsFetchSpec<Long> countFetchSpec = org.mockito.Mockito.mock(RowsFetchSpec.class);
-        when(executeSpec.map(org.mockito.ArgumentMatchers.<BiFunction<Row, RowMetadata, Long>>any()))
-                .thenReturn(rowsFetchSpec, countFetchSpec);
-        when(countFetchSpec.one()).thenReturn(reactor.core.publisher.Mono.just(1L));
+        RowsFetchSpec<ForecastAgrupadoResponseDTO> resultFetchSpec = org.mockito.Mockito.mock(RowsFetchSpec.class);
+        when(resultFetchSpec.all()).thenReturn(Flux.just(result));
+        when(resultExecuteSpec.map(org.mockito.ArgumentMatchers.<BiFunction<Row, RowMetadata, ForecastAgrupadoResponseDTO>>any()))
+                .thenReturn(resultFetchSpec);
+        when(countExecuteSpec.map(org.mockito.ArgumentMatchers.<BiFunction<Row, RowMetadata, Long>>any()))
+                .thenReturn(countFetchSpec);
+        when(countFetchSpec.one()).thenReturn(Mono.just(1L));
         var repository = new ForecastRepositoryCustomImpl(databaseClient);
         var filter = filter(1, 10);
         filter.setGroupBy(List.of(AgrupamentosPadrao.EMPRESA));
@@ -160,17 +170,22 @@ class ForecastRepositoryCustomImplTest {
         assertTrue(sqls.get(1).contains("(cod_produto = :produto or :produto is null)"));
         assertFalse(sqls.get(0).contains("produto ilike :produto"));
         assertFalse(sqls.get(1).contains("produto ilike :produto"));
-        verify(executeSpec, org.mockito.Mockito.times(2)).bindNull("produto", String.class);
+        verify(resultExecuteSpec).bindNull("produto", String.class);
+        verify(countExecuteSpec).bindNull("produto", String.class);
     }
 
     private void stubQuery(ForecastAgrupadoResponseDTO response) {
 
         when(databaseClient.sql(anyString())).thenReturn(executeSpec);
-        lenient().when(executeSpec.bind(anyString(), any())).thenReturn(executeSpec);
-        lenient().when(executeSpec.bindNull(anyString(), eq(String.class))).thenReturn(executeSpec);
+        stubBindings(executeSpec);
         when(executeSpec.map(org.mockito.ArgumentMatchers.<BiFunction<Row, RowMetadata, ForecastAgrupadoResponseDTO>>any()))
                 .thenReturn(rowsFetchSpec);
         when(rowsFetchSpec.all()).thenReturn(Flux.just(response));
+    }
+
+    private void stubBindings(DatabaseClient.GenericExecuteSpec spec) {
+        lenient().when(spec.bind(anyString(), any())).thenReturn(spec);
+        lenient().when(spec.bindNull(anyString(), eq(String.class))).thenReturn(spec);
     }
 
     private ForecastFilterDTO filter(int numeroPagina, int tamanhoPagina) {
