@@ -27,12 +27,18 @@ class ConsultaForecastServiceTest {
     @Test
     void shouldListForecastAgrupado() {
 
-        var filter = new ForecastFilterDTO("CD", "Empresa", "SP", "Cidade", "Anvisa", "Marca", "Produto", null);
+        var filter = new ForecastFilterDTO();
+        filter.setNumeroPagina("1");
+        filter.setTamanhoPagina("100");
         var response = TestDataFactory.forecastAgrupadoResponseDTO();
         when(forecastRepository.findByFilter(filter)).thenReturn(Flux.fromIterable(List.of(response)));
+        when(forecastRepository.countByFilter(filter)).thenReturn(reactor.core.publisher.Mono.just(1L));
 
         StepVerifier.create(forecastService.listForecastAgrupado(filter))
-                .expectNext(response)
+                .assertNext(page -> {
+                    org.junit.jupiter.api.Assertions.assertEquals(List.of(response), page.pagina());
+                    org.junit.jupiter.api.Assertions.assertEquals(1, page.quantidadeRegistros());
+                })
                 .verifyComplete();
     }
 }
