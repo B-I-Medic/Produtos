@@ -138,6 +138,10 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
 
         var selectColumns = String.join(", ", groupByColumns);
         var groupBy = String.join(", ", groupByColumns);
+        if (groupByColumns.contains(AgrupamentosPadrao.COD_PRODUTO.getDescricao())) {
+            selectColumns += ", produto";
+            groupBy += ", produto";
+        }
         var orderBy = buildOrderBy(groupByColumns);
 
         return BASE_SQL.formatted(selectColumns, FILTER_PREDICATES, groupBy, orderBy);
@@ -168,7 +172,7 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
     private List<String> resolveGroupByColumns(List<AgrupamentosPadrao> groupBy) {
 
         if (groupBy == null || groupBy.isEmpty()) {
-            return DEFAULT_GROUP_BY.stream().map(AgrupamentosPadrao::getDescricao).toList();
+        return DEFAULT_GROUP_BY.stream().map(AgrupamentosPadrao::getDescricao).toList();
         }
 
         return groupBy.stream().map(AgrupamentosPadrao::getDescricao).toList();
