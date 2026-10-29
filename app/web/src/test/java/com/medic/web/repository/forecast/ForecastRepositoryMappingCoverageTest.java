@@ -65,6 +65,21 @@ class ForecastRepositoryMappingCoverageTest {
                 .verifyComplete();
     }
 
+    @Test
+    void shouldMapProductWhenCodeProductIsGrouped() {
+
+        prepareQuery();
+        stubRows();
+        ForecastFilterDTO filter = filter(List.of(AgrupamentosPadrao.COD_PRODUTO));
+
+        StepVerifier.create(new ForecastRepositoryCustomImpl(databaseClient).findByFilter(filter))
+                .assertNext(response -> {
+                    org.junit.jupiter.api.Assertions.assertEquals("value", response.codigoProduto());
+                    org.junit.jupiter.api.Assertions.assertEquals("value", response.produto());
+                })
+                .verifyComplete();
+    }
+
     private void prepareQuery() {
 
         when(databaseClient.sql(anyString())).thenReturn(executeSpec);

@@ -140,6 +140,24 @@ class ForecastRepositoryCustomImplTest {
     }
 
     @Test
+    void shouldSelectAndGroupByProductWhenCodeProductIsGrouped() {
+        var response = TestDataFactory.forecastAgrupadoResponseDTO();
+        stubQuery(response);
+        var filter = filter(1, 10);
+        filter.setProduto(null);
+        filter.setGroupBy(List.of(AgrupamentosPadrao.COD_PRODUTO));
+
+        StepVerifier.create(new ForecastRepositoryCustomImpl(databaseClient).findByFilter(filter))
+                .expectNext(response)
+                .verifyComplete();
+
+        var sqlCaptor = ArgumentCaptor.forClass(String.class);
+        verify(databaseClient).sql(sqlCaptor.capture());
+        assertTrue(sqlCaptor.getValue().contains("select cod_produto, produto,"));
+        assertTrue(sqlCaptor.getValue().contains("group by cod_produto, produto"));
+    }
+
+    @Test
     void shouldUseSharedFilterPredicatesForResultAndCountQueries() {
         var resultExecuteSpec = org.mockito.Mockito.mock(DatabaseClient.GenericExecuteSpec.class);
         var countExecuteSpec = org.mockito.Mockito.mock(DatabaseClient.GenericExecuteSpec.class);
