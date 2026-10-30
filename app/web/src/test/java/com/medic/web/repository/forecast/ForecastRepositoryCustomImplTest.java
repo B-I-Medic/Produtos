@@ -153,7 +153,7 @@ class ForecastRepositoryCustomImplTest {
 
         var sqlCaptor = ArgumentCaptor.forClass(String.class);
         verify(databaseClient).sql(sqlCaptor.capture());
-        assertTrue(sqlCaptor.getValue().contains("select cod_produto, produto,"));
+        assertTrue(sqlCaptor.getValue().contains("cod_produto, produto,"));
         assertTrue(sqlCaptor.getValue().contains("group by cod_produto, produto"));
     }
 

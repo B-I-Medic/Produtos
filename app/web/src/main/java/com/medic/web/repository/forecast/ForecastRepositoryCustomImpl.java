@@ -77,7 +77,10 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
 
         query = bindFilters(query, filter);
 
-        var selectedColumns = Set.copyOf(groupByColumns);
+        var selectedColumns = new java.util.HashSet<>(groupByColumns);
+        if (groupByColumns.contains(AgrupamentosPadrao.COD_PRODUTO.getDescricao())) {
+            selectedColumns.add("produto");
+        }
 
         int tamanhoPagina = filter == null || !StringUtils.hasText(filter.getTamanhoPagina())
                 ? DEFAULT_PAGE_SIZE
@@ -139,8 +142,8 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
         var selectColumns = String.join(", ", groupByColumns);
         var groupBy = String.join(", ", groupByColumns);
         if (groupByColumns.contains(AgrupamentosPadrao.COD_PRODUTO.getDescricao())) {
-            selectColumns += ", produto";
-            groupBy += ", produto";
+            selectColumns = selectColumns.replace("cod_produto", "cod_produto, produto");
+            groupBy = groupBy.replace("cod_produto", "cod_produto, produto");
         }
         var orderBy = buildOrderBy(groupByColumns);
 
