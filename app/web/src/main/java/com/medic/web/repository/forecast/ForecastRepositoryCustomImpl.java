@@ -12,6 +12,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 @Repository
@@ -21,6 +23,16 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
     private static final int DEFAULT_PAGE_SIZE = 10;
 
     private static final List<AgrupamentosPadrao> DEFAULT_GROUP_BY = List.of(AgrupamentosPadrao.values());
+    private static final Map<String, String> ORDER_BY_COLUMNS = Map.ofEntries(
+            Map.entry("centroDistribuicao", "centro_distribuicao"), Map.entry("empresa", "empresa"),
+            Map.entry("estado", "estado"), Map.entry("municipio", "municipio"), Map.entry("anvisa", "anvisa"),
+            Map.entry("marca", "marca"), Map.entry("codigoProduto", "cod_produto"), Map.entry("produto", "produto"),
+            Map.entry("estoqueInterno", "sum(estoque_interno)"), Map.entry("estoqueSegregado", "sum(estoque_segregado)"),
+            Map.entry("estoqueVP", "sum(estoque_vp)"), Map.entry("estoqueTotal", "sum(estoque_total)"),
+            Map.entry("demandaOrcado", "sum(demanda_orcado)"), Map.entry("demandaAprovado", "sum(demanda_aprovado)"),
+            Map.entry("demandaAgendado", "sum(demanda_agendado)"), Map.entry("demandaUtilizado", "sum(demanda_utilizado)"),
+            Map.entry("demandaTotal", "sum(demanda_total)"), Map.entry("necessidadeDeCompra", "necessidade_de_compra_real")
+    );
 
     private static final String FILTER_PREDICATES = """
             (centro_distribuicao ilike :centro_distribuicao or :centro_distribuicao is null)
@@ -73,7 +85,7 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
     public Flux<ForecastAgrupadoResponseDTO> findByFilter(ForecastFilterDTO filter) {
 
         var groupByColumns = resolveGroupByColumns(filter == null ? null : filter.getGroupBy());
-        var query = databaseClient.sql(buildSql(groupByColumns));
+        var query = databaseClient.sql(buildSql(groupByColumns, filter));
 
         query = bindFilters(query, filter);
 
@@ -137,7 +149,7 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
         return bindNullableExactText(query, "produto", filter == null ? null : filter.getProduto());
     }
 
-    private String buildSql(List<String> groupByColumns) {
+    private String buildSql(List<String> groupByColumns, ForecastFilterDTO filter) {
 
         var selectColumns = String.join(", ", groupByColumns);
         var groupBy = String.join(", ", groupByColumns);
@@ -145,14 +157,30 @@ public class ForecastRepositoryCustomImpl implements ForecastRepositoryCustom {
             selectColumns = selectColumns.replace("cod_produto", "cod_produto, produto");
             groupBy = groupBy.replace("cod_produto", "cod_produto, produto");
         }
-        var orderBy = buildOrderBy(groupByColumns);
+        var orderBy = buildOrderBy(groupByColumns, filter == null ? null : filter.getOrdenarPor(),
+                filter == null ? null : filter.getDirecaoOrdenacao());
 
         return BASE_SQL.formatted(selectColumns, FILTER_PREDICATES, groupBy, orderBy);
     }
 
-    private String buildOrderBy(List<String> groupByColumns) {
+    private String buildOrderBy(List<String> groupByColumns, String sortField, String sortDirection) {
 
         var orderByColumns = new ArrayList<String>();
+
+        if (StringUtils.hasText(sortField)) {
+            var column = ORDER_BY_COLUMNS.entrySet().stream()
+                    .filter(entry -> entry.getKey().equalsIgnoreCase(sortField))
+                    .map(Map.Entry::getValue)
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Campo inválido para ordenação do forecast"));
+            String direction = StringUtils.hasText(sortDirection) ? sortDirection.toUpperCase(Locale.ROOT) : "ASC";
+            if (!"ASC".equals(direction) && !"DESC".equals(direction)) {
+                throw new IllegalArgumentException("A direção da ordenação deve ser ASC ou DESC");
+            }
+            orderByColumns.add(column + " " + direction);
+            groupByColumns.stream().filter(c -> !c.equals(column)).forEach(c -> orderByColumns.add(c + " asc"));
+            return String.join(", ", orderByColumns);
+        }
 
         if (groupByColumns.contains(AgrupamentosPadrao.CENTRO_DISTRIBUICAO.getDescricao())) {
             orderByColumns.add("centro_distribuicao asc");

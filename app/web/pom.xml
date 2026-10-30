@@ -15,6 +15,7 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<mockito.version>5.20.0</mockito.version>
 	</properties>
 
 	<dependencies>
@@ -137,6 +138,9 @@
 							<goal>compile</goal>
 						</goals>
 						<configuration>
+						<compilerArgs>
+							<arg>-Xlint:unchecked</arg>
+						</compilerArgs>
 							<annotationProcessorPaths>
 								<path>
 									<groupId>org.projectlombok</groupId>
@@ -152,6 +156,9 @@
 							<goal>testCompile</goal>
 						</goals>
 						<configuration>
+							<compilerArgs>
+								<arg>-Xlint:unchecked</arg>
+							</compilerArgs>
 							<annotationProcessorPaths>
 								<path>
 									<groupId>org.projectlombok</groupId>

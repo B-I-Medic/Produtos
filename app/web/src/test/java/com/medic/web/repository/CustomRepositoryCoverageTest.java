@@ -224,7 +224,6 @@ class CustomRepositoryCoverageTest {
 
         RowsFetchSpec<T> rows = mock(RowsFetchSpec.class);
         doAnswer(invocation -> {
-                    @SuppressWarnings("unchecked")
                     BiFunction<Row, RowMetadata, T> mapper = invocation.getArgument(0);
                     T mapped = mapper.apply(row, null);
                     lenient().when(rows.all()).thenReturn(Flux.just(mapped));
