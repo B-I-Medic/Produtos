@@ -22,6 +22,7 @@ import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -155,6 +156,34 @@ class ForecastRepositoryCustomImplTest {
         verify(databaseClient).sql(sqlCaptor.capture());
         assertTrue(sqlCaptor.getValue().contains("cod_produto, produto,"));
         assertTrue(sqlCaptor.getValue().contains("group by cod_produto, produto"));
+    }
+
+    @Test
+    void shouldApplyRequestedSortAndDirectionInDatabase() {
+        stubQuery(TestDataFactory.forecastAgrupadoResponseDTO());
+        var filter = filter(1, 10);
+        filter.setGroupBy(List.of(AgrupamentosPadrao.EMPRESA));
+        filter.setOrdenarPor("demandaTotal");
+        filter.setDirecaoOrdenacao("DESC");
+
+        StepVerifier.create(new ForecastRepositoryCustomImpl(databaseClient).findByFilter(filter))
+                .expectNextCount(1).verifyComplete();
+
+        var sqlCaptor = ArgumentCaptor.forClass(String.class);
+        verify(databaseClient).sql(sqlCaptor.capture());
+        assertTrue(sqlCaptor.getValue().contains("order by sum(demanda_total) DESC, empresa asc"));
+    }
+
+    @Test
+    void shouldRejectUnsupportedSortFieldOrDirection() {
+        var repository = new ForecastRepositoryCustomImpl(databaseClient);
+        var filter = filter(1, 10);
+        filter.setOrdenarPor("empresa; DROP TABLE forecast");
+        assertThrows(IllegalArgumentException.class, () -> repository.findByFilter(filter));
+
+        filter.setOrdenarPor("empresa");
+        filter.setDirecaoOrdenacao("DESC; DROP TABLE forecast");
+        assertThrows(IllegalArgumentException.class, () -> repository.findByFilter(filter));
     }
 
     @Test
